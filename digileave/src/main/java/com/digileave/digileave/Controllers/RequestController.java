@@ -1,6 +1,8 @@
 package com.digileave.digileave.Controllers;
 
 import com.digileave.digileave.DatabaseOps.RequestRepository;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import com.digileave.digileave.Models.Request;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,5 +30,15 @@ public class RequestController {
         }
         String email = currentUser.getAttributes().get("email").toString();
         return requests.findByEmail(email);
+    }
+    @PostMapping
+    public Request createRequest(
+            @AuthenticationPrincipal OAuth2User currentUser,
+            @RequestBody Request body) {
+
+        String email = currentUser.getAttributes().get("email").toString();
+        body.setUserEmail(email);
+
+        return requests.save(body);
     }
 }
