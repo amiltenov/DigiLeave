@@ -9,14 +9,14 @@ import java.time.LocalDate;
 
 import com.digileave.digileave.Models.enums.*; 
 
-@Document(collection = "leave_requests")
-public class LeaveRequest {
+@Document(collection = "requests")
+public class Request {
 
     @Id
     private String id;
 
     // Requesting  person's id
-    private String userId;
+    private String userEmail;
 
     // # SINGLE DATES   <------------------\
     private LocalDate startDate;//#         \
@@ -40,8 +40,8 @@ public class LeaveRequest {
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    public String getUserId() { return userEmail; }
+    public void setUserId(String userId) { this.userEmail = userEmail; }
 
     public LocalDate getStartDate() { return startDate; }
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
