@@ -1,23 +1,32 @@
 package com.digileave.digileave.Controllers;
 
-import com.digileave.digileave.DatabaseOps.UserRepository;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.digileave.digileave.DatabaseOps.RequestRepository;
+import com.digileave.digileave.Models.Request;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-
+import java.util.List;
 
 @RestController
-@RequestMapping("/request")
+@RequestMapping("/requests")
 public class RequestController {
-	
-    @GetMapping("/")
-    public String getRequests(@AuthenticationPrincipal OAuth2User currentUser) {
-        return new String();
-    }
-    
 
+    private final RequestRepository requests;
+
+    public RequestController(RequestRepository requests) {
+        this.requests = requests;
+    }
+
+    @GetMapping({ "", "/" })
+    public List<Request> getRequests(@AuthenticationPrincipal OAuth2User currentUser) {
+        if (currentUser == null || currentUser.getAttributes().get("email") == null) {
+            throw new RuntimeException("No authenticated user email found.");
+        }
+        String email = currentUser.getAttributes().get("email").toString();
+        return requests.findByEmail(email);
+    }
 }
