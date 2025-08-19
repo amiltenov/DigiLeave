@@ -23,7 +23,6 @@ public class AuthController {
         this.users = users;
     }
 
-    // If google login Ok
     @GetMapping("/post-login")
     public String postLogin(@AuthenticationPrincipal OAuth2User principal) {
         if (principal == null) {
@@ -41,16 +40,8 @@ public class AuthController {
             return users.save(u);
         });
 
-        return "redirect:/auth/me";
+        return "redirect:/user/me";
     }
 
-    @ResponseBody
-    @GetMapping("/me")
-    public Object me(@AuthenticationPrincipal OAuth2User principal) {
-        if (principal == null) {
-            return Map.of("authenticated", false);
-        }
-        String email = (String) principal.getAttributes().get("email");
-        return users.findByEmail(email).orElse(null);
-    }
+    
 }

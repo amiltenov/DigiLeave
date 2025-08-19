@@ -5,7 +5,7 @@ import com.digileave.digileave.DatabaseOps.UserRepository;
 import com.digileave.digileave.Models.User;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
     private final UserRepository repo;
 
@@ -31,4 +31,5 @@ public class UserController {
     public java.util.List<User> list() {
         return repo.findAll();
     }
+    
 }

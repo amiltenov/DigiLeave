@@ -15,6 +15,7 @@ public class User {
     @Id
     private String id;
 
+    private String fullName;
     private String email;
     private Role role;
     private int availableLeaveDays;
@@ -26,6 +27,13 @@ public class User {
     }
     public void setId(String id){
         this.id = id;
+    }
+
+    public String getFullName(){
+        return fullName;
+    }
+    public void setFullName(String fullName){
+        this.fullName = fullName;
     }
 
     public String getEmail(){
