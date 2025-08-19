@@ -18,21 +18,24 @@ import java.util.Map;
 public class AuthController {
 
     private final UserRepository users;
-
     public AuthController(UserRepository users) {
         this.users = users;
     }
 
-    @GetMapping("/post-login")
-    public String postLogin(@AuthenticationPrincipal OAuth2User principal) {
-        if (principal == null) {
+    @GetMapping("")
+    public String postLogin(@AuthenticationPrincipal OAuth2User currentUser) {
+        if (currentUser == null) {
             return "redirect:/"; 
         }
 
-        String email = (String) principal.getAttributes().get("email");
+        String email = (String) currentUser.getAttributes().get("email");
 
         users.findByEmail(email).orElseGet(() -> {
             User u = new User();
+            u.setFullName(// ! DOESNT WORK
+            (String) currentUser.getAttributes().get("given_name") + " " +
+            (String) currentUser.getAttributes().get("family_name")
+            );
             u.setEmail(email);
             u.setRole(Role.USER);
             u.setAvailableLeaveDays(20);
@@ -40,7 +43,7 @@ public class AuthController {
             return users.save(u);
         });
 
-        return "redirect:/user/me";
+        return "redirect:/account";
     }
 
     

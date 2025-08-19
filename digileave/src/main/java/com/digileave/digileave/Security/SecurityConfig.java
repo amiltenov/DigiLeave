@@ -14,7 +14,7 @@ public class SecurityConfig {
           .requestMatchers("/", "/health").permitAll()
           .anyRequest().authenticated()
         )
-        .oauth2Login(o -> o.defaultSuccessUrl("/auth/post-login", true))
+        .oauth2Login(o -> o.defaultSuccessUrl("/auth", true))
         .logout(l -> l.logoutUrl("/logout").logoutSuccessUrl("/"));
     return http.build();
   }
