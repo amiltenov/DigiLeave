@@ -1,14 +1,9 @@
-// /public/three-bg.js
 (function () {
-  // Guard if THREE not loaded
   if (!window.THREE) {
-    console.error("THREE not found. Make sure the <script> CDN tags are in index.html.");
     return;
   }
 
   const scene = new THREE.Scene();
-
-  // Camera (like your planet code)
   const camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -18,13 +13,35 @@
   camera.position.z = 5;
   camera.lookAt(scene.position);
 
+  // Keep alpha:true so the canvas blends with page; we'll still set a scene bg color via CSS var
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.domElement.id = "digi-bg";
   document.body.appendChild(renderer.domElement);
 
-  // Background tint (optional)
-  scene.background = new THREE.Color(0xefefef);
+  // Helper: apply theme -> scene.background from CSS var --color-bg (or fallback)
+  function applyThemeBg() {
+    const root = document.documentElement;
+    const cssBg =
+      getComputedStyle(root).getPropertyValue("--color-bg").trim() || "#eeeeee";
+    // THREE.Color accepts CSS strings directly
+    try {
+      scene.background = new THREE.Color(cssBg);
+    } catch {
+      // fallback if var is missing or invalid
+      scene.background = new THREE.Color(0x111111);
+    }
+  }
+
+  // Initial background from current theme
+  applyThemeBg();
+
+  // React to theme changes (Header toggles data-theme on <html>)
+  const themeObserver = new MutationObserver(() => applyThemeBg());
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
 
   // Lights
   scene.add(new THREE.AmbientLight(0xffffff, 0.12));
@@ -33,7 +50,7 @@
   scene.add(dir);
   scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
-  // Load the GLB logo
+
   let logo = null;
   new THREE.GLTFLoader().load(
     "/DigitollLogo.glb",
@@ -41,12 +58,10 @@
       logo = gltf.scene;
       scene.add(logo);
 
-      // Center model
       const box = new THREE.Box3().setFromObject(logo);
       const center = box.getCenter(new THREE.Vector3());
       logo.position.sub(center);
 
-      // Orientation (from your file)
       logo.rotation.x = -Math.PI / 2;
       logo.rotation.y -= Math.PI;
       logo.rotation.z -= Math.PI;
@@ -55,7 +70,7 @@
     (err) => console.error("GLB load error:", err)
   );
 
-  // Mouse → camera easing
+
   let mouseX = 0,
     mouseY = 0;
   window.addEventListener("mousemove", (e) => {
@@ -66,7 +81,7 @@
   function animate() {
     requestAnimationFrame(animate);
 
-    if (logo) logo.rotation.z -= 0.008; // gentle spin
+    if (logo) logo.rotation.z -= 0.008;
 
     camera.position.x += (mouseX * 2 - camera.position.x) * 0.025;
     camera.position.y += (mouseY * 2 - camera.position.y) * 0.025;

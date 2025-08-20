@@ -1,29 +1,117 @@
-
-.glass-footer {
-  position: fixed;          /* pinned to bottom */
-  bottom: 0; left: 0; right: 0;
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
 
-  display: flex;
-  justify-content: center;  /* center text/content */
-  align-items: center;
-
-  height: 56px;
-  padding: 0 20px;
+  height: auto;
+  padding: 12px 20px;
   border-radius: 0;
 
-  /* glass look */
-  background: rgba(255,255,255,0.25);
-  border-top: 1px solid rgba(255,255,255,0.4);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-surface-border);
   backdrop-filter: blur(12px) saturate(160%);
   -webkit-backdrop-filter: blur(12px) saturate(160%);
-  box-shadow: 0 -4px 18px rgba(0,0,0,.15);
+  box-shadow: 0 -4px 18px var(--color-surface-shadow);
 
   font-size: 0.9rem;
-  color: #111;
+  color: var(--color-text);
+  text-align: center;
+
+  /* GRID LAYOUT */
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* 2 columns */
+  grid-template-rows: auto auto auto; /* logo, routes+contacts, copyright */
+  column-gap: 4%;
+  row-gap: 8px;
+  align-items: start;
 }
 
+/* ===== LOGO ===== */
+.logof-div {
+  grid-row: 1;
+  grid-column: 1 / -1; /* span full width */
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  margin: 15px;
+  margin-left: 5%;
+}
 
-.page-pad-footer {
-  padding-bottom: 64px;
+.logof-img {
+  width: 300px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ===== ROUTES ===== */
+.routes {
+  grid-row: 2;
+  grid-column: 1;
+  justify-self: start;
+  align-self: start;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 5%;
+}
+
+.routes::before {
+  content: "Routes:";
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.routes a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.9;
+  margin-left: 1%;
+}
+
+.routes a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* ===== CONTACT INFO ===== */
+.contact-info {
+  grid-row: 2;
+  grid-column: 2;
+  justify-self: start;
+  align-self: start;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contact-info b {
+  margin-bottom: 2px;
+}
+
+.contact-info a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.9;
+  margin-left: 1%;
+}
+
+.contact-info a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* ===== COPYRIGHT ===== */
+footer p {
+  grid-row: 3;
+  grid-column: 1 / -1; /* center under both columns */
+  justify-self: center;
+  align-self: end;
+  margin: 0;
+  opacity: 0.85;
 }

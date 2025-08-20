@@ -1,0 +1,97 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import "../styles/Requests.css";
+
+const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
+
+export default function Requests() {
+  const [items, setItems] = useState([]);
+  const [state, setState] = useState("loading");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setState("loading");
+      try {
+        const res = await fetch(`${API}/requests`, { credentials: "include" });
+        if (res.status === 401) {
+          if (!cancelled) setState("unauth");
+          return;
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!cancelled) setItems(data || []);
+        if (!cancelled) setState((data && data.length) ? "ready" : "empty");
+      } catch (e) {
+        console.error("[Requests] load error:", e);
+        if (!cancelled) setState("error");
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  const fmtDate = (s) => {
+    if (!s) return "—";
+    try { return new Date(s).toLocaleDateString(); } catch { return s; }
+  };
+
+  if (state === "loading") return <div className="requests-root">Loading…</div>;
+  if (state === "unauth")
+    return (
+      <div className="requests-root">
+        <p>Not signed in.</p>
+        <a href={`${API}/oauth2/authorization/google`}>Login with Google</a>
+      </div>
+    );
+  if (state === "error") return <div className="requests-root">Couldn’t load your requests.</div>;
+  if (state === "empty")
+    return (
+      <div className="requests-root">
+        <h1>My Requests</h1>
+        <p>You don’t have any requests yet.</p>
+        <Link to="/requests/new" className="new-request-btn">Create your first request →</Link>
+      </div>
+    );
+
+  
+  return (
+    <div className="requests-root">
+      <div className="requests-header">
+        <h1>My Requests</h1>
+        <Link to="/requests/new" className="new-request-btn">
+          + New Request
+        </Link>
+      </div>
+
+      <div className="requests-table-wrap">
+        <table className="requests-table">
+          <thead>
+            <tr>
+              <th>Start</th>
+              <th>End</th>
+              <th>Workdays</th>
+              <th>Status</th>
+              <th>Comment</th>
+              <th>ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((r) => (
+              <tr key={r.id}>
+                <td>{fmtDate(r.startDate)}</td>
+                <td>{fmtDate(r.endDate)}</td>
+                <td>{r.workdaysCount}</td>
+                <td className="status">{r.status}</td>
+                <td>{r.comment || "—"}</td>
+                <td className="id">{r.id}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

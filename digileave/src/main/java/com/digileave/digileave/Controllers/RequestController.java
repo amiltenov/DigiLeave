@@ -23,14 +23,15 @@ public class RequestController {
         this.requests = requests;
     }
 
-    @GetMapping({ "", "/" })
+    @GetMapping("")
     public List<Request> getRequests(@AuthenticationPrincipal OAuth2User currentUser) {
         if (currentUser == null || currentUser.getAttributes().get("email") == null) {
             throw new RuntimeException("No authenticated user email found.");
         }
         String email = currentUser.getAttributes().get("email").toString();
-        return requests.findByEmail(email);
+        return requests.findByUserEmail(email);
     }
+
     @PostMapping
     public Request createRequest(
             @AuthenticationPrincipal OAuth2User currentUser,

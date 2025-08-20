@@ -15,7 +15,7 @@ public class Request {
     @Id
     private String id;
 
-    // Requesting  person's id
+    
     private String userEmail;
 
     // # SINGLE DATES   <------------------\
@@ -41,7 +41,7 @@ public class Request {
     public void setId(String id) { this.id = id; }
 
     public String getUserEmail() { return userEmail; }
-    public void setUserEmail(String userId) { this.userEmail = userEmail; }
+    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
 
     public LocalDate getStartDate() { return startDate; }
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
