@@ -13,6 +13,7 @@ public class DigileaveApplication {
         .load();
 
     String mongo = dotenv.get("MONGO_URI");
+    String port = dotenv.get("PORT");
     String cid   = dotenv.get("CLIENT_ID");
     String cs    = dotenv.get("CLIENT_SECRET");
 
@@ -27,10 +28,11 @@ public class DigileaveApplication {
     }
 
     System.setProperty("MONGO_URI", mongo);
+    System.setProperty("PORT", port);
     System.setProperty("CLIENT_ID", cid);
     System.setProperty("CLIENT_SECRET", cs);
 
-	System.out.println("[ENV] MONGO_URI=" + mongo);
+	System.out.println("[ENV] MONGO_URI=" + mongo + port);
 
     SpringApplication.run(DigileaveApplication.class, args);
   }
