@@ -17,25 +17,25 @@ export default function Footer() {
 
   return (
     <footer className="footer">
-      <div className="logof-div">
+      {/* <div className="logof-div">
         <img
           src={darkMode ? "/DigiLeaveLogo_WHITE.png" : "/DigiLeaveLogo_BLACK.png"}
           alt="DigiLeave Logo"
           className="logof-img"
         />
-      </div>
-      <div className="routes">
+      </div> */}
+      {/* <div className="routes">
         Routes:
         <a href="/">Home</a>
         <a href="/account">Account</a>
         <a href="/requests">Requests</a>
-      </div>
-
+      </div> */}
+{/* 
       <div className="contact-info">
         <b>Contact Information:</b>
         <a href="mailto:miltenoval@digitoll.bg">miltenoval@digitoll.bg</a>
         <a href="mailto:belchinovh@digitoll.bg">belchinovh@digitoll.bg</a>
-      </div>
+      </div> */}
 
       <p>© {new Date().getFullYear()} DigiLeave. All rights reserved.</p>
     </footer>

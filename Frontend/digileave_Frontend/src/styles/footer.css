@@ -47,7 +47,7 @@ footer {
 
 /* ===== ROUTES ===== */
 .routes {
-  grid-row: 2;
+  grid-row: 1;
   grid-column: 1;
   justify-self: start;
   align-self: start;
@@ -79,10 +79,10 @@ footer {
 
 /* ===== CONTACT INFO ===== */
 .contact-info {
-  grid-row: 2;
+  /* grid-row: 2; */
   grid-column: 2;
   justify-self: start;
-  align-self: start;
+  /* align-self: start; */
 
   display: flex;
   flex-direction: column;
@@ -108,8 +108,8 @@ footer {
 
 /* ===== COPYRIGHT ===== */
 footer p {
-  grid-row: 3;
-  grid-column: 1 / -1; /* center under both columns */
+  /* grid-row: 2; */
+  grid-column: 1 / -1;
   justify-self: center;
   align-self: end;
   margin: 0;
