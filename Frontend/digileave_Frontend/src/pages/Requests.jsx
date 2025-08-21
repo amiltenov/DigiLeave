@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "../styles/Requests.css";
+import "../styles/requests.css";
 
 const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
 
