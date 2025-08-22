@@ -134,7 +134,7 @@ export default function Header() {
           {user ? (
             <Link className="account_google-btn" to="/account">Account</Link>
           ) : (
-            <a className="account_google-btn" href={`https://digileave.onrender.com/oauth2/authorization/google`}>
+            <a className="account_google-btn" href={"https://digileave.onrender.com/oauth2/authorization/google"}>
               Login with Google
             </a>
           )}
