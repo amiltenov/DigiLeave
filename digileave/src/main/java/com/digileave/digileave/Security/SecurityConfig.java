@@ -15,7 +15,7 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
   private static final String FRONTEND_URL =
-      System.getenv().getOrDefault("FRONTEND_URL", "http://localhost:5173");
+      System.getenv().getOrDefault("FRONTEND_URL", "https://digi-leavefrontend.vercel.app/");
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -45,7 +45,6 @@ public class SecurityConfig {
     CorsConfiguration cfg = new CorsConfiguration();
 
     cfg.setAllowedOrigins(List.of(
-        "http://localhost:5173",
         "https://digi-leavefrontend.vercel.app"
     ));
 
