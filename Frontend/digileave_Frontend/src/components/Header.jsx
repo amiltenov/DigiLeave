@@ -103,7 +103,7 @@ export default function Header() {
           className="logo-img"
         />
       </div>
-      
+
       <div className="theme-switch" ref={themeRef}>
         <input
           type="checkbox"
@@ -113,7 +113,6 @@ export default function Header() {
         />
         <label htmlFor="switch" className="slider"></label>
       </div>
-
       {collapsed && (
         <button
           ref={burgerRef}
