@@ -3,7 +3,6 @@
   line-height: 1.5;
   font-weight: 400;
 
-  /* Your existing variables */
   --color-bg: #ffffff;
   --color-text: #111111;
   --color-accent: #ffd733;
@@ -12,7 +11,7 @@
   --color-surface-border: rgba(255,255,255,0.4);
   --color-surface-shadow: rgba(0,0,0,0.15);
 
-  /* Header / Nav / Button variables */
+
   --header-bg: var(--color-surface);
   --header-border: var(--color-surface-border);
   --header-shadow: var(--color-surface-shadow);
@@ -35,7 +34,7 @@
 
 /* Dark theme */
 [data-theme="dark"] {
-  /* Your existing overrides */
+
   --color-bg: #111111;
   --color-text: #f5f5f5;
   --color-accent: #ffd733;
@@ -44,7 +43,6 @@
   --color-surface-border: rgba(255,255,255,0.1);
   --color-surface-shadow: rgba(0,0,0,0.5);
 
-  /* Header / Nav / Button overrides */
   --header-bg: var(--color-surface);
   --header-border: var(--color-surface-border);
   --header-shadow: var(--color-surface-shadow);
@@ -65,7 +63,7 @@
   --switch-bg-active: #bbb;
 }
 
-/* Reset & base */
+
 body {
   padding-top: 70px;
   font-family: system-ui, sans-serif;
