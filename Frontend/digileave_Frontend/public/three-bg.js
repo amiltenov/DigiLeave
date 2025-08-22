@@ -15,6 +15,7 @@
 
   // Keep alpha:true so the canvas blends with page; we'll still set a scene bg color via CSS var
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.domElement.id = "digi-bg";
   document.body.appendChild(renderer.domElement);
