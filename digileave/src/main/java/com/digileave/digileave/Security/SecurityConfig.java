@@ -14,30 +14,44 @@ import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+  private static final String FRONTEND_URL =
+      System.getenv().getOrDefault("FRONTEND_URL", "http://localhost:5173");
 
   @Bean
-  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-      .cors(Customizer.withDefaults()) // <-- let Security apply our CORS rules
+      .cors(Customizer.withDefaults())
       .csrf(csrf -> csrf.disable())
+
       .authorizeHttpRequests(auth -> auth
-          .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // <-- preflight must pass
-          .requestMatchers("/", "/health").permitAll()
+          .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+          .requestMatchers("/", "/health", "/actuator/health").permitAll()
+          .requestMatchers("/oauth2/**", "/login/**").permitAll()
           .anyRequest().authenticated()
       )
-      .oauth2Login(o -> o.defaultSuccessUrl("/auth", true)) // use your working post-login
-      .logout(l -> l.logoutUrl("/logout").logoutSuccessUrl("/"));
+
+      .oauth2Login(o -> o.successHandler((req, res, auth) -> {
+        res.sendRedirect(FRONTEND_URL);
+      }))
+
+      .logout(l -> l.logoutUrl("/logout")
+                    .logoutSuccessUrl(FRONTEND_URL));
+
     return http.build();
   }
 
   @Bean
-  CorsConfigurationSource corsConfigurationSource() {
+  public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration cfg = new CorsConfiguration();
-    // ORIGINS ONLY (no paths) — include both localhost & 127.0.0.1 just in case
-    cfg.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
-    cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+
+    cfg.setAllowedOrigins(List.of(
+        "http://localhost:5173",
+        "https://digi-leavefrontend.vercel.app"
+    ));
+
+    cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     cfg.setAllowedHeaders(List.of("*"));
-    cfg.setAllowCredentials(true); // you’re sending cookies
+    cfg.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", cfg);
