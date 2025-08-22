@@ -18,11 +18,12 @@ export default function Header() {
   }, [darkMode]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/account", { credentials: "include" })
+    fetch("https://digileave.onrender.com/account", { credentials: "include" })
       .then((res) => (res.ok ? res.json() : null))
       .then(setUser)
       .catch(() => setUser(null));
   }, []);
+  console.log(user);
 
   const headerRef = useRef(null);
   const logoRef = useRef(null);
@@ -134,14 +135,13 @@ export default function Header() {
           {user ? (
             <Link className="account_google-btn" to="/account">Account</Link>
           ) : (
-            <a className="account_google-btn" href="http://localhost:8080/auth">
+            <a className="account_google-btn" href={`https://digileave.onrender.com/oauth2/authorization/google`}>
               Login with Google
             </a>
           )}
         </nav>
       )}
 
-      {/* Mobile drawer */}
       {collapsed && (
         <div
           id="mobile-menu"
@@ -153,7 +153,7 @@ export default function Header() {
           {user ? (
             <Link className="account_google-btn" to="/account" onClick={() => setMenuOpen(false)}>Account</Link>
           ) : (
-            <a className="account_google-btn" href="http://localhost:8080/auth" onClick={() => setMenuOpen(false)}>
+            <a className="account_google-btn" href={`https://digileave.onrender.com/oauth2/authorization/google`}>
               Login with Google
             </a>
           )}

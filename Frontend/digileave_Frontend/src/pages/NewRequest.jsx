@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
+const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
 
 export default function NewRequest() {
   const [startDate, setStartDate] = useState("");
