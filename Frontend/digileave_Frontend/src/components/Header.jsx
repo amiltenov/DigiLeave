@@ -23,7 +23,6 @@ export default function Header() {
       .then(setUser)
       .catch(() => setUser(null));
   }, []);
-  console.log(user);
 
   const headerRef = useRef(null);
   const logoRef = useRef(null);

@@ -7,9 +7,8 @@ export default function NewRequest() {
   const [endDate, setEndDate] = useState("");
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [msg, setMsg] = useState(null); // { type: "ok" | "err" | "unauth", text: string }
+  const [msg, setMsg] = useState(null);
 
-  // compute business days (Mon–Fri)
   const workdaysCount = useMemo(() => {
     if (!startDate || !endDate) return 0;
     const s = new Date(startDate);
@@ -45,13 +44,10 @@ export default function NewRequest() {
     const payload = {
       startDate,       // "YYYY-MM-DD"
       endDate,         // "YYYY-MM-DD"
-      workdaysCount,   // your backend currently expects this from client
+      workdaysCount,
       comment: comment || null
-      // userEmail set server-side from OAuth principal
-      // status defaults to SUBMITTED server-side or in model
     };
 
-    // 🔵 log what you're sending
     console.log("[NewRequest] Submitting payload →", payload);
 
     setSubmitting(true);
@@ -63,7 +59,6 @@ export default function NewRequest() {
         body: JSON.stringify(payload),
       });
 
-      // 🟡 log raw HTTP status
       console.log("[NewRequest] Response status:", res.status, res.statusText);
 
       if (res.status === 401) {
@@ -79,7 +74,6 @@ export default function NewRequest() {
 
       const saved = await res.json().catch(() => null);
 
-      // 🟢 log what the backend saved (DB object echoed back)
       console.log("[NewRequest] Saved to DB ←", saved);
 
       setMsg({
