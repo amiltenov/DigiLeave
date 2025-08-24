@@ -1,7 +1,7 @@
 package com.digileave.digileave.Models;
 
-
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -9,61 +9,63 @@ import java.time.LocalDate;
 
 import com.digileave.digileave.Models.enums.*; 
 
+
 @Document(collection = "requests")
 public class Request {
 
     @Id
     private String id;
 
-    
-    private String userEmail;
+    @Indexed
+    private String userId;
 
-    // # SINGLE DATES   <------------------\
-    private LocalDate startDate;//#         \
-    private LocalDate endDate;//#            |
-    // #                                     |
-    // # CALCULATE DAYS DATE TO DATE   -----/
+    private LocalDate startDate;
+    private LocalDate endDate;
     private int workdaysCount;
 
-    // Default is submitted
+    @Indexed
     private Status status = Status.SUBMITTED;
 
-    // Comment
+    @Indexed
+    private LeaveType type;
+    
     private String comment;
-
-    // audit
-    private String approvedByUserId;  // approver id who made the decision
-    private Instant approvedAt;
-
-
-
+    
+    // Audit
+    private String decidedByUserId;
+    private Instant decidedAt;
+    
+    
+    
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-
-    public String getUserEmail() { return userEmail; }
-    public void setUserEmail(String userEmail) { this.userEmail = userEmail; }
-
+    
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+    
     public LocalDate getStartDate() { return startDate; }
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
-
+    
     public LocalDate getEndDate() { return endDate; }
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
-
+    
     public int getWorkdaysCount() { return workdaysCount; }
     public void setWorkdaysCount(int workdaysCount) { this.workdaysCount = workdaysCount; }
-
+    
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
+    
+    public LeaveType getType() { return type; }
+    public void setType(LeaveType type) { this.type = type; }
 
     public String getComment() { return comment; }
     public void setComment(String comment) { this.comment = comment; }
 
-    public String getDecidedByUserId() { return approvedByUserId; }
-    public void setDecidedByUserId(String decidedByUserId) { this.approvedByUserId = decidedByUserId; }
+    public String getDecidedByUserId() { return decidedByUserId; }
+    public void setDecidedByUserId(String decidedByUserId) { this.decidedByUserId = decidedByUserId; }
 
-    public Instant getDecidedAt() { return approvedAt; }
-    public void setDecidedAt(Instant decidedAt) { this.approvedAt = decidedAt; }
+    public Instant getDecidedAt() { return decidedAt; }
+    public void setDecidedAt(Instant decidedAt) { this.decidedAt = decidedAt; }
 
 
 }
-

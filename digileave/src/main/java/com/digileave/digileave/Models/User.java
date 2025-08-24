@@ -26,7 +26,7 @@ public class User {
 
     private int availableLeaveDays = 20;
 
-    private List<String> assigneeIDs = new ArrayList<>();
+    private List<String> assigneeIds = new ArrayList<>();
 
 
 
@@ -45,9 +45,9 @@ public class User {
     public int getAvailableLeaveDays(){ return availableLeaveDays; }
     public void setAvailableLeaveDays(int availableLeaveDays){ this.availableLeaveDays = availableLeaveDays; }
 
-    public List<String> getAssigneeIDs(){ return assigneeIDs; }
-    public void addAssignee(String assignee){ this.assigneeIDs.add(assignee); }
-    public void deleteAssignee(String assignee){ this.assigneeIDs.remove(assignee); }
+    public List<String> getAssigneeIds(){ return assigneeIds; }
+    public void addAssignee(String assignee){ this.assigneeIds.add(assignee); }
+    public void deleteAssignee(String assignee){ this.assigneeIds.remove(assignee); }
 
 
 }

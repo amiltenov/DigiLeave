@@ -38,7 +38,7 @@ public class RequestController {
             @RequestBody Request body) {
 
         String email = currentUser.getAttributes().get("email").toString();
-        body.setUserEmail(email);
+        body.setUserId(email);
 
         return requests.save(body);
     }
