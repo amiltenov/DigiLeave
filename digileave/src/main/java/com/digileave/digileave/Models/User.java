@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.digileave.digileave.Models.enums.Role;
@@ -15,56 +16,38 @@ public class User {
     @Id
     private String id;
 
-    private String fullName;
+    @Indexed(unique = true)
     private String email;
-    private Role role;
-    private int availableLeaveDays;
-    private List<String> assignees = new ArrayList<>();
+
+    @Indexed
+    private Role role = Role.USER;
+
+    private String fullName;
+
+    private int availableLeaveDays = 20;
+
+    private List<String> assigneeIDs = new ArrayList<>();
 
 
-    public String getId(){
-        return id; 
-    }
-    public void setId(String id){
-        this.id = id;
-    }
 
-    public String getFullName(){
-        return fullName;
-    }
-    public void setFullName(String fullName){
-        this.fullName = fullName;
-    }
+    public String getId(){ return id; }
+    public void setId(String id){ this.id = id; }
 
-    public String getEmail(){
-        return email;
-    }
-    public void setEmail(String email){
-        this.email = email;
-    }
+    public String getFullName(){ return fullName; }
+    public void setFullName(String fullName){ this.fullName = fullName; }
 
-    public Role getRole(){
-        return role;
-    }
-    public void setRole(Role role){
-        this.role = role;
-    }
+    public String getEmail(){ return email; }
+    public void setEmail(String email){ this.email = email; }
 
-    public int getAvailableLeaveDays(){
-        return availableLeaveDays;
-    }
-    public void setAvailableLeaveDays(int availableLeaveDays){
-        this.availableLeaveDays = availableLeaveDays;
-    }
+    public Role getRole(){ return role; }
+    public void setRole(Role role){ this.role = role; }
 
-    public List<String> getAssignees(){
-        return assignees;
-    }
-    public void addAssignee(String assignee){
-        this.assignees.add(assignee);
-    }
-    public void deleteAssignee(String assignee){
-        this.assignees.remove(assignee);
-    }
+    public int getAvailableLeaveDays(){ return availableLeaveDays; }
+    public void setAvailableLeaveDays(int availableLeaveDays){ this.availableLeaveDays = availableLeaveDays; }
+
+    public List<String> getAssigneeIDs(){ return assigneeIDs; }
+    public void addAssignee(String assignee){ this.assigneeIDs.add(assignee); }
+    public void deleteAssignee(String assignee){ this.assigneeIDs.remove(assignee); }
+
+
 }
-
