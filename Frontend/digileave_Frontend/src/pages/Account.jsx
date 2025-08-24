@@ -6,7 +6,7 @@ export default function Account() {
   const [state, setState] = useState("loading");
 
   useEffect(() => {
-    fetch("https://digileave.onrender.com/account", { credentials: "include" })
+    fetch("http://localhost:8080/account", { credentials: "include" })
       .then(res => {
         if (res.status === 401) {
           setState("unauth");
@@ -33,7 +33,7 @@ export default function Account() {
       <div className="account-wrap">
         <h2>Account</h2>
         <p>You’re not signed in.</p>
-        <a className="btn" href="https://digileave.onrender.com/oauth2/authorization/google">Login with Google</a>
+        <a className="btn" href="http://localhost:8080/oauth2/authorization/google">Login with Google</a>
       </div>
     );
   }
