@@ -24,6 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.digileave.digileave.Services.JwtService;
 import com.digileave.digileave.Security.HttpLoggerFilter;
+import com.digileave.digileave.Repositories.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,15 +39,16 @@ public class SecurityConfig {
   // # Dev & Production frontend routes
   private static final String DEV_FRONTEND = "http://localhost:5173";
   private static final String PROD_FRONTEND = "https://digi-leavefrontend.vercel.app";
-
   private final HttpLoggerFilter httpLoggerFilter;
   private final JwtService jwtService;
+  private final UserRepository users;
 
-  public SecurityConfig(JwtService jwtService , HttpLoggerFilter httpLoggerFilter) {
+  public SecurityConfig(JwtService jwtService, HttpLoggerFilter httpLoggerFilter, UserRepository users) {
     this.httpLoggerFilter = httpLoggerFilter;
     this.jwtService = jwtService;
-
+    this.users = users;
   }
+  
 
   // # Register JwtAuthFilter as a bean
   @Bean
@@ -76,10 +78,27 @@ public class SecurityConfig {
         .accessDeniedHandler(json403())
       )
 
-      // # OAuth2 Success Redirect to /auth
       .oauth2Login(oauth -> oauth
-      .successHandler((req, res, auth) -> res.sendRedirect("/auth/jwt"))
-      )
+  .successHandler((req, res, auth) -> {
+    var p = (org.springframework.security.oauth2.core.user.OAuth2User) auth.getPrincipal();
+    String email = p.getAttribute("email");
+    String name  = p.getAttribute("name");
+
+    var u = users.findByEmail(email).orElseGet(() -> {
+      var nu = new com.digileave.digileave.Models.User();
+      nu.setEmail(email);
+      nu.setFullName(name);
+      nu.setRole(com.digileave.digileave.Models.enums.Role.USER);
+      return users.save(nu);
+    });
+
+    String token = jwtService.createJwtToken(
+        u.getId(), u.getEmail(), u.getRole(), java.time.Duration.ofHours(8));
+
+    String redirect = "https://digi-leavefrontend.vercel.app/auth/callback#token=" + token;
+    res.sendRedirect(redirect);
+  })
+)
 
       // # JWT Filter
       .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
