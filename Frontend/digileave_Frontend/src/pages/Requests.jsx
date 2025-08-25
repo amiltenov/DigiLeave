@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/requests.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
+const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com/";
 
 export default function Requests() {
   const [items, setItems] = useState([]);
