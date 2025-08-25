@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -19,12 +21,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.digileave.digileave.Services.JwtService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
-
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -34,34 +37,45 @@ public class SecurityConfig {
   private static final String DEV_FRONTEND = "http://localhost:5173";
   private static final String PROD_FRONTEND = "https://digi-leavefrontend.vercel.app";
 
+  private final JwtService jwtService;
+
+  public SecurityConfig(JwtService jwtService) {
+    this.jwtService = jwtService;
+  }
+
+  // # Register JwtAuthFilter as a bean
+  @Bean
+  public JwtAuthFilter jwtAuthFilter() {
+    return new JwtAuthFilter(jwtService);
+  }
+
   // # Security Pipeline Setup
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
       .cors(Customizer.withDefaults())
-      .csrf(csrf -> csrf.disable()) // we send cookies only to sites allowed by cors
+      .csrf(csrf -> csrf.disable())
+      .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
         .requestMatchers("/", "/health", "/actuator/health",
-                         "/oauth2/**", "/login/**", "/auth").permitAll()
+                         "/oauth2/**", "/login/**", "/auth/jwt").permitAll()
         .anyRequest().authenticated()
       )
       .exceptionHandling(e -> e
-        .authenticationEntryPoint(json401())   // 401 JSON when not authenticated
-        .accessDeniedHandler(json403())        // 403 JSON when authenticated but forbidden
+        .authenticationEntryPoint(json401())
+        .accessDeniedHandler(json403())
       )
 
       // # OAuth2 Success Redirect to /auth
-      .oauth2Login(oauth -> oauth 
-        .successHandler((req, res, auth) -> res.sendRedirect("/auth"))
+      .oauth2Login(oauth -> oauth
+        .successHandler((req, res, auth) -> {
+          req.getRequestDispatcher("/auth/jwt").forward(req, res);
+        })
       )
 
-      // # Logout cookie management
-      .logout(l -> l
-        .logoutUrl("/logout")
-        .deleteCookies("JSESSIONID")
-        .logoutSuccessHandler((req, res, auth) -> res.setStatus(HttpStatus.NO_CONTENT.value()))
-      );
+      .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
@@ -107,5 +121,4 @@ public class SecurityConfig {
 
   // TODO - add other error handlers
   // ...............................
-
 }

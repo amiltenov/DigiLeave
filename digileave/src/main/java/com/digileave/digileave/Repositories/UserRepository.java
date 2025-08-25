@@ -1,4 +1,4 @@
-package com.digileave.digileave.DatabaseOps;
+package com.digileave.digileave.Repositories;
 
 import java.util.Optional;
 

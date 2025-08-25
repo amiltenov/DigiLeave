@@ -16,6 +16,7 @@ public class DigileaveApplication {
     String port = dotenv.get("PORT");
     String cid   = dotenv.get("CLIENT_ID");
     String cs    = dotenv.get("CLIENT_SECRET");
+    String jwt    = dotenv.get("JWT_SECRET_BASE64");
 
     if (mongo == null) {
       throw new IllegalStateException("Missing MONGO_URI in environment or .env");
@@ -31,8 +32,8 @@ public class DigileaveApplication {
     System.setProperty("PORT", port);
     System.setProperty("CLIENT_ID", cid);
     System.setProperty("CLIENT_SECRET", cs);
+    System.setProperty("JWT_SECRET_BASE64", jwt);
 
-	System.out.println("[ENV] MONGO_URI=" + mongo + port);
 
     SpringApplication.run(DigileaveApplication.class, args);
   }

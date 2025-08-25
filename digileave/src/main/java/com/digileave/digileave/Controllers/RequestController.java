@@ -1,12 +1,13 @@
 package com.digileave.digileave.Controllers;
 
-import com.digileave.digileave.DatabaseOps.RequestRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.digileave.digileave.Models.Request;
+import com.digileave.digileave.Repositories.RequestRepository;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,22 +24,33 @@ public class RequestController {
         this.requests = requests;
     }
 
-    @GetMapping("")
-    public List<Request> getRequests(@AuthenticationPrincipal OAuth2User currentUser) {
-        if (currentUser == null || currentUser.getAttributes().get("email") == null) {
-            throw new RuntimeException("No authenticated user email found.");
+    @GetMapping
+    public List<Request> getRequests(
+            @AuthenticationPrincipal String email,
+            org.springframework.security.core.Authentication authentication) {
+
+        String userId = null;
+        if (authentication != null && authentication.getDetails() instanceof String) {
+            userId = (String) authentication.getDetails();
         }
-        String email = currentUser.getAttributes().get("email").toString();
-        return requests.findByUserEmail(email);
+
+        // Prefer DB id if present; fallback to email (OAuth2-only sessions)
+        String key = (userId != null ? userId : email);
+        return requests.findByUserId(key);
     }
 
     @PostMapping
     public Request createRequest(
-            @AuthenticationPrincipal OAuth2User currentUser,
+            @AuthenticationPrincipal String email,
+            org.springframework.security.core.Authentication authentication,
             @RequestBody Request body) {
 
-        String email = currentUser.getAttributes().get("email").toString();
-        body.setUserId(email);
+        String userId = null;
+        if (authentication != null && authentication.getDetails() instanceof String) {
+            userId = (String) authentication.getDetails();
+        }
+        // Prefer DB id if present; fallback to email (OAuth2-only sessions)
+        body.setUserId(userId != null ? userId : email);
 
         return requests.save(body);
     }

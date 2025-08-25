@@ -2,8 +2,8 @@ package com.digileave.digileave.Controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.digileave.digileave.DatabaseOps.UserRepository;
 import com.digileave.digileave.Models.User;
+import com.digileave.digileave.Repositories.UserRepository;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
