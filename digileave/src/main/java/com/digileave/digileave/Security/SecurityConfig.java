@@ -78,9 +78,7 @@ public class SecurityConfig {
 
       // # OAuth2 Success Redirect to /auth
       .oauth2Login(oauth -> oauth
-        .successHandler((req, res, auth) -> {
-          req.getRequestDispatcher("/auth/jwt").forward(req, res);
-        })
+      .successHandler((req, res, auth) -> res.sendRedirect("/auth/jwt"))
       )
 
       // # JWT Filter
