@@ -18,7 +18,7 @@ export default function Header() {
   }, [darkMode]);
 
   useEffect(() => {
-    fetch("https://digileave.onrender.com//account", { credentials: "include" })
+    fetch("https://digileave.onrender.com/account", { credentials: "include" })
       .then((res) => (res.ok ? res.json() : null))
       .then(setUser)
       .catch(() => setUser(null));
@@ -134,7 +134,7 @@ export default function Header() {
           {user ? (
             <Link className="account_google-btn" to="/account">Account</Link>
           ) : (
-            <a className="account_google-btn" href={"https://digileave.onrender.com//oauth2/authorization/google"}>
+            <a className="account_google-btn" href={"https://digileave.onrender.com/oauth2/authorization/google"}>
               Login with Google
             </a>
           )}
@@ -152,7 +152,7 @@ export default function Header() {
           {user ? (
             <Link className="account_google-btn" to="/account" onClick={() => setMenuOpen(false)}>Account</Link>
           ) : (
-            <a className="account_google-btn" href={`https://digileave.onrender.com//oauth2/authorization/google`}>
+            <a className="account_google-btn" href={`https://digileave.onrender.com/oauth2/authorization/google`}>
               Login with Google
             </a>
           )}
