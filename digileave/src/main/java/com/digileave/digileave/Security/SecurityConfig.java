@@ -14,6 +14,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -22,6 +23,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.digileave.digileave.Services.JwtService;
+import com.digileave.digileave.Security.HttpLoggerFilter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,10 +39,13 @@ public class SecurityConfig {
   private static final String DEV_FRONTEND = "http://localhost:5173";
   private static final String PROD_FRONTEND = "https://digi-leavefrontend.vercel.app";
 
+  private final HttpLoggerFilter httpLoggerFilter;
   private final JwtService jwtService;
 
-  public SecurityConfig(JwtService jwtService) {
+  public SecurityConfig(JwtService jwtService , HttpLoggerFilter httpLoggerFilter) {
+    this.httpLoggerFilter = httpLoggerFilter;
     this.jwtService = jwtService;
+
   }
 
   // # Register JwtAuthFilter as a bean
@@ -56,6 +61,9 @@ public class SecurityConfig {
       .cors(Customizer.withDefaults())
       .csrf(csrf -> csrf.disable())
       .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+      // # Custom HTTP Logger Filter
+      .addFilterAfter(httpLoggerFilter, SecurityContextHolderFilter.class)
 
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -75,6 +83,7 @@ public class SecurityConfig {
         })
       )
 
+      // # JWT Filter
       .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
