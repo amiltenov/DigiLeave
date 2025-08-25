@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { authHeader } from "../auth";
 import "../styles/requests.css";
 
 const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
@@ -14,7 +15,7 @@ export default function Requests() {
     async function load() {
       setState("loading");
       try {
-        const res = await fetch(`${API}/requests`, { credentials: "include" });
+        const res = await fetch(`${API}/requests`, { headers: authHeader() });
         if (res.status === 401) {
           if (!cancelled) setState("unauth");
           return;

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { authHeader } from "../auth";
 
 const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
 
@@ -54,8 +55,7 @@ export default function NewRequest() {
     try {
       const res = await fetch(`${API}/requests`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeader() },
         body: JSON.stringify(payload),
       });
 

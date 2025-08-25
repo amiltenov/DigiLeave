@@ -1,12 +1,13 @@
 import "../styles/account.css";
+import { authHeader } from "../auth";
 import { useEffect, useState } from "react";
 
 export default function Account() {
   const [data, setData] = useState(null);
   const [state, setState] = useState("loading");
 
-  useEffect(() => {
-    fetch("https://digileave.onrender.com/account", { credentials: "include" })
+    useEffect(() => {
+    fetch("https://digileave.onrender.com/account", { headers: authHeader() })
       .then(res => {
         if (res.status === 401) {
           setState("unauth");

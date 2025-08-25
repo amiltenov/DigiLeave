@@ -17,11 +17,16 @@ export default function Header() {
     localStorage.setItem("theme", theme);
   }, [darkMode]);
 
+
   useEffect(() => {
-    fetch("https://digileave.onrender.com/account", { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : null))
-      .then(setUser)
-      .catch(() => setUser(null));
+    const h = new Headers();
+    import("../auth").then(({ authHeader }) => {
+      Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
+      fetch("https://digileave.onrender.com/account", { headers: h })
+        .then((res) => (res.ok ? res.json() : null))
+        .then(setUser)
+        .catch(() => setUser(null));
+    });
   }, []);
 
   const headerRef = useRef(null);
