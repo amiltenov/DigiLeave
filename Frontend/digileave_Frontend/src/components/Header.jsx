@@ -1,15 +1,17 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "../styles/header.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { authHeader, logout } from "../auth";
 
 export default function Header() {
   const [user, setUser] = useState(null);
-
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("theme");
     if (saved) return saved === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const theme = darkMode ? "dark" : "light";
@@ -17,16 +19,13 @@ export default function Header() {
     localStorage.setItem("theme", theme);
   }, [darkMode]);
 
-
   useEffect(() => {
     const h = new Headers();
-    import("../auth").then(({ authHeader }) => {
-      Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
-      fetch("https://digileave.onrender.com/account", { headers: h })
-        .then((res) => (res.ok ? res.json() : null))
-        .then(setUser)
-        .catch(() => setUser(null));
-    });
+    Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
+    fetch("https://digileave.onrender.com/account", { headers: h })
+      .then((res) => (res.ok ? res.json() : null))
+      .then(setUser)
+      .catch(() => setUser(null));
   }, []);
 
   const headerRef = useRef(null);
@@ -53,19 +52,16 @@ export default function Header() {
     const burgerW = burgerRef.current?.getBoundingClientRect().width || 0;
 
     const base = padL + padR + logoW + themeW;
-    const baseGaps = (() => {
-      return 2 * gap;
-    })();
-
+    const baseGaps = 2 * gap;
     const containerW = header.clientWidth;
 
     const requiredWithNav = base + navW + baseGaps;
-
     const requiredWithBurger = base + burgerW + baseGaps;
 
-    const needsCollapse = requiredWithNav > containerW && requiredWithBurger <= containerW
-      ? true
-      : requiredWithNav > containerW;
+    const needsCollapse =
+      requiredWithNav > containerW && requiredWithBurger <= containerW
+        ? true
+        : requiredWithNav > containerW;
 
     setCollapsed(needsCollapse);
     if (!needsCollapse) setMenuOpen(false);
@@ -99,11 +95,19 @@ export default function Header() {
     };
   }, []);
 
+  const handleLogout = () => {
+    logout();
+    setUser(null);
+    navigate("/");
+  };
+
   return (
     <header className="header" ref={headerRef}>
       <div className="logo-div" ref={logoRef}>
         <img
-          src={darkMode ? "/DigiLeaveLogo_WHITE.png" : "/DigiLeaveLogo_BLACK.png"}
+          src={
+            darkMode ? "/DigiLeaveLogo_WHITE.png" : "/DigiLeaveLogo_BLACK.png"
+          }
           alt="DigiLeave Logo"
           className="logo-img"
         />
@@ -118,28 +122,32 @@ export default function Header() {
         />
         <label htmlFor="switch" className="slider"></label>
       </div>
-      {collapsed && (
-        <button
-          ref={burgerRef}
-          className={`hamburger-btn ${menuOpen ? "is-open" : ""}`}
-          aria-label="Open menu"
-          aria-expanded={menuOpen}
-          aria-controls="mobile-menu"
-          onClick={() => setMenuOpen((o) => !o)}
-        >
-          <span className="hamburger-lines" />
-        </button>
-      )}
 
 
       {!collapsed && (
         <nav ref={navRef}>
-          <Link className="nav-btn" to="/">Home</Link>
-          <Link className="nav-btn" to="/requests">Requests</Link>
+          <Link className="nav-btn" to="/">
+            Home
+          </Link>
+          <Link className="nav-btn" to="/requests">
+            Requests
+          </Link>
           {user ? (
-            <Link className="account_google-btn" to="/account">Account</Link>
+            <>
+              <Link className="account_google-btn" to="/account">
+                Account
+              </Link>
+              <button className="account_google-btn" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
           ) : (
-            <a className="account_google-btn" href={"https://digileave.onrender.com/oauth2/authorization/google"}>
+            <a
+              className="account_google-btn"
+              href={
+                "https://digileave.onrender.com/oauth2/authorization/google"
+              }
+            >
               Login with Google
             </a>
           )}
@@ -152,12 +160,44 @@ export default function Header() {
           className={`mobile-drawer ${menuOpen ? "open" : ""}`}
           role="menu"
         >
-          <Link className="nav-btn" to="/" onClick={() => setMenuOpen(false)}>Home</Link>
-          <Link className="nav-btn" to="/requests" onClick={() => setMenuOpen(false)}>Requests</Link>
+          <Link
+            className="nav-btn"
+            to="/"
+            onClick={() => setMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            className="nav-btn"
+            to="/requests"
+            onClick={() => setMenuOpen(false)}
+          >
+            Requests
+          </Link>
           {user ? (
-            <Link className="account_google-btn" to="/account" onClick={() => setMenuOpen(false)}>Account</Link>
+            <>
+              <Link
+                className="account_google-btn"
+                to="/account"
+                onClick={() => setMenuOpen(false)}
+              >
+                Account
+              </Link>
+              <button
+                className="account_google-btn"
+                onClick={() => {
+                  setMenuOpen(false);
+                  handleLogout();
+                }}
+              >
+                Logout
+              </button>
+            </>
           ) : (
-            <a className="account_google-btn" href={`https://digileave.onrender.com/oauth2/authorization/google`}>
+            <a
+              className="account_google-btn"
+              href={`https://digileave.onrender.com/oauth2/authorization/google`}
+            >
               Login with Google
             </a>
           )}
