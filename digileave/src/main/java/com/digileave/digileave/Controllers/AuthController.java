@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,20 @@ public class AuthController {
     }
 
     @GetMapping(value = "/jwt", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, String>> issueJwt(@AuthenticationPrincipal OAuth2User principal) {
-        System.out.println("HIT /auth/jwt, principal=" + (principal == null ? "null" : principal.getAttributes()));
+    public ResponseEntity<Map<String, String>> issueJwt(
+            @AuthenticationPrincipal OAuth2User principal,
+            Authentication authentication) {
+
+        // Fallback: if @AuthenticationPrincipal is null, try SecurityContext's Authentication
+        if (principal == null && authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
+            principal = (OAuth2User) authentication.getPrincipal();
+        }
+        if (principal == null) {
+            // no principal after oauth success -> treat as unauthorized
+            return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
+        }
+
+        System.out.println("HIT /auth/jwt, principal=" + principal.getAttributes());
 
         String email = principal.getAttribute("email");
         String name  = principal.getAttribute("name");
@@ -49,10 +62,10 @@ public class AuthController {
             Duration.ofHours(8)
         );
 
+        // Redirect to SPA with token in URL hash
         String redirect = "https://digi-leavefrontend.vercel.app/auth/callback#token=" + token;
-
         return ResponseEntity.status(302)
-            .header(org.springframework.http.HttpHeaders.LOCATION, redirect)
-            .build();
+                .header(org.springframework.http.HttpHeaders.LOCATION, redirect)
+                .build();
     }
 }
