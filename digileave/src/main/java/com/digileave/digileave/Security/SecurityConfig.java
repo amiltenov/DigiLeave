@@ -39,6 +39,7 @@ public class SecurityConfig {
   // # Dev & Production frontend routes
   private static final String DEV_FRONTEND = "http://localhost:5173";
   private static final String PROD_FRONTEND = "https://digi-leavefrontend.vercel.app";
+  
   private final HttpLoggerFilter httpLoggerFilter;
   private final JwtService jwtService;
   private final UserRepository users;
