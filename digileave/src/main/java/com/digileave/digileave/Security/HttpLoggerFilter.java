@@ -26,10 +26,6 @@ public class HttpLoggerFilter extends OncePerRequestFilter {
             long ms = System.currentTimeMillis() - t0;
             int status = res.getStatus();
             System.out.printf("%s %s - %d %d ms \n", method , uri , status , ms );
-<<<<<<< Updated upstream
         }
-=======
-        }git
->>>>>>> Stashed changes
     }
 }
