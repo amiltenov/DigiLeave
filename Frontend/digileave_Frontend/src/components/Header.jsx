@@ -23,7 +23,7 @@ export default function Header() {
     const h = new Headers();
     import("../auth").then(({ authHeader }) => {
       Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
-      fetch("http://localhost:8080/account", { headers: h })
+      fetch("https://digileave.onrender.com/account", { headers: h })
         .then((res) => (res.ok ? res.json() : null))
         .then(setUser)
         .catch(() => setUser(null));
@@ -148,7 +148,7 @@ export default function Header() {
               </button>
             </>
           ) : (
-            <a className="account_google-btn" href={"http://localhost:8080/oauth2/authorization/google"}>
+            <a className="account_google-btn" href={"https://digileave.onrender.com/oauth2/authorization/google"}>
               Login with Google
             </a>
           )}
@@ -174,7 +174,7 @@ export default function Header() {
               </button>
             </>
           ) : (
-            <a className="account_google-btn" href={`http://localhost:8080/oauth2/authorization/google`}>
+            <a className="account_google-btn" href={`https://digileave.onrender.com/oauth2/authorization/google`}>
               Login with Google
             </a>
           )}
