@@ -1,32 +1,82 @@
 package com.digileave.digileave.Controllers;
 
-import org.springframework.web.bind.annotation.RestController;
-
 import com.digileave.digileave.Models.User;
+import com.digileave.digileave.Models.enums.Role;
 import com.digileave.digileave.Repositories.UserRepository;
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
-import org.springframework.web.bind.annotation.GetMapping;
-// import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 
 
 @RestController
 @RequestMapping("/admin")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
-	
+
     private final UserRepository users;
 
     public AdminController(UserRepository users) {
         this.users = users;
     }
 
-    @GetMapping("")
-    public List<User> getAllUsers() {
+    @GetMapping("/users")
+    public List<User> allUsers() {
         return users.findAll();
     }
-    
-    
+
+
+    @PatchMapping("/users/{id}")
+    public ResponseEntity<User> patchUser(@PathVariable String id, @RequestBody Map<String, Object> body) {
+        Optional<User> ou = users.findById(id);
+        if (ou.isEmpty()) return ResponseEntity.notFound().build();
+
+        User u = ou.get();
+
+        if (body.containsKey("email")) {
+            Object v = body.get("email");
+            u.setEmail(v == null ? u.getEmail() : v.toString());
+        }
+        if (body.containsKey("fullName")) {
+            Object v = body.get("fullName");
+            u.setFullName(v == null ? u.getFullName() : v.toString());
+        }
+        if (body.containsKey("role")) {
+            Object v = body.get("role");
+            if (v != null) {
+                try { u.setRole(Role.valueOf(v.toString())); } catch (Exception ignored) {}
+            }
+        }
+        if (body.containsKey("availableLeaveDays")) {
+            Object v = body.get("availableLeaveDays");
+            if (v instanceof Number n) u.setAvailableLeaveDays(n.intValue());
+            else if (v != null) {
+                try { u.setAvailableLeaveDays(Integer.parseInt(v.toString())); } catch (Exception ignored) {}
+            }
+        }
+        if (body.containsKey("assignees")) {
+            Object v = body.get("assignees");
+            if (v instanceof List<?> list) {
+                List<String> clean = new ArrayList<>();
+                for (Object o : list) if (o != null) clean.add(o.toString());
+                u.setAssigneeIds(clean);
+            }
+        }
+
+        return ResponseEntity.ok(users.save(u));
+    }
+
+    // Delete
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        if (!users.existsById(id)) return ResponseEntity.notFound().build();
+        users.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

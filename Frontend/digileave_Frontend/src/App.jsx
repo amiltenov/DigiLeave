@@ -5,6 +5,7 @@ import Account from "./pages/Account";
 import Requests from "./pages/Requests";
 import NewRequest from "./pages/NewRequest";
 import AuthCallback from "./pages/AuthCallback";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<div style={{ padding: "16px 24px" }}>Home</div>} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/requests" element={<Requests />} />
           <Route path="/requests/new" element={<NewRequest />} />
         </Routes>

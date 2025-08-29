@@ -46,6 +46,7 @@ public class User {
     public void setAvailableLeaveDays(int availableLeaveDays){ this.availableLeaveDays = availableLeaveDays; }
 
     public List<String> getAssigneeIds(){ return assigneeIds; }
+    public void setAssigneeIds(List<String> assigneeIds){ this.assigneeIds = assigneeIds;}
     public void addAssignee(String assignee){ this.assigneeIds.add(assignee); }
     public void deleteAssignee(String assignee){ this.assigneeIds.remove(assignee); }
 

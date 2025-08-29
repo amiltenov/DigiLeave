@@ -57,7 +57,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
                 var authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
                 authentication.setDetails(userId);
-                System.out.println("JwtAuthFilter: header = " + req.getHeader("Authorization"));
+                // System.out.println("JwtAuthFilter: header = " + req.getHeader("Authorization"));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JwtException ignored) {}
