@@ -60,7 +60,7 @@ public class AuthController {
             Duration.ofHours(8)
         );
 
-        String redirect = "https://digi-leavefrontend.vercel.app/auth/callback#token=" + token;
+        String redirect = "https://digileave.vercel.app/auth/callback#token=" + token;
         return ResponseEntity.status(302)
                 .header(org.springframework.http.HttpHeaders.LOCATION, redirect)
                 .build();
