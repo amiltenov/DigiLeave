@@ -1,9 +1,8 @@
 footer {
-  position: fixed;
+  position: relative;   /* instead of fixed */
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
 
   height: auto;
   padding: 12px 20px;
@@ -19,19 +18,19 @@ footer {
   color: var(--color-text);
   text-align: center;
 
-  /* GRID LAYOUT */
   display: grid;
-  grid-template-columns: 1fr 1fr;   /* 2 columns */
-  grid-template-rows: auto auto auto; /* logo, routes+contacts, copyright */
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
   column-gap: 4%;
   row-gap: 8px;
   align-items: start;
 }
 
+
 /* ===== LOGO ===== */
 .logof-div {
   grid-row: 1;
-  grid-column: 1 / -1; /* span full width */
+  grid-column: 1 / -1; 
   display: flex;
   justify-content: flex-start;
   width: 100%;

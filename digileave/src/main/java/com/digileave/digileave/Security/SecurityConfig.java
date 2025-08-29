@@ -23,7 +23,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.digileave.digileave.Services.JwtService;
-import com.digileave.digileave.Security.HttpLoggerFilter;
 import com.digileave.digileave.Repositories.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -96,7 +95,8 @@ public class SecurityConfig {
     String token = jwtService.createJwtToken(
         u.getId(), u.getEmail(), u.getRole(), java.time.Duration.ofHours(8));
 
-    String redirect = "https://digi-leavefrontend.vercel.app/auth/callback#token=" + token;
+    // ! Local vs Dev
+    String redirect = "http://localhost:5173/auth/callback#token=" + token;
     res.sendRedirect(redirect);
   })
 )

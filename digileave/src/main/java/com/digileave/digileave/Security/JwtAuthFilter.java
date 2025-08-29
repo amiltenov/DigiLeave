@@ -53,7 +53,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String email  = claims.get("email", String.class);
                 Role role     = Role.valueOf(claims.get("role", String.class));
                 
-                // #
+                // # Set Authentication
                 var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
                 var authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
                 authentication.setDetails(userId);
@@ -64,6 +64,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     
         }
 
+    // # Continue with the request
     chain.doFilter(req, res);
   }
 }

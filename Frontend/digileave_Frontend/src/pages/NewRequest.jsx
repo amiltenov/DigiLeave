@@ -1,14 +1,43 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { authHeader } from "../auth";
+import "../styles/newrequest.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
+const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
+
+const LEAVE_TYPES = [
+  "ANNUAL_PAID_LEAVE",
+  "ANNUAL_UNPAID_LEAVE",
+  "SICK_LEAVE",
+  "MATERNITY_LEAVE",
+  "PATERNITY_LEAVE",
+];
+
+function prettyType(t) {
+  return t
+    .toLowerCase()
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
 
 export default function NewRequest() {
+  const [type, setType] = useState(LEAVE_TYPES[0]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState(null);
+
+  const [availableDays, setAvailableDays] = useState(null);
+
+  useEffect(() => {
+    const h = new Headers();
+    Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
+    fetch(`${API}/account`, { headers: h })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((u) => setAvailableDays(u?.availableLeaveDays ?? null))
+      .catch(() => setAvailableDays(null));
+  }, []);
 
   const workdaysCount = useMemo(() => {
     if (!startDate || !endDate) return 0;
@@ -18,17 +47,27 @@ export default function NewRequest() {
     let d = new Date(s);
     let count = 0;
     while (d <= e) {
-      const day = d.getDay(); // 0=Sun..6=Sat
+      const day = d.getDay(); // 0..6
       if (day !== 0 && day !== 6) count++;
       d.setDate(d.getDate() + 1);
     }
     return count;
   }, [startDate, endDate]);
 
+  const remainingDays = useMemo(() => {
+    if (availableDays == null) return null;
+    const rem = availableDays - workdaysCount;
+    return rem < 0 ? 0 : rem;
+  }, [availableDays, workdaysCount]);
+
   async function handleSubmit(e) {
     e.preventDefault();
     setMsg(null);
 
+    if (!type) {
+      setMsg({ type: "err", text: "Please choose a leave type." });
+      return;
+    }
     if (!startDate || !endDate) {
       setMsg({ type: "err", text: "Select both start and end dates." });
       return;
@@ -43,13 +82,12 @@ export default function NewRequest() {
     }
 
     const payload = {
-      startDate,       // "YYYY-MM-DD"
-      endDate,         // "YYYY-MM-DD"
+      type,
+      startDate,
+      endDate,
       workdaysCount,
-      comment: comment || null
+      comment: comment || null,
     };
-
-    console.log("[NewRequest] Submitting payload →", payload);
 
     setSubmitting(true);
     try {
@@ -59,23 +97,17 @@ export default function NewRequest() {
         body: JSON.stringify(payload),
       });
 
-      console.log("[NewRequest] Response status:", res.status, res.statusText);
-
       if (res.status === 401) {
         setMsg({ type: "unauth", text: "Not signed in. Use Login with Google." });
         return;
       }
       if (!res.ok) {
         const text = await res.text().catch(() => "");
-        console.error("[NewRequest] Error response body:", text);
         setMsg({ type: "err", text: text || `Request failed (HTTP ${res.status})` });
         return;
       }
 
       const saved = await res.json().catch(() => null);
-
-      console.log("[NewRequest] Saved to DB ←", saved);
-
       setMsg({
         type: "ok",
         text: saved?.id
@@ -83,12 +115,12 @@ export default function NewRequest() {
           : "Request submitted successfully.",
       });
 
+      setType(LEAVE_TYPES[0]);
       setStartDate("");
       setEndDate("");
       setComment("");
-    } catch (err) {
-      console.error("[NewRequest] Network/JS error:", err);
-      setMsg({ type: "err", text: "Network error. Is the backend on :8080 with CORS enabled?" });
+    } catch {
+      setMsg({ type: "err", text: "Network error." });
     } finally {
       setSubmitting(false);
     }
@@ -97,104 +129,100 @@ export default function NewRequest() {
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <div style={{ padding: "16px 24px" }}>
-      <h1>Create Leave Request</h1>
+    <div className="newrequest-wrap">
+      <div className="newrequest-card">
+        <h2>Create Leave Request</h2>
 
-      {msg && (
-        <div
-          style={{
-            padding: "10px 12px",
-            margin: "10px 0",
-            borderRadius: 8,
-            border: "1px solid",
-            borderColor:
-              msg.type === "ok" ? "rgba(0,160,60,.4)" :
-              msg.type === "unauth" ? "rgba(255,170,0,.5)" :
-              "rgba(200,0,0,.4)",
-            background:
-              msg.type === "ok" ? "rgba(0,160,60,.08)" :
-              msg.type === "unauth" ? "rgba(255,170,0,.08)" :
-              "rgba(200,0,0,.08)",
-            color: "#000"
-          }}
-        >
-          {msg.text}
-        </div>
-      )}
+        {msg && (
+          <div className={`nr-alert ${msg.type === "ok" ? "ok" : msg.type === "unauth" ? "warn" : "err"}`}>
+            {msg.text}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12, maxWidth: 560 }}>
-        <label style={{ display: "grid", gap: 6 }}>
-          <span>Start date</span>
-          <input
-            type="date"
-            value={startDate}
-            min={today}
-            onChange={(e) => setStartDate(e.target.value)}
-            required
-          />
-        </label>
+        <form onSubmit={handleSubmit}>
+          <label>
+            <span>Start date</span>
+            <input
+              type="date"
+              value={startDate}
+              min={today}
+              onChange={(e) => setStartDate(e.target.value)}
+              required
+            />
+          </label>
 
-        <label style={{ display: "grid", gap: 6 }}>
-          <span>End date</span>
-          <input
-            type="date"
-            value={endDate}
-            min={startDate || today}
-            onChange={(e) => setEndDate(e.target.value)}
-            required
-          />
-        </label>
+          <label>
+            <span>End date</span>
+            <input
+              type="date"
+              value={endDate}
+              min={startDate || today}
+              onChange={(e) => setEndDate(e.target.value)}
+              required
+            />
+          </label>
 
-        <label style={{ display: "grid", gap: 6 }}>
-          <span>Comment (optional)</span>
-          <textarea
-            rows={3}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Reason, notes, etc."
-            style={{ resize: "vertical" }}
-          />
-        </label>
+          <label>
+            <span>Leave type</span>
+            <select value={type} onChange={(e) => setType(e.target.value)} required>
+              {LEAVE_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {prettyType(t)}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        <div style={{ fontSize: 14 }}>
-          <strong>Preview:</strong> {workdaysCount} workday{workdaysCount === 1 ? "" : "s"} (Mon–Fri)
-        </div>
+          <label>
+            <span>Comment (optional)</span>
+            <textarea
+              rows={3}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Reason, notes, etc."
+            />
+          </label>
 
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            type="submit"
-            disabled={submitting}
-            style={{
-              padding: "10px 14px",
-              borderRadius: 10,
-              border: "none",
-              background: "#FFD733",
-              color: "#111",
-              fontWeight: 700,
-              cursor: "pointer",
-              opacity: submitting ? 0.7 : 1
-            }}
-          >
-            {submitting ? "Submitting…" : "Submit"}
-          </button>
+          <div className="nr-previewCard">
+            <span className="nr-chip">Preview</span>
+            <div className="nr-previewText">
+              {workdaysCount} workday{workdaysCount === 1 ? "" : "s"} (Mon–Fri)
+            </div>
+          </div>
 
-          <button
-            type="button"
-            onClick={() => { setStartDate(""); setEndDate(""); setComment(""); setMsg(null); }}
-            style={{
-              padding: "10px 14px",
-              borderRadius: 10,
-              border: "1px solid rgba(0,0,0,.2)",
-              background: "rgba(255,255,255,.7)",
-              color: "#111",
-              fontWeight: 600,
-              cursor: "pointer"
-            }}
-          >
-            Reset
-          </button>
-        </div>
-      </form>
+          <div className="nr-stats">
+            <div className="nr-stat">
+              <div className="nr-stat-label">Available days</div>
+              <div className="nr-stat-value">{availableDays == null ? "—" : availableDays}</div>
+            </div>
+            <div className="nr-stat">
+              <div className="nr-stat-label">Remaining after request</div>
+              <div className={`nr-stat-value ${remainingDays === 0 ? "danger" : ""}`}>
+                {remainingDays == null ? "—" : remainingDays}
+              </div>
+            </div>
+          </div>
+
+          <div className="newrequest-buttons">
+            <button className="btn-lg submit-btn" type="submit" disabled={submitting}>
+              {submitting ? "Submitting…" : "Submit"}
+            </button>
+            <button
+              className="btn-lg reset-btn"
+              type="button"
+              onClick={() => {
+                setType(LEAVE_TYPES[0]);
+                setStartDate("");
+                setEndDate("");
+                setComment("");
+                setMsg(null);
+              }}
+            >
+              Reset
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

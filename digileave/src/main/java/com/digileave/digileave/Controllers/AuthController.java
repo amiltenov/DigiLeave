@@ -33,12 +33,10 @@ public class AuthController {
             @AuthenticationPrincipal OAuth2User principal,
             Authentication authentication) {
 
-        // Fallback: if @AuthenticationPrincipal is null, try SecurityContext's Authentication
         if (principal == null && authentication != null && authentication.getPrincipal() instanceof OAuth2User) {
             principal = (OAuth2User) authentication.getPrincipal();
         }
         if (principal == null) {
-            // no principal after oauth success -> treat as unauthorized
             return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
         }
 
@@ -62,7 +60,6 @@ public class AuthController {
             Duration.ofHours(8)
         );
 
-        // Redirect to SPA with token in URL hash
         String redirect = "https://digi-leavefrontend.vercel.app/auth/callback#token=" + token;
         return ResponseEntity.status(302)
                 .header(org.springframework.http.HttpHeaders.LOCATION, redirect)
