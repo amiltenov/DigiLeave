@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { authHeader } from "../auth";
 import "../styles/newrequest.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
+const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
 
 const LEAVE_TYPES = [
   "ANNUAL_PAID_LEAVE",
@@ -164,7 +164,7 @@ export default function NewRequest() {
 
           <label>
             <span>Leave type</span>
-            <select value={type} onChange={(e) => setType(e.target.value)} required>
+            <select id="role-dropdown" value={type} onChange={(e) => setType(e.target.value)} required>
               {LEAVE_TYPES.map((t) => (
                 <option key={t} value={t}>
                   {prettyType(t)}

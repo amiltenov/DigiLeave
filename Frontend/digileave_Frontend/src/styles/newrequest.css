@@ -160,3 +160,7 @@
 
 .reset-btn:hover   { background: color-mix(in srgb, var(--color-accent) 18%, transparent); transform: translateY(-1px); }
 .reset-btn:active  { transform: translateY(0); }
+
+#type-dropdown {
+  background-color: var(--color-surface);
+}

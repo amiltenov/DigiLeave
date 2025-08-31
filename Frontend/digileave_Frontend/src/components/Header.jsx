@@ -1,7 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import "../styles/header.css";
 import { Link } from "react-router-dom";
-import { logout } from "../auth";
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -23,7 +22,7 @@ export default function Header() {
     const h = new Headers();
     import("../auth").then(({ authHeader }) => {
       Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
-      fetch("https://digileave.onrender.com/account", { headers: h })
+      fetch("http://localhost:8080/account", { headers: h })
         .then((res) => (res.ok ? res.json() : null))
         .then(setUser)
         .catch(() => setUser(null));
@@ -139,16 +138,14 @@ export default function Header() {
           <Link className="nav-btn" to="/requests">Requests</Link>
           {user ? (
             <>
+              {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin">Admin</Link>)
+              :
+              (<></>)
+              }
               <Link className="account_google-btn" to="/account">Account</Link>
-              <button
-                className="account_google-btn"
-                onClick={() => { logout(); window.location.href = "/"; }}
-              >
-                Logout
-              </button>
             </>
           ) : (
-            <a className="account_google-btn" href={"https://digileave.onrender.com/oauth2/authorization/google"}>
+            <a className="account_google-btn" href={"http://localhost:8080/oauth2/authorization/google"}>
               Login with Google
             </a>
           )}
@@ -165,16 +162,15 @@ export default function Header() {
           <Link className="nav-btn" to="/requests" onClick={() => setMenuOpen(false)}>Requests</Link>
           {user ? (
             <>
+            {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin">Admin</Link>)
+              :
+              (<></>)
+              }
               <Link className="account_google-btn" to="/account" onClick={() => setMenuOpen(false)}>Account</Link>
-              <button
-                className="account_google-btn"
-                onClick={() => { setMenuOpen(false); logout(); window.location.href = "/"; }}
-              >
-                Logout
-              </button>
+              
             </>
           ) : (
-            <a className="account_google-btn" href={`https://digileave.onrender.com/oauth2/authorization/google`}>
+            <a className="account_google-btn" href={`http://localhost:8080/oauth2/authorization/google`}>
               Login with Google
             </a>
           )}

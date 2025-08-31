@@ -1,13 +1,15 @@
 import "../styles/account.css";
 import { authHeader } from "../auth";
 import { useEffect, useState } from "react";
+import { logout } from "../auth";
+
 
 export default function Account() {
   const [data, setData] = useState(null);
   const [state, setState] = useState("loading");
 
     useEffect(() => {
-    fetch("https://digileave.onrender.com/account", { headers: authHeader() })
+    fetch("http://localhost:8080/account", { headers: authHeader() })
       .then(res => {
         if (res.status === 401) {
           setState("unauth");
@@ -34,7 +36,7 @@ export default function Account() {
       <div className="account-wrap">
         <h2>Account</h2>
         <p>You’re not signed in.</p>
-        <a className="btn" href="https://digileave.onrender.com/oauth2/authorization/google">Login with Google</a>
+        <a className="btn" href="http://localhost:8080/oauth2/authorization/google">Login with Google</a>
       </div>
     );
   }
@@ -73,6 +75,7 @@ return (
             <div className="account-email">{data.email}</div>
             <div className="account-role">Role: {data.role}</div>
           </div>
+          
         </div>
 
         <div className="tableWrap">
@@ -87,6 +90,9 @@ return (
             </tbody>
           </table>
         </div>
+        <button className="Logout-btn" onClick={() => { logout(); window.location.href = "/"; }}>
+            Logout
+        </button>
       </div>
     </div>
   </div>

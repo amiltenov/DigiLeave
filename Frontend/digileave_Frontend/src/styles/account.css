@@ -74,3 +74,28 @@
   background: color-mix(in srgb, var(--color-accent) 25%, transparent);
   font-weight:600;
 }
+
+.Logout-btn {
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 16px;
+  margin-top: 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  background: linear-gradient(90deg, var(--btn-grad-light), var(--btn-grad-dark));
+  color: var(--btn-text);
+  box-shadow: 0 2px 4px var(--btn-shadow);
+  transition: transform .15s ease, box-shadow .15s ease;
+  white-space: nowrap;
+}
+.Logout-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px var(--btn-shadow-hover);
+}
+.Logout-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px var(--btn-shadow-active);
+}

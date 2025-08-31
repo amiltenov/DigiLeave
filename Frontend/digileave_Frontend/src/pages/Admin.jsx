@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useId, useCallback } from "react";
 import { authHeader } from "../auth";
 import "../styles/admin.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
+const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
 const ROLES = ["USER", "APPROVER", "ADMIN"];
 
 // normalize assignee field name
@@ -212,7 +212,7 @@ export default function Admin() {
                 <th>Email</th>
                 <th>Role</th>
                 <th>Leave days</th>
-                <th>Assignees</th>
+                {/* <th>Assignees</th> */}
                 <th></th>
               </tr>
             </thead>
@@ -223,7 +223,7 @@ export default function Admin() {
                   <td>{u.email}</td>
                   <td>{u.role}</td>
                   <td>{u.availableLeaveDays}</td>
-                  <td>{getAssigneeIds(u).length}</td>
+                  {/* <td>{getAssigneeIds(u).length}</td> */}
                   <td className="actions">
                     <button className="btn small" onClick={() => openEdit(u)}>
                       Edit
@@ -293,6 +293,7 @@ export default function Admin() {
                       value={form.role}
                       onChange={(e) => setForm({ ...form, role: e.target.value })}
                       className="themed-select"
+                      id="role-dropdown"
                       name={`${rnd}-role`}
                     >
                       {ROLES.map((r) => (
@@ -305,6 +306,7 @@ export default function Admin() {
                   <label>
                     <span>Available leave days</span>
                     <input
+                    classname="themed-select"
                       type="number"
                       min="0"
                       value={form.availableLeaveDays}
