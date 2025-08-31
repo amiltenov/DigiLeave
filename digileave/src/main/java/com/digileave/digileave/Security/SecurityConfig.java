@@ -96,7 +96,7 @@ public class SecurityConfig {
         u.getId(), u.getEmail(), u.getRole(), java.time.Duration.ofHours(8));
 
     // ! Local vs Dev
-    String redirect = "http://localhost:5173/auth/callback#token=" + token;
+    String redirect = "https://digileave.vercel.app/auth/callback#token=" + token;
     res.sendRedirect(redirect);
   })
 )
