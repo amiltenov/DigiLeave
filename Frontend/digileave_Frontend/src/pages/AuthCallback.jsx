@@ -6,10 +6,14 @@ export default function AuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const hash = window.location.hash.slice(1); // "token=JWT..."
-    const token = new URLSearchParams(hash).get("token");
+    const params = new URLSearchParams(window.location.hash.slice(1));
+    const token = params.get("token");
+    const error = params.get("error");
+
     if (token) setToken(token);
-    navigate("/", { replace: true });
+    if (error) alert("Use your @digitoll.bg account");
+
+    navigate("/", { replace: false });
   }, [navigate]);
 
   return <div style={{ padding: 16 }}>Signing you in…</div>;

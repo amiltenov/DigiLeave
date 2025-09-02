@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { authHeader } from "../auth";
 import "../styles/requests.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
+const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
 
 function prettyType(t) {
   if (!t) return "—";

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useId, useCallback } from "react";
 import { authHeader } from "../auth";
 import "../styles/admin.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
+const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
 const ROLES = ["USER", "APPROVER", "ADMIN"];
 
 // normalize assignee field name
@@ -318,8 +318,9 @@ export default function Admin() {
                       inputMode="numeric"
                     />
                   </label>
-
-                  {/* Assignees CHIPS */}
+                </div>
+                  {form.role == "APPROVER" ? 
+                  (
                   <div className="span-2">
                     <span>Assignees</span>
                     <div className="chip-wrap">
@@ -352,7 +353,6 @@ export default function Admin() {
                         </div>
                       ))}
 
-                      {/* Add row – full width at the bottom; ENTER adds or click a suggestion */}
                       <div className="chip-add">
                         <input
                           value={form.assigneeInput}
@@ -390,7 +390,9 @@ export default function Admin() {
                       </div>
                     </div>
                   </div>
-                </div>
+                  
+                ) : null}
+                  
 
                 <div className="modal-actions spaced">
                   <button className="btn" disabled={saving} type="submit">

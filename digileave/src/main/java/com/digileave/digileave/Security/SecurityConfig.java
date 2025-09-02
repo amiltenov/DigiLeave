@@ -41,12 +41,10 @@ public class SecurityConfig {
   
   private final HttpLoggerFilter httpLoggerFilter;
   private final JwtService jwtService;
-  private final UserRepository users;
 
   public SecurityConfig(JwtService jwtService, HttpLoggerFilter httpLoggerFilter, UserRepository users) {
     this.httpLoggerFilter = httpLoggerFilter;
     this.jwtService = jwtService;
-    this.users = users;
   }
   
 
@@ -79,27 +77,8 @@ public class SecurityConfig {
       )
 
       .oauth2Login(oauth -> oauth
-  .successHandler((req, res, auth) -> {
-    var p = (org.springframework.security.oauth2.core.user.OAuth2User) auth.getPrincipal();
-    String email = p.getAttribute("email");
-    String name  = p.getAttribute("name");
-
-    var u = users.findByEmail(email).orElseGet(() -> {
-      var nu = new com.digileave.digileave.Models.User();
-      nu.setEmail(email);
-      nu.setFullName(name);
-      nu.setRole(com.digileave.digileave.Models.enums.Role.USER);
-      return users.save(nu);
-    });
-
-    String token = jwtService.createJwtToken(
-        u.getId(), u.getEmail(), u.getRole(), java.time.Duration.ofHours(8));
-
-    // ! Local vs Dev
-    String redirect = "https://digileave.vercel.app/auth/callback#token=" + token;
-    res.sendRedirect(redirect);
-  })
-)
+        .successHandler((req, res, auth) -> { req.getRequestDispatcher("/auth/jwt").forward(req, res); })
+      )
 
       // # JWT Filter
       .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
