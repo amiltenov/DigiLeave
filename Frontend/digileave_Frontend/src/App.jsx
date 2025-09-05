@@ -6,6 +6,7 @@ import Requests from "./pages/Requests";
 import NewRequest from "./pages/NewRequest";
 import AuthCallback from "./pages/AuthCallback";
 import Admin from "./pages/Admin";
+import Approver from "./pages/Approver";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/requests" element={<Requests />} />
           <Route path="/requests/new" element={<NewRequest />} />
+          <Route path="/approver" element={<Approver />} />
         </Routes>
       </main>
       <Footer />

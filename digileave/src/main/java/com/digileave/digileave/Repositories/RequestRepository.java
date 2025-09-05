@@ -8,5 +8,6 @@ import com.digileave.digileave.Models.Request;
 
 public interface RequestRepository extends MongoRepository<Request, String> {
     List<Request> findByUserId(String userId);
+    List<Request> findByUserIdIn(List<String> userIds);
 }
 

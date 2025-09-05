@@ -9,7 +9,7 @@ export default function Account() {
   const [state, setState] = useState("loading");
 
     useEffect(() => {
-    fetch("http://localhost:8080/account", { headers: authHeader() })
+    fetch("https://digileave.onrender.com/account", { headers: authHeader() })
       .then(res => {
         if (res.status === 401) {
           setState("unauth");
@@ -36,7 +36,7 @@ export default function Account() {
       <div className="account-wrap">
         <h2>Account</h2>
         <p>You’re not signed in.</p>
-        <a className="btn" href="http://localhost:8080/oauth2/authorization/google">Login with Google</a>
+        <a className="btn" href="https://digileave.onrender.com/oauth2/authorization/google">Login with Google</a>
       </div>
     );
   }
@@ -57,7 +57,7 @@ const rows = [
   ["Role", data.role],
   ["Available Leave Days", data.availableLeaveDays],
   ...(data.role === "APPROVER"
-    ? [["Assignees", Array.isArray(data.assignees) && data.assignees.length ? data.assignees.join(", ") : "—"]]
+    ? [["Assignees", Array.isArray(data.assigneeIds) && data.assigneeIds.length ? data.assigneeIds.join(", ") : "—"]]
     : []
   ),
 ];

@@ -1,5 +1,6 @@
 package com.digileave.digileave.Controllers;
 
+import com.digileave.digileave.DTOs.UserExportDto;
 import com.digileave.digileave.Models.User;
 import com.digileave.digileave.Models.enums.Role;
 import com.digileave.digileave.Repositories.UserRepository;
@@ -12,24 +13,29 @@ import java.util.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 
-
 @RestController
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
+    // # DB Operations
     private final UserRepository users;
-
     public AdminController(UserRepository users) {
         this.users = users;
     }
 
+    // # Return All Users
     @GetMapping("/users")
-    public List<User> allUsers() {
-        return users.findAll();
+    public List<UserExportDto> allUsers() {
+        return users.findAll()
+                .stream()
+                .map(UserExportDto::from)
+                .toList();
     }
 
 
+    // ! TODO - Incorporate Patch DTOs in the PatchMapping
+    // # Patch User
     @PatchMapping("/users/{id}")
     public ResponseEntity<User> patchUser(@PathVariable String id, @RequestBody Map<String, Object> body) {
         Optional<User> ou = users.findById(id);
@@ -70,7 +76,7 @@ public class AdminController {
         return ResponseEntity.ok(users.save(u));
     }
 
-    // Delete
+    // # Delete User
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         if (!users.existsById(id)) return ResponseEntity.notFound().build();
