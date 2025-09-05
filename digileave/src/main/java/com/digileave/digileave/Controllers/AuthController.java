@@ -63,7 +63,7 @@ public class AuthController {
               current_user.getId(), current_user.getEmail(), current_user.getRole(), java.time.Duration.ofHours(8));
 
         // ! Local vs Dev Redirect
-        String redirect = "https:digileave.vercel.app/auth/callback#token=" + token;
+        String redirect = "https://digileave.vercel.app/auth/callback#token=" + token;
         return ResponseEntity.status(302)
                 .header(org.springframework.http.HttpHeaders.LOCATION, redirect)
                 .build();
