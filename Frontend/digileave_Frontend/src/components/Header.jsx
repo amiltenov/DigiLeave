@@ -169,7 +169,11 @@ export default function Header() {
             {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin">Admin</Link>)
               :
               (<></>)
-              }
+            }
+            {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin">Admin</Link>)
+              :
+              (<></>)
+            }
               <Link className="account_google-btn" to="/account" onClick={() => setMenuOpen(false)}>Account</Link>
               
             </>
