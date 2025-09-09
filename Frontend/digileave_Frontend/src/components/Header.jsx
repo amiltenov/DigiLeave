@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../styles/header.css";
 import { Link } from "react-router-dom";
 
@@ -16,7 +16,6 @@ export default function Header() {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [darkMode]);
-
 
   useEffect(() => {
     const h = new Headers();
@@ -38,66 +37,18 @@ export default function Header() {
   const [collapsed, setCollapsed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const checkFits = () => {
-    const header = headerRef.current;
-    if (!header) return;
-
-    const cs = getComputedStyle(header);
-    const gap = parseFloat(cs.gap || "0");
-    const padL = parseFloat(cs.paddingLeft || "0");
-    const padR = parseFloat(cs.paddingRight || "0");
-
-    const logoW = logoRef.current?.getBoundingClientRect().width || 0;
-    const themeW = themeRef.current?.getBoundingClientRect().width || 0;
-    const navW = navRef.current?.scrollWidth || 0;
-    const burgerW = burgerRef.current?.getBoundingClientRect().width || 0;
-
-    const base = padL + padR + logoW + themeW;
-    const baseGaps = (() => {
-      return 2 * gap;
-    })();
-
-    const containerW = header.clientWidth;
-
-    const requiredWithNav = base + navW + baseGaps;
-
-    const requiredWithBurger = base + burgerW + baseGaps;
-
-    const needsCollapse = requiredWithNav > containerW && requiredWithBurger <= containerW
-      ? true
-      : requiredWithNav > containerW;
-
-    setCollapsed(needsCollapse);
-    if (!needsCollapse) setMenuOpen(false);
-  };
-
-  useLayoutEffect(() => {
-    const raf = requestAnimationFrame(checkFits);
-
-    const header = headerRef.current;
-    const ro = new ResizeObserver(() => {
-      requestAnimationFrame(checkFits);
-    });
-
-    if (header) ro.observe(header);
-    if (logoRef.current) ro.observe(logoRef.current);
-    if (themeRef.current) ro.observe(themeRef.current);
-    if (navRef.current) ro.observe(navRef.current);
-
-    const onResize = () => requestAnimationFrame(checkFits);
-    window.addEventListener("resize", onResize);
-    window.addEventListener("orientationchange", onResize);
-
-    const t = setTimeout(checkFits, 50);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      clearTimeout(t);
-      ro.disconnect();
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("orientationchange", onResize);
+  // --- Fixed: stable breakpoint using matchMedia (no flicker) ---
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 900px)");
+    const apply = () => {
+      setCollapsed(mq.matches);
+      if (!mq.matches) setMenuOpen(false);
     };
+    apply(); // set initial state
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
   }, []);
+  // --------------------------------------------------------------
 
   return (
     <header className="header" ref={headerRef}>
@@ -131,21 +82,14 @@ export default function Header() {
         </button>
       )}
 
-
       {!collapsed && (
         <nav ref={navRef}>
           <Link className="nav-btn" to="/">Home</Link>
           <Link className="nav-btn" to="/requests">Requests</Link>
           {user ? (
             <>
-              {user.role == "APPROVER" ? (<Link className="nav-btn" to="/approver">Approver</Link>)
-              :
-              (<></>)
-              }
-              {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin">Admin</Link>)
-              :
-              (<></>)
-              }
+              {user.role == "APPROVER" ? (<Link className="nav-btn" to="/approver">Approver</Link>) : (<></>)}
+              {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin">Admin</Link>) : (<></>)}
               <Link className="account_google-btn" to="/account">Account</Link>
             </>
           ) : (
@@ -166,16 +110,9 @@ export default function Header() {
           <Link className="nav-btn" to="/requests" onClick={() => setMenuOpen(false)}>Requests</Link>
           {user ? (
             <>
-            {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin">Admin</Link>)
-              :
-              (<></>)
-            }
-            {user.role == "APPROVER" ? (<Link className="nav-btn" to="/approver">Approver</Link>)
-              :
-              (<></>)
-            }
+              {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin">Admin</Link>) : (<></>)}
+              {user.role == "APPROVER" ? (<Link className="nav-btn" to="/approver">Approver</Link>) : (<></>)}
               <Link className="account_google-btn" to="/account" onClick={() => setMenuOpen(false)}>Account</Link>
-              
             </>
           ) : (
             <a className="account_google-btn" href={`https://digileave.onrender.com/oauth2/authorization/google`}>
