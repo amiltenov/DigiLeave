@@ -170,7 +170,7 @@ export default function Header() {
               :
               (<></>)
             }
-            {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin">Admin</Link>)
+            {user.role == "APPROVER" ? (<Link className="nav-btn" to="/approver">Approver</Link>)
               :
               (<></>)
             }
