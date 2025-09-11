@@ -91,7 +91,9 @@ export default function Approver() {
 
   const sortedRequests = useMemo(() => {
     const order = { SUBMITTED: 0, APPROVED: 1, REJECTED: 2, CANCELLED: 3 };
-    return [...requests].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
+    return [...requests]
+      .sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9))
+      .sort((a, b) => (b.startDate || "").localeCompare(a.startDate || ""));
   }, [requests]);
 
   return (
@@ -176,19 +178,19 @@ export default function Approver() {
                         <div className="who-email">{u?.email || r.userId}</div>
                       </div>
                     </div>
-                    <div className={`status pill ${cls}`}>{r.status}</div>
+                    <div className="req-right">
+                      <span className={`status pill ${cls}`}>{r.status}</span>
+                      <div className="req-dates">
+                        <span>{r.startDate}</span>
+                        <span className="dash">→</span>
+                        <span>{r.endDate}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="req-mid">
-                    <div className="req-dates">
-                      <span>{r.startDate}</span>
-                      <span className="dash">→</span>
-                      <span>{r.endDate}</span>
-                    </div>
-                    <div className="req-meta">
-                      <span className="badge">{r.type}</span>
-                      <span className="badge">{r.workdaysCount ?? 0} days</span>
-                    </div>
+                  <div className="req-meta">
+                    <span className="chip">{r.type}</span>
+                    <span className="chip">{r.workdaysCount ?? 0} days</span>
                   </div>
 
                   {r.comment && <div className="req-comment">“{r.comment}”</div>}
