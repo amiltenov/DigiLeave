@@ -71,7 +71,12 @@ const rows = [
   ["Role", data.role],
   ["Available Leave Days", data.availableLeaveDays],
   ...(data.role === "APPROVER"
-    ? [["Assignees", Array.isArray(data.assigneeIds) && data.assigneeIds.length ? data.assigneeIds.join(", ") : "—"]]
+    ? [[
+      "Assignees",
+      (Array.isArray(data.assigneeEmails) && data.assigneeEmails.length && data.assigneeEmails.join(", ")) ||
+      (Array.isArray(data.assigneeIds) && data.assigneeIds.length && data.assigneeIds.join(", ")) ||
+      "—"
+      ]]
     : []
   ),
 ];
