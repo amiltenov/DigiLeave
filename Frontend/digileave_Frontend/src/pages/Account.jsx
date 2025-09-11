@@ -50,7 +50,7 @@ export default function Account() {
     );
   }
 
- 
+
 const rows = [
   ["Full Name", data.fullName ?? "—"],
   ["Email", data.email],
@@ -75,21 +75,18 @@ return (
             <div className="account-email">{data.email}</div>
             <div className="account-role">Role: {data.role}</div>
           </div>
-          
         </div>
 
-        <div className="tableWrap">
-          <table className="niceTable">
-            <tbody>
-              {rows.map(([k, v]) => (
-                <tr key={k}>
-                  <th>{k}</th>
-                  <td>{String(v)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Replaced table with a clean stacked list */}
+        <div className="infoList" role="list">
+          {rows.map(([k, v]) => (
+            <div className="infoRow" key={k} role="listitem">
+              <div className="label">{k}</div>
+              <div className="value">{String(v)}</div>
+            </div>
+          ))}
         </div>
+
         <button className="Logout-btn" onClick={() => { logout(); window.location.href = "/"; }}>
             Logout
         </button>

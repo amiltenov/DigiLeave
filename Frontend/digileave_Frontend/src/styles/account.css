@@ -46,42 +46,55 @@
 .account-email { font-weight: 600; color: var(--color-text); }
 .account-role { font-size: .9rem; opacity: .85; color: var(--color-text); }
 
+/* --- New stacked info list (mobile-first) --- */
+.infoList {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
 
-.tableWrap {
-  overflow:hidden;
-  border-radius: 10px;
+.infoRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding: 12px;
   border: 1px solid var(--color-surface-border);
-  margin-top: 1rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--color-surface) 82%, transparent);
 }
 
-.niceTable {
-  width:100%;
-  border-collapse: collapse;
-  color: var(--color-text);
+.label {
+  font-size: .8rem;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  opacity: .8;
 }
 
-.niceTable th, .niceTable td {
-  padding: .75rem 1rem;
-  text-align:left;
-  border-top: 1px solid var(--color-surface-border);
+.value {
+  font-weight: 600;
+  word-break: break-word; /* long emails, lists */
 }
 
-.niceTable tr:first-child th,
-.niceTable tr:first-child td { border-top: none; }
-
-.niceTable th {
-  width: 38%;
-  background: color-mix(in srgb, var(--color-accent) 25%, transparent);
-  font-weight:600;
+/* On larger screens, align like two columns for readability */
+@media (min-width: 600px) {
+  .infoRow {
+    grid-template-columns: 220px 1fr;
+    align-items: center;
+  }
+  .label { font-size: .85rem; }
 }
+
+/* Keep the old table styles around (unused) to avoid breaking other pages, but you can delete safely if not needed */
+.tableWrap { display:none; }
+.niceTable { display:none; }
 
 .Logout-btn {
   align-items: center;
   justify-content: center;
-  height: 36px;
+  height: 40px;
   padding: 0 16px;
-  margin-top: 20px;
-  border-radius: 8px;
+  margin-top: 16px;
+  border-radius: 10px;
   text-decoration: none;
   font-weight: 600;
   border: none;
@@ -90,6 +103,7 @@
   box-shadow: 0 2px 4px var(--btn-shadow);
   transition: transform .15s ease, box-shadow .15s ease;
   white-space: nowrap;
+  width: 100%;
 }
 .Logout-btn:hover {
   transform: translateY(-1px);
@@ -98,4 +112,10 @@
 .Logout-btn:active {
   transform: translateY(0);
   box-shadow: 0 2px 4px var(--btn-shadow-active);
+}
+
+/* Compact padding on very small screens */
+@media (max-width: 380px) {
+  .account-root { padding: 1rem; }
+  .account-card { padding: 12px; }
 }
