@@ -82,7 +82,7 @@
     align-items: center;
   }
   .label { font-size: .85rem; }
-  .value { justify-self: end; text-align: center; }
+  .value { justify-self: center; text-align: center; }
 }
 
 /* Keep the old table styles around (unused) to avoid breaking other pages, but you can delete safely if not needed */
