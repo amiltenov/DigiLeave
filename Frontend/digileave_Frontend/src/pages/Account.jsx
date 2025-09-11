@@ -22,6 +22,20 @@ export default function Account() {
         if (json) {
           setData(json);
           setState("ready");
+
+          if (json.role === "APPROVER") {
+            fetch("https://digileave.onrender.com/approver/assignees", { headers: authHeader() })
+            .then(r => (r.ok ? r.json() : []))
+            .then(list => {
+            const emails = Array.isArray(list)
+            ? list.map(a => (a && a.email) ? a.email : a).filter(Boolean)
+            : [];
+      
+            setData(d => ({ ...d, assigneeEmails: emails }));
+            })
+            .catch(() => {});
+          }
+
         }
       })
       .catch(() => setState("error"));
@@ -55,13 +69,7 @@ const rows = [
   ["Full Name", data.fullName ?? "—"],
   ["Email", data.email],
   ["Role", data.role],
-  ["Assignees",
-  (Array.isArray(data.assigneeEmails) && data.assigneeEmails.length && data.assigneeEmails.join(", ")) ||
-  (Array.isArray(data.assignees) && data.assignees.length && data.assignees.map(a => a.email || a).join(", ")) ||
-  (Array.isArray(data.assigneeIds) && data.assigneeIds.length && data.assigneeIds.join(", ")) ||
-  "—"
-],
-
+  ["Available Leave Days", data.availableLeaveDays],
   ...(data.role === "APPROVER"
     ? [["Assignees", Array.isArray(data.assigneeIds) && data.assigneeIds.length ? data.assigneeIds.join(", ") : "—"]]
     : []
@@ -83,7 +91,7 @@ return (
           </div>
         </div>
 
-        {/* Replaced table with a clean stacked list */}
+        
         <div className="infoList" role="list">
           {rows.map(([k, v]) => (
             <div className="infoRow" key={k} role="listitem">
