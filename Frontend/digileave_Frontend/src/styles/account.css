@@ -1,7 +1,7 @@
 .account-root {
   display: flex;
   justify-content: center;
-  padding: 2rem;
+  padding: clamp(12px, 3.5vw, 24px);
   background: transparent;
   color: var(--color-text);
 }
@@ -72,10 +72,9 @@
 
 .value {
   font-weight: 600;
-  word-break: break-word; /* long emails, lists */
+  word-break: break-word; 
 }
 
-/* On larger screens, align like two columns for readability */
 @media (min-width: 600px) {
   .infoRow {
     grid-template-columns: 220px 1fr;
@@ -85,7 +84,6 @@
   
 }
 
-/* Keep the old table styles around (unused) to avoid breaking other pages, but you can delete safely if not needed */
 .tableWrap { display:none; }
 .niceTable { display:none; }
 
@@ -115,7 +113,7 @@
   box-shadow: 0 2px 4px var(--btn-shadow-active);
 }
 
-/* Compact padding on very small screens */
+
 @media (max-width: 380px) {
   .account-root { padding: 1rem; }
   .account-card { padding: 12px; }
