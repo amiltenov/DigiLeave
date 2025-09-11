@@ -55,7 +55,13 @@ const rows = [
   ["Full Name", data.fullName ?? "—"],
   ["Email", data.email],
   ["Role", data.role],
-  ["Available Leave Days", data.availableLeaveDays],
+  ["Assignees",
+  (Array.isArray(data.assigneeEmails) && data.assigneeEmails.length && data.assigneeEmails.join(", ")) ||
+  (Array.isArray(data.assignees) && data.assignees.length && data.assignees.map(a => a.email || a).join(", ")) ||
+  (Array.isArray(data.assigneeIds) && data.assigneeIds.length && data.assigneeIds.join(", ")) ||
+  "—"
+],
+
   ...(data.role === "APPROVER"
     ? [["Assignees", Array.isArray(data.assigneeIds) && data.assigneeIds.length ? data.assigneeIds.join(", ") : "—"]]
     : []
