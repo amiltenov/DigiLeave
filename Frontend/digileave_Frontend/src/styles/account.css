@@ -8,7 +8,7 @@
 
 .account-wrap {
   width: 100%;
-  max-width: 800px;   /* keeps it narrow */
+  max-width: 600px;   /* keeps it narrow */
   margin: 0 auto;
   padding: 16px 24px;
 }
