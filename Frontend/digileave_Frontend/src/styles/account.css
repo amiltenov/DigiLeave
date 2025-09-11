@@ -46,7 +46,7 @@
 .account-email { font-weight: 600; color: var(--color-text); }
 .account-role { font-size: .9rem; opacity: .85; color: var(--color-text); }
 
-/* --- New stacked info list (mobile-first) --- */
+
 .infoList {
   display: grid;
   gap: 10px;
@@ -82,6 +82,7 @@
     align-items: center;
   }
   .label { font-size: .85rem; }
+  .value { justify-self: end; text-align: end; }
 }
 
 /* Keep the old table styles around (unused) to avoid breaking other pages, but you can delete safely if not needed */
