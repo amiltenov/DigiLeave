@@ -15,32 +15,32 @@ export default function Approver() {
 
   const userById = useMemo(() => {
     const m = new Map();
-    for (const a of assignees) m.set(a.id, a);
+    for (const u of assignees) m.set(u.id, u);
     return m;
   }, [assignees]);
 
   useEffect(() => {
-    loadAssignees();
+    let alive = true;
+    (async () => {
+      setAssigneesLoading(true);
+      setAssigneesErr("");
+      try {
+        const res = await fetch("https://digileave.onrender.com/approver/assignees", { headers: authHeader() });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (alive) setAssignees(Array.isArray(data) ? data : []);
+      } catch (e) {
+        if (alive) setAssigneesErr("Couldn't load assignees.");
+      } finally {
+        if (alive) setAssigneesLoading(false);
+      }
+    })();
+    return () => { alive = false; };
   }, []);
 
   useEffect(() => {
     loadAllRequests();
   }, []);
-
-  async function loadAssignees() {
-    setAssigneesLoading(true);
-    setAssigneesErr("");
-    try {
-      const res = await fetch("https://digileave.onrender.com/approver/assignees", { headers: authHeader() });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setAssignees(Array.isArray(data) ? data : []);
-    } catch (e) {
-      setAssigneesErr("Couldn't load assignees.");
-    } finally {
-      setAssigneesLoading(false);
-    }
-  }
 
   async function loadAllRequests() {
     setSelectedAssignee(null);
@@ -63,12 +63,12 @@ export default function Approver() {
     setRequestsLoading(true);
     setRequestsErr("");
     try {
-      const res = await fetch(`https://digileave.onrender.com/approver/assignees/${assignee.id}/requests`, { headers: authHeader() });
+      const res = await fetch(`https://digileave.onrender.com/approver/assignee/${assignee.id}/requests`, { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRequests(Array.isArray(data) ? data : []);
     } catch (e) {
-      setRequestsErr("Couldn't load requests.");
+      setRequestsErr("Couldn't load requests for this user.");
     } finally {
       setRequestsLoading(false);
     }
@@ -76,53 +76,59 @@ export default function Approver() {
 
   async function decide(reqId, status) {
     try {
-      const res = await fetch(`https://digileave.onrender.com/approver/requests/${reqId}/decision`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...authHeader() },
-        body: JSON.stringify({ status }),
+      const res = await fetch(`https://digileave.onrender.com/approver/request/${reqId}`, {
+        method: "PATCH",
+        headers: { ...authHeader(), "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const updated = await res.json();
-      setRequests(prev => prev.map(r => (r.id === updated.id ? updated : r)));
-    } catch {}
+      setRequests(prev => prev.map(r => (r.id === reqId ? updated : r)));
+    } catch (e) {
+      setRequestsErr("Couldn't update request.");
+    }
   }
+
+  const sortedRequests = useMemo(() => {
+    const order = { SUBMITTED: 0, APPROVED: 1, REJECTED: 2, CANCELLED: 3 };
+    return [...requests].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
+  }, [requests]);
 
   return (
     <div className="approver-page">
-      <header className="approver-header glass">
+      <div className="approver-header glass">
         <h1>Approver</h1>
-      </header>
+        <div className="approver-actions">
+          <button className="accent-btn" onClick={loadAllRequests}>All Requests</button>
+        </div>
+      </div>
 
-      <section className="assignees-section">
+      <section className="approver-section">
         <div className="section-head">
           <h2>Assignees</h2>
-          <div className="head-actions">
-            <button className="accent-btn" onClick={loadAllRequests}>All Requests</button>
-          </div>
         </div>
 
-        {assigneesLoading && <div className="muted">Loading assignees…</div>}
-        {!!assigneesErr && <div className="error">{assigneesErr}</div>}
-
-        {!assigneesLoading && !assigneesErr && (
+        {assigneesErr && <div className="msg glass">{assigneesErr}</div>}
+        {assigneesLoading ? (
+          <div className="msg glass">Loading assignees…</div>
+        ) : assignees.length === 0 ? (
+          <div className="msg glass">No assignees.</div>
+        ) : (
           <div className="assignee-grid">
-            {assignees.map(a => (
+            {assignees.map(u => (
               <button
-                key={a.id}
-                className={`assignee-card glass ${selectedAssignee && selectedAssignee.id === a.id ? "is-selected" : ""}`}
-                onClick={() => loadAssigneeRequests(a)}
-                title={a.email}
+                key={u.id}
+                className={`assignee-card glass${selectedAssignee && selectedAssignee.id === u.id ? " is-selected" : ""}`}
+                onClick={() => loadAssigneeRequests(u)}
+                title="View this user's requests"
               >
-                <div className="assignee-top">
-                  <div className="assignee-avatar">{(a.email || "?").slice(0, 2).toUpperCase()}</div>
-                  <div className="assignee-meta">
-                    <div className="assignee-name">{a.fullName || a.email}</div>
-                    <div className="assignee-email">{a.email}</div>
-                  </div>
+                <div className="assignee-main">
+                  <div className="assignee-name">{u.fullName || "—"}</div>
+                  <div className="assignee-email">{u.email}</div>
                 </div>
-                <div className="assignee-badges">
-                  <span className="badge role">{a.role || "USER"}</span>
-                  <span className="badge days">{(a.availableLeaveDays ?? 0)} days</span>
+                <div className="assignee-meta">
+                  <span className="badge role">{u.role}</span>
+                  <span className="badge days">{u.availableLeaveDays ?? 0} days</span>
                 </div>
               </button>
             ))}
@@ -130,63 +136,62 @@ export default function Approver() {
         )}
       </section>
 
-      <section className="requests-section">
+      <section className="approver-section">
         <div className="section-head">
           <h2>
             {selectedAssignee
               ? `Requests — ${selectedAssignee.fullName || selectedAssignee.email}`
               : `Requests — All Assignees`}
           </h2>
-          <div className="head-actions">
-            <button className="accent-btn" onClick={loadAllRequests}>All Requests</button>
-            {selectedAssignee && (
-              <button className="ghost-btn" onClick={() => { setSelectedAssignee(null); setRequests([]); }}>
-                Clear
-              </button>
-            )}
-          </div>
+          {selectedAssignee && (
+            <button
+              className="ghost-btn"
+              onClick={() => {
+                setSelectedAssignee(null);
+                setRequests([]);
+              }}
+            >
+              Clear
+            </button>
+          )}
         </div>
 
-        {requestsLoading && <div className="muted">Loading requests…</div>}
-        {!!requestsErr && <div className="error">{requestsErr}</div>}
-
-        {!requestsLoading && !requestsErr && (
+        {requestsErr && <div className="msg glass">{requestsErr}</div>}
+        {requestsLoading ? (
+          <div className="msg glass">Loading requests…</div>
+        ) : sortedRequests.length === 0 ? (
+          <div className="msg glass">No requests.</div>
+        ) : (
           <div className="request-list">
-            {requests.map(r => {
-              const who = userById.get(r.userId);
-              const borderClass =
-                r.status === "SUBMITTED" ? "b-submitted" :
-                r.status === "APPROVED"  ? "b-approved"  :
-                r.status === "REJECTED"  ? "b-rejected"  : "b-default";
-
+            {sortedRequests.map(r => {
+              const u = userById.get(r.userId);
+              const cls = (r.status || "").toLowerCase();
               return (
-                <div key={r.id} className={`request-item glass ${borderClass}`}>
+                <div key={r.id} className={`request-item glass ${cls}`}>
                   <div className="req-top">
-                    <div className="req-person">
-                      <div className="avatar">{((who?.email) || "?").slice(0, 2).toUpperCase()}</div>
+                    <div className="req-who">
+                      <div className="who-avatar">{(u?.email || "").slice(0,2).toUpperCase()}</div>
                       <div>
-                        <div className="name">{who?.fullName || who?.email || r.userEmail || "Unknown"}</div>
-                        <div className="email">{who?.email || r.userEmail || ""}</div>
+                        <div className="who-name">{u?.fullName || "—"}</div>
+                        <div className="who-email">{u?.email || r.userId}</div>
                       </div>
                     </div>
-                    <div className="req-status">
-                      <span className={`pill ${borderClass}`}>{r.status}</span>
-                    </div>
+                    <div className={`status pill ${cls}`}>{r.status}</div>
                   </div>
 
                   <div className="req-mid">
-                    <div className="req-meta">
-                      <span className="chip">{r.leaveType}</span>
-                      <span className="chip">{r.days} days</span>
-                    </div>
-                    <div className="req-when">
+                    <div className="req-dates">
                       <span>{r.startDate}</span>
-                      <span className="arrow">→</span>
+                      <span className="dash">→</span>
                       <span>{r.endDate}</span>
+                    </div>
+                    <div className="req-meta">
+                      <span className="badge">{r.type}</span>
+                      <span className="badge">{r.workdaysCount ?? 0} days</span>
                     </div>
                   </div>
 
-                  {!!r.comment && <div className="req-comment">“{r.comment}”</div>}
+                  {r.comment && <div className="req-comment">“{r.comment}”</div>}
 
                   {r.status === "SUBMITTED" && (
                     <div className="req-actions">
