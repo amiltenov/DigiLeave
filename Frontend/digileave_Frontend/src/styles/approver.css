@@ -32,7 +32,7 @@
   border-radius: 10px;
   border: 1px solid transparent;
   background: linear-gradient(90deg, var(--btn-grad-light), var(--btn-grad-dark));
-  color: var(--btn-text);
+  color: black;
   font-weight: 600;
   box-shadow: 0 2px 4px var(--btn-shadow);
   cursor: pointer;
@@ -337,7 +337,7 @@
 
 .approver-header h1 {
   margin: 0;
-  font-size: clamp(1rem, 0.9rem + 0.3vw, 1.2rem);
+  font-size: clamp(2rem, 0.9rem + 0.3vw, 1.2rem);
   line-height: 1.1;
   font-weight: 700;
   color: var(--color-text);
