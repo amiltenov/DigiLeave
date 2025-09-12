@@ -5,6 +5,7 @@
   line-height: 0;
   pointer-events: none;
   isolation: isolate;
+  margin-bottom: -20px;
 }
 
 .footer-wave-svg {
