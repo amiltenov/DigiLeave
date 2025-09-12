@@ -264,3 +264,61 @@
 
 @media (max-width: 900px) { .assignee-card { width: 300px; } }
 @media (max-width: 640px) { .assignee-card { width: 100%; } }
+
+.request-list { max-width: 100%; }
+.request-item { max-width: 100%; overflow: hidden; }
+
+.req-top,
+.req-mid,
+.req-who,
+.req-dates,
+.req-meta,
+.req-actions { min-width: 0; }
+
+.who-email,
+.req-comment,
+.req-dates span,
+.req-meta .badge,
+.btn-approve,
+.btn-reject { overflow-wrap: anywhere; word-break: break-word; }
+
+
+@media (max-width: 600px) {
+  .req-top,
+  .req-mid { gap: 8px; }
+
+  .req-dates { flex-wrap: wrap; row-gap: 4px; }
+
+  .req-actions { width: 100%; }
+  .btn-approve, .btn-reject {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+  }
+}
+
+
+.accent-btn,
+.ghost-btn,
+.btn-approve,
+.btn-reject,
+.status.pill,
+.badge,
+.req-dates,
+.req-meta,
+.req-comment,
+.who-name,
+.who-email { color: var(--color-text) !important; }
+
+
+.accent-btn { background: linear-gradient(90deg, var(--btn-grad-light), var(--btn-grad-dark)); }
+
+
+.request-item,
+.status.pill { border-color: var(--color-surface-border); }
+
+
+.btn-approve, .btn-reject {
+  height: 32px;
+  padding: 0 10px;
+}
