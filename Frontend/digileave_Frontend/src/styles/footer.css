@@ -1,5 +1,5 @@
 :root {
-  --footer-bg: var(--color-surface);
+  --footer-bg: var(--footer-background);
   --footer-text: var(--color-text);
   --footer-border: var(--color-surface-border);
   --footer-shadow: var(--color-surface-shadow);
@@ -11,10 +11,10 @@
   width: 100%;
   background: var(--footer-bg);
   color: var(--footer-text);
-  border-top: 1px solid var(--footer-border);
-  box-shadow: 0 -4px 18px var(--footer-shadow);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* border-top: 1px solid var(--footer-border); */
+  /* box-shadow: 0 -4px 18px var(--footer-shadow); */
+  /* backdrop-filter: blur(8px); */
+  /* -webkit-backdrop-filter: blur(8px); */
   margin: -10px;
   padding-right:16px;
 }
@@ -120,3 +120,4 @@
 @media (min-width: 1024px) {
   .footer-logo { height: 40px; }
 }
+

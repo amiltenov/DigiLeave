@@ -7,6 +7,7 @@ import NewRequest from "./pages/NewRequest";
 import AuthCallback from "./pages/AuthCallback";
 import Admin from "./pages/Admin";
 import Approver from "./pages/Approver";
+import FooterWaves from "./components/FooterWaves";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/approver" element={<Approver />} />
         </Routes>
       </main>
+       <FooterWaves />
       <Footer />
     </Router>
   );

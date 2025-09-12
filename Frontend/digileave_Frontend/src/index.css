@@ -30,6 +30,10 @@
   --switch-bg: #ccc;
   --switch-circle: #fff;
   --switch-bg-active: #222;
+
+  --footer-background: #d7d7d7;
+  --footer-background2: #cecccc;
+  --footer-background3: #ededed;
 }
 
 /* Dark theme */
@@ -61,6 +65,10 @@
   --switch-bg: #444;
   --switch-circle: #fff;
   --switch-bg-active: #bbb;
+
+  --footer-background: #131313;
+  --footer-background2: #101010;
+  --footer-background3: #474747;
 }
 
 
