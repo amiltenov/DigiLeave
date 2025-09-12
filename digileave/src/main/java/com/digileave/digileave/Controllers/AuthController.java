@@ -35,17 +35,17 @@ public class AuthController {
 
         final String n_email = (email == null ? "" : email.trim().toLowerCase(java.util.Locale.ROOT));
 
-        // // # Digitoll domain check
-        // if (!n_email.endsWith("@digitoll.bg")) {
-        //     org.springframework.security.core.context.SecurityContextHolder.clearContext();
-        //     var session = req.getSession(false);
-        //     if (session != null) session.invalidate();
+        // # Digitoll domain check
+        if (!n_email.endsWith("@digitoll.bg")) {
+            org.springframework.security.core.context.SecurityContextHolder.clearContext();
+            var session = req.getSession(false);
+            if (session != null) session.invalidate();
 
-        //     String redirectErr = "http://localhost:5173/auth/callback#error=domain";
-        //     return ResponseEntity.status(302)
-        //             .header(org.springframework.http.HttpHeaders.LOCATION, redirectErr)
-        //             .build();
-        // }
+            String redirectErr = "http://digileave.vercel.app/auth/callback#error=domain";
+            return ResponseEntity.status(302)
+                    .header(org.springframework.http.HttpHeaders.LOCATION, redirectErr)
+                    .build();
+        }
 
           // # Find or Create User
           var current_user = users.findByEmail(n_email).orElseGet(() -> {
