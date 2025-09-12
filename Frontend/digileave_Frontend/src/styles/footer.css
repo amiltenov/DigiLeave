@@ -8,7 +8,7 @@
 }
 
 .site-footer {
-  width: 105%;
+  width: 100%;
   background: var(--footer-bg);
   color: var(--footer-text);
   border-top: 1px solid var(--footer-border);
@@ -16,6 +16,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   margin: -10px;
+  padding-right:16px;
 }
 
 .footer-inner {
@@ -78,23 +79,20 @@
 
 
 @media (max-width: 719px) {
-  /* Put Routes and Contact side-by-side */
   .footer-inner {
     grid-template-columns: 1fr 1fr;
     align-items: start;
   }
 
-  /* Make the brand/logo span full width above them */
   .footer-brand {
     grid-column: 1 / -1;
   }
 
-  /* Keep items aligned nicely */
   .footer-links,
   .footer-contact {
-    align-self: start;
     align-items: flex-start;
     min-width: 0;
+    margin-right: 10px;
   }
 
   .footer-title {
