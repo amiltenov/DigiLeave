@@ -308,7 +308,7 @@
 .req-meta,
 .req-comment,
 .who-name,
-.who-email { color: var(--color-text) !important; }
+.who-email { color: var(--color-text) !important; padding:5%;}
 
 
 .accent-btn { background: linear-gradient(90deg, var(--btn-grad-light), var(--btn-grad-dark)); }
