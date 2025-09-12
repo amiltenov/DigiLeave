@@ -302,14 +302,17 @@
 .ghost-btn,
 .btn-approve,
 .btn-reject,
-.status.pill,
 .badge,
 .req-dates,
 .req-meta,
 .req-comment,
 .who-name,
-.who-email { color: var(--color-text) !important; padding:5%;}
+.who-email { color: var(--color-text) !important; }
 
+.status.pill{ 
+  color: var(--color-text) !important;
+  margin: 4px;
+}
 
 .accent-btn { background: linear-gradient(90deg, var(--btn-grad-light), var(--btn-grad-dark)); }
 
