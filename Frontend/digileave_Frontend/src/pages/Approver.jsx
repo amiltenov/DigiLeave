@@ -171,13 +171,13 @@ export default function Approver() {
                   <div className="req-top">
                     <div className="req-who">
                       <div className="who-avatar">{(u?.email || "").slice(0,2).toUpperCase()}</div>
-                      <div>
-                        <div className="who-name">{u?.fullName || "—"}</div>
-                        <div className="who-email">{u?.email || r.userId}</div>
+                        <div className="who-block">
+                          <div className="who-name">{u?.fullName || "—"}</div>
+                          <div className="who-email">{u?.email || r.userId}</div>
+                          <span className={`status pill ${cls}`}>{r.status}</span>
+                        </div>
                       </div>
                     </div>
-                    <div className={`status pill ${cls}`}>{r.status}</div>
-                  </div>
 
                   <div className="req-mid">
                     <div className="req-dates">
