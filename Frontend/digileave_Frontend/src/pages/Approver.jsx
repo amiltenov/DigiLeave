@@ -38,6 +38,10 @@ export default function Approver() {
     return () => { alive = false; };
   }, []);
 
+  useEffect(() => {
+    loadAllRequests();
+  }, []);
+
   async function loadAllRequests() {
     setSelectedAssignee(null);
     setRequestsLoading(true);
@@ -114,7 +118,7 @@ export default function Approver() {
             {assignees.map(u => (
               <button
                 key={u.id}
-                className="assignee-card glass"
+                className={`assignee-card glass${selectedAssignee && selectedAssignee.id === u.id ? " is-selected" : ""}`}
                 onClick={() => loadAssigneeRequests(u)}
                 title="View this user's requests"
               >
@@ -131,7 +135,6 @@ export default function Approver() {
           </div>
         )}
       </section>
-
 
       <section className="approver-section">
         <div className="section-head">
@@ -167,8 +170,11 @@ export default function Approver() {
                 <div key={r.id} className={`request-item glass ${cls}`}>
                   <div className="req-top">
                     <div className="req-who">
-                      <div className="who-name">{u?.fullName || "—"}</div>
-                      <div className="who-email">{u?.email || r.userId}</div>
+                      <div className="who-avatar">{(u?.email || "").slice(0,2).toUpperCase()}</div>
+                      <div>
+                        <div className="who-name">{u?.fullName || "—"}</div>
+                        <div className="who-email">{u?.email || r.userId}</div>
+                      </div>
                     </div>
                     <div className={`status pill ${cls}`}>{r.status}</div>
                   </div>
