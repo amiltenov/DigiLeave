@@ -1,116 +1,124 @@
-footer {
-  position: relative;   /* instead of fixed */
-  bottom: 0;
-  left: 0;
-  right: 0;
+:root {
+  --footer-bg: var(--color-surface);
+  --footer-text: var(--color-text);
+  --footer-border: var(--color-surface-border);
+  --footer-shadow: var(--color-surface-shadow);
+  --footer-link: var(--color-text);
+  --footer-link-hover: var(--color-text);
+}
 
-  height: auto;
-  padding: 12px 20px;
-  border-radius: 0;
+.site-footer {
+  width: 105%;
+  background: var(--footer-bg);
+  color: var(--footer-text);
+  border-top: 1px solid var(--footer-border);
+  box-shadow: 0 -4px 18px var(--footer-shadow);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  margin: -10px;
+}
 
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-surface-border);
-  backdrop-filter: blur(12px) saturate(160%);
-  -webkit-backdrop-filter: blur(12px) saturate(160%);
-  box-shadow: 0 -4px 18px var(--color-surface-shadow);
-
-  font-size: 0.9rem;
-  color: var(--color-text);
-  text-align: center;
-
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  column-gap: 4%;
-  row-gap: 8px;
-  align-items: start;
+  grid-template-columns: 1fr;
+  gap: 18px;
 }
 
-
-/* ===== LOGO ===== */
-.logof-div {
-  grid-row: 1;
-  grid-column: 1 / -1; 
+.footer-brand {
   display: flex;
-  justify-content: flex-start;
-  width: 100%;
-  margin: 15px;
-  margin-left: 5%;
+  align-items: center;
+  justify-content: center;
 }
 
-.logof-img {
-  width: 300px;
-  height: auto;
+.footer-logo {
+  height: 32px;
+  width: auto;
   object-fit: contain;
+  display: block;
 }
 
-/* ===== ROUTES ===== */
-.routes {
-  grid-row: 1;
-  grid-column: 1;
-  justify-self: start;
-  align-self: start;
-
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-left: 5%;
+.footer-links,
+.footer-contact {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  text-align: start;
 }
 
-.routes::before {
-  content: "Routes:";
+.footer-title {
   font-weight: 700;
-  margin-bottom: 2px;
 }
 
-.routes a {
-  color: var(--color-text);
+.footer-links a,
+.footer-contact a {
+  color: var(--footer-link);
   text-decoration: none;
   font-weight: 600;
   opacity: 0.9;
-  margin-left: 1%;
 }
 
-.routes a:hover {
+.footer-links a:hover,
+.footer-contact a:hover {
   opacity: 1;
   text-decoration: underline;
+  color: var(--footer-link-hover);
 }
 
-/* ===== CONTACT INFO ===== */
-.contact-info {
-  /* grid-row: 2; */
-  grid-column: 2;
-  justify-self: start;
-  /* align-self: start; */
-
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.contact-info b {
-  margin-bottom: 2px;
-}
-
-.contact-info a {
-  color: var(--color-text);
-  text-decoration: none;
-  font-weight: 600;
+.footer-bottom {
+  border-top: 1px solid var(--footer-border);
+  margin-top: 8px;
+  padding: 10px 16px;
+  text-align: center;
+  color: var(--footer-text);
   opacity: 0.9;
-  margin-left: 1%;
 }
 
-.contact-info a:hover {
-  opacity: 1;
-  text-decoration: underline;
+
+@media (max-width: 719px) {
+  /* Put Routes and Contact side-by-side */
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  /* Make the brand/logo span full width above them */
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  /* Keep items aligned nicely */
+  .footer-links,
+  .footer-contact {
+    align-self: start;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  .footer-title {
+    margin: 0 0 6px;
+  }
 }
 
-/* ===== COPYRIGHT ===== */
-footer p {
-  /* grid-row: 2; */
-  grid-column: 1 / -1;
-  justify-self: center;
-  align-self: end;
-  margin: 0;
-  opacity: 0.85;
+
+@media (min-width: 720px) {
+  .site-footer{
+    margin: -10px;
+  }
+  .footer-inner {
+    grid-template-columns: 1.2fr 1fr 1fr;
+    align-items: start;
+    gap: 24px;
+    padding: 28px 16px;
+  }
+  .footer-brand { justify-content: flex-start; }
+  .footer-links,
+  .footer-contact { justify-items: start; text-align: left; }
+  .footer-logo { height: 36px; }
+}
+
+@media (min-width: 1024px) {
+  .footer-logo { height: 40px; }
 }
