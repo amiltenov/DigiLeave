@@ -122,7 +122,16 @@ export default function Header() {
           <Link className="nav-btn" to="/requests" onClick={() => setMenuOpen(false)}>Requests</Link>
           {user ? (
             <>
-              {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin" onClick={() => setMenuOpen(false)}>Admin</Link>) : (<></>)}
+              {user.role == "ADMIN" ? 
+              (
+              <>
+                <Link className="nav-btn" to="/admin">Admin</Link>
+                <Link className="nav-btn" to="/approver">Approver</Link>
+              </>
+              ) 
+              : 
+              (<></>)
+              }
               {user.role == "APPROVER" ? (<Link className="nav-btn" to="/approver" onClick={() => setMenuOpen(false)}>Approver</Link>) : (<></>)}
               <Link className="account_google-btn" to="/account" onClick={() => setMenuOpen(false)}>Account</Link>
             </>
