@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { authHeader } from "../auth";
+import { authHeader } from "../utils/auth";
 import "../styles/newrequest.css";
 
 const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
@@ -111,7 +111,7 @@ export default function NewRequest() {
       setMsg({
         type: "ok",
         text: saved?.id
-          ? `Request submitted successfully (id: ${saved.id}).`
+          ? `Request submitted successfully.`
           : "Request submitted successfully.",
       });
 
@@ -143,6 +143,7 @@ export default function NewRequest() {
           <label>
             <span>Start date</span>
             <input
+              className="datePicker"
               type="date"
               value={startDate}
               min={today}

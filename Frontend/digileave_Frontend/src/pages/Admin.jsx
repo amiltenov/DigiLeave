@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useId, useCallback } from "react";
-import { authHeader } from "../auth";
+import { authHeader } from "../utils/auth";
 import "../styles/admin.css";
 
 const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
@@ -71,6 +71,8 @@ export default function Admin() {
       email: u.email || "",
       role: u.role || "USER",
       availableLeaveDays: u.availableLeaveDays ?? 0,
+      contractLeaveDays: u.contractLeaveDays ?? "",
+      workingSince: u.workingSince ?? "",
       assignees: chips, // [{id,email,fullName}]
       assigneeInput: "",
       showSuggest: false,
@@ -154,6 +156,9 @@ export default function Admin() {
       availableLeaveDays: Number(form.availableLeaveDays),
       assignees: assigneeIds,
       assigneeIds: assigneeIds,
+      contractLeaveDays:
+      form.contractLeaveDays === "" || form.contractLeaveDays == null ? null : Number(form.contractLeaveDays),
+      workingSince: form.workingSince || null,
     };
 
     try {
@@ -306,7 +311,7 @@ export default function Admin() {
                   <label>
                     <span>Available leave days</span>
                     <input
-                    classname="themed-select"
+                    className="themed-select"
                       type="number"
                       min="0"
                       value={form.availableLeaveDays}
@@ -318,6 +323,37 @@ export default function Admin() {
                       inputMode="numeric"
                     />
                   </label>
+                  <label>
+                    <span>Yearly Contract Leave Days</span>
+                    <input
+                      className="themed-select"
+                      type="number"
+                      min="0"
+                      value={form.contractLeaveDays ?? ""}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          contractLeaveDays:
+                            e.target.value === "" ? "" : Number(e.target.value),
+                        })
+                      }
+                      autoComplete="off"
+                      name={`${rnd}-contract-days`}
+                      inputMode="numeric"
+                    />
+                  </label>
+
+                  <label>
+                    <span>Working Since</span>
+                    <input
+                      className="themed-select"
+                      type="date"
+                      value={form.workingSince ?? ""}
+                      onChange={(e) => setForm({ ...form, workingSince: e.target.value })}
+                      name={`${rnd}-working-since`}
+                    />
+                  </label>
+
                 </div>
                   {form.role == "APPROVER" ? 
                   (

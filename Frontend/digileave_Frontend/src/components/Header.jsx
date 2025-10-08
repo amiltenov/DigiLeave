@@ -1,13 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import "../styles/header.css";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import "../styles/header.css";
+
 
 export default function Header() {
   const [user, setUser] = useState(null);
 
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("theme");
-    if (saved) return saved === "dark";
+    if (saved) {
+      return saved === "dark";
+    }
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
@@ -19,7 +22,7 @@ export default function Header() {
 
   useEffect(() => {
     const h = new Headers();
-    import("../auth").then(({ authHeader }) => {
+    import("../utils/auth").then(({ authHeader }) => {
       Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
       fetch("https://digileave.onrender.com/account", { headers: h })
         .then((res) => (res.ok ? res.json() : null))
@@ -37,19 +40,19 @@ export default function Header() {
   const [collapsed, setCollapsed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // --- Fixed: stable breakpoint using matchMedia (no flicker) ---
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 900px)");
     const apply = () => {
       setCollapsed(mq.matches);
       if (!mq.matches) setMenuOpen(false);
     };
-    apply(); // set initial state
+    apply();
+
     mq.addEventListener("change", apply);
     return () => mq.removeEventListener("change", apply);
   }, []);
-  // --------------------------------------------------------------
 
+  
   return (
     <header className="header" ref={headerRef}>
       <div className="logo-div" ref={logoRef}>
@@ -85,11 +88,20 @@ export default function Header() {
       {!collapsed && (
         <nav ref={navRef}>
           <Link className="nav-btn" to="/">Home</Link>
-          <Link className="nav-btn" to="/requests">Requests</Link>
           {user ? (
             <>
+            <Link className="nav-btn" to="/requests">Requests</Link>
               {user.role == "APPROVER" ? (<Link className="nav-btn" to="/approver">Approver</Link>) : (<></>)}
-              {user.role == "ADMIN" ? (<Link className="nav-btn" to="/admin">Admin</Link>) : (<></>)}
+              {user.role == "ADMIN" ? 
+              (
+              <>
+                <Link className="nav-btn" to="/admin">Admin</Link>
+                <Link className="nav-btn" to="/approver">Approver</Link>
+              </>
+              ) 
+              : 
+              (<></>)
+              }
               <Link className="account_google-btn" to="/account">Account</Link>
             </>
           ) : (

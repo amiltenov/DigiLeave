@@ -36,7 +36,7 @@ import java.util.List;
 public class SecurityConfig {
 
   // # Dev & Production frontend routes
-  private static final String DEV_FRONTEND = "http://localhost:5173";
+  private static final String DEV_FRONTEND = "https://digileave.onrender.com";
   private static final String PROD_FRONTEND = "https://digileave.vercel.app";
   
   private final HttpLoggerFilter httpLoggerFilter;

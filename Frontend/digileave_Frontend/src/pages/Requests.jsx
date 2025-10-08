@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { authHeader } from "../auth";
+import { authHeader } from "../utils/auth";
 import "../styles/requests.css";
 
 const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";

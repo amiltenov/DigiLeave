@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { authHeader } from "../auth";
+import { authHeader } from "../utils/auth";
 import "../styles/approver.css";
 
 export default function Approver() {

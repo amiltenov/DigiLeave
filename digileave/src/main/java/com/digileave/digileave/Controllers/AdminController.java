@@ -1,9 +1,10 @@
 package com.digileave.digileave.Controllers;
 
 import com.digileave.digileave.DTOs.UserExportDto;
+import com.digileave.digileave.DTOs.UserPatchDto;
 import com.digileave.digileave.Models.User;
-import com.digileave.digileave.Models.enums.Role;
 import com.digileave.digileave.Repositories.UserRepository;
+import com.digileave.digileave.Services.LeaveDaysAdditionService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,16 +13,20 @@ import java.util.*;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
+    private final LeaveDaysAdditionService leaveDaysAdditionService;
+
     // # DB Operations
     private final UserRepository users;
-    public AdminController(UserRepository users) {
+    public AdminController(UserRepository users , LeaveDaysAdditionService leaveDaysAdditionService) {
         this.users = users;
+        this.leaveDaysAdditionService = leaveDaysAdditionService;
     }
 
     // # Return All Users
@@ -33,50 +38,27 @@ public class AdminController {
                 .toList();
     }
 
-
-    // ! TODO - Incorporate Patch DTOs in the PatchMapping
     // # Patch User
     @PatchMapping("/users/{id}")
-    public ResponseEntity<User> patchUser(@PathVariable String id, @RequestBody Map<String, Object> body) {
-        Optional<User> ou = users.findById(id);
-        if (ou.isEmpty()) return ResponseEntity.notFound().build();
+    public ResponseEntity<UserExportDto> patchUser(@PathVariable String id, @Valid @RequestBody UserPatchDto body) {
+        var u = users.findById(id);
+        if (u.isEmpty()) return ResponseEntity.notFound().build();
 
-        User u = ou.get();
+        User user = u.get();
 
-        if (body.containsKey("email")) {
-            Object v = body.get("email");
-            u.setEmail(v == null ? u.getEmail() : v.toString());
-        }
-        if (body.containsKey("fullName")) {
-            Object v = body.get("fullName");
-            u.setFullName(v == null ? u.getFullName() : v.toString());
-        }
-        if (body.containsKey("role")) {
-            Object v = body.get("role");
-            if (v != null) {
-                try { u.setRole(Role.valueOf(v.toString())); } catch (Exception ignored) {}
-            }
-        }
-        if (body.containsKey("availableLeaveDays")) {
-            Object v = body.get("availableLeaveDays");
-            if (v instanceof Number n) u.setAvailableLeaveDays(n.intValue());
-            else if (v != null) {
-                try { u.setAvailableLeaveDays(Integer.parseInt(v.toString())); } catch (Exception ignored) {}
-            }
-        }
-        if (body.containsKey("assignees")) {
-            Object v = body.get("assignees");
-            if (v instanceof List<?> list) {
-                List<String> clean = new ArrayList<>();
-                for (Object o : list) if (o != null) clean.add(o.toString());
-                u.setAssigneeIds(clean);
-            }
-        }
+        if (body.email() != null) user.setEmail(body.email());
+        if (body.fullName() != null) user.setFullName(body.fullName());
+        if (body.role() != null) user.setRole(body.role());
+        if (body.availableLeaveDays() != null) user.setAvailableLeaveDays(body.availableLeaveDays());
+        if (body.assigneeIds() != null) user.setAssigneeIds(new ArrayList<>(body.assigneeIds()));
+        if (body.contractLeaveDays() != null) user.setContractLeaveDays(body.contractLeaveDays());
+        if (body.workingSince() != null)      user.setWorkingSince(body.workingSince());
 
-        return ResponseEntity.ok(users.save(u));
+        var saved = users.save(user);
+        return ResponseEntity.ok(UserExportDto.from(saved));
     }
 
-    // # Delete User
+    // #Delete User
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         if (!users.existsById(id)) return ResponseEntity.notFound().build();
@@ -84,5 +66,11 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-
+    // TODO : Make It Check and execute on itself
+    // ! Force Yearly Contract Leave Days Addition in case of sleeping server 
+    @PostMapping("/force-contract-leave-days-addition")
+    public ResponseEntity<Void> forceContractLeaveDaysAddition() {
+        leaveDaysAdditionService.addYearlyContractLeaveDays();
+        return ResponseEntity.noContent().build();
+    }
 }

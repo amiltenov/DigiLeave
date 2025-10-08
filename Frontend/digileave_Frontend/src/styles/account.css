@@ -1,16 +1,15 @@
 .account-root {
   display: flex;
   justify-content: center;
-  padding: clamp(12px, 3.5vw, 24px);
+  padding: 24px;
   background: transparent;
   color: var(--color-text);
 }
 
 .account-wrap {
   width: 100%;
-  max-width: 500px;   /* keeps it narrow */
+  max-width: 500px;
   margin: 0 auto;
-  padding: 16px 24px;
 }
 
 .account-wrap h2 {
@@ -32,30 +31,45 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-top: 6px;
+  margin-bottom: 24px;
 }
 
 .avatar {
-  width: 48px; height: 48px; border-radius: 50%;
-  display:flex; align-items:center; justify-content:center;
-  font-weight:700;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
   background: var(--color-accent);
   color: #111;
 }
 
-.account-email { font-weight: 600; color: var(--color-text); }
-.account-role { font-size: .9rem; opacity: .85; color: var(--color-text); }
+.account-fullname {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--color-text);
+}
 
+.account-email {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  color: var(--color-text);
+}
 
-.infoList {
+.user-data {
   display: grid;
   gap: 10px;
   margin-top: 12px;
 }
 
-.infoRow {
+.user-data-row {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 220px 1fr;
+  align-items: center;
   gap: 6px;
   padding: 12px;
   border: 1px solid var(--color-surface-border);
@@ -63,31 +77,21 @@
   background: color-mix(in srgb, var(--color-surface) 82%, transparent);
 }
 
-.label {
-  font-size: .8rem;
-  letter-spacing: .02em;
+.user-data-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
-  opacity: .8;
+  opacity: 0.85;
 }
 
-.value {
+.user-data-value {
   font-weight: 600;
-  word-break: break-word; 
+  word-break: break-word;
 }
 
-@media (min-width: 600px) {
-  .infoRow {
-    grid-template-columns: 220px 1fr;
-    align-items: center;
-  }
-  .label { font-size: .85rem; }
-  
-}
 
-.tableWrap { display:none; }
-.niceTable { display:none; }
-
-.Logout-btn {
+.logout-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   height: 40px;
@@ -100,21 +104,42 @@
   background: linear-gradient(90deg, var(--btn-grad-light), var(--btn-grad-dark));
   color: var(--btn-text);
   box-shadow: 0 2px 4px var(--btn-shadow);
-  transition: transform .15s ease, box-shadow .15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
   white-space: nowrap;
   width: 100%;
 }
-.Logout-btn:hover {
+
+.logout-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px var(--btn-shadow-hover);
 }
-.Logout-btn:active {
+
+.logout-btn:active {
   transform: translateY(0);
   box-shadow: 0 2px 4px var(--btn-shadow-active);
 }
 
+/* ===== Mobile ===== */
+
+@media (max-width: 600px) {
+  .account-root { padding: 16px; }
+  .account-card { padding: 12px; }
+
+  .user-data-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .user-data-label {
+    font-size: 0.8rem;
+  }
+
+  .user-data-value{
+    font-size: 1.15rem;
+  }
+}
 
 @media (max-width: 380px) {
-  .account-root { padding: 1rem; }
-  .account-card { padding: 12px; }
+  .account-root { padding: 12px; }
+  .avatar { width: 44px; height: 44px; }
 }

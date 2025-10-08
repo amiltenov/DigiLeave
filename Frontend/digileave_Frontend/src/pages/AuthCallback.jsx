@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { setToken } from "../auth";
+import { setToken } from "../utils/auth";
 
 export default function AuthCallback() {
   const navigate = useNavigate();

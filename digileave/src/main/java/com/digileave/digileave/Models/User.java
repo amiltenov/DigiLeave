@@ -26,8 +26,9 @@ public class User {
     private String fullName;
 
     private int availableLeaveDays = 20;
-    private int yearlyLeaveDaysByContract;
+    private int contractLeaveDays;
     private LocalDate workingSince;
+    
     private List<String> assigneeIds = new ArrayList<>();
 
 
@@ -48,8 +49,8 @@ public class User {
     public int getAvailableLeaveDays(){ return availableLeaveDays; }
     public void setAvailableLeaveDays(int availableLeaveDays){ this.availableLeaveDays = availableLeaveDays; }
 
-    public int getYearlyLeaveDaysByContract(){ return yearlyLeaveDaysByContract; }
-    public void setYearlyLeaveDaysByContract(int yearlyLeaveDaysByContract){ this.yearlyLeaveDaysByContract = yearlyLeaveDaysByContract; }
+    public int getContractLeaveDays(){ return contractLeaveDays; }
+    public void setContractLeaveDays(int contractLeaveDays){ this.contractLeaveDays = contractLeaveDays; }
 
     public LocalDate getWorkingSince(){ return workingSince; }
     public void setWorkingSince(LocalDate workingSince){ this.workingSince = workingSince; }
