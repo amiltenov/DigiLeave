@@ -37,11 +37,11 @@ public class AuthController {
 
         // // # Digitoll domain check
         // if (!n_email.endsWith("@digitoll.bg")) {
-        //     org.springframework.security.core.context.SecurityContextHolder.clearContext();
-        //     var session = req.getSession(false);
-        //     if (session != null) session.invalidate();
+        //      org.springframework.security.core.context.SecurityContextHolder.clearContext();
+        //      var session = req.getSession(false);
+        //      if (session != null) session.invalidate();
 
-        //     String redirectErr = "https://digileave.onrender.com/auth/callback#error=domain";
+        //     String redirectErr = "https://digileave.vercel.app/auth/callback#error=domain";
         //     return ResponseEntity.status(302)
         //             .header(org.springframework.http.HttpHeaders.LOCATION, redirectErr)
         //             .build();
@@ -63,7 +63,7 @@ public class AuthController {
               current_user.getId(), current_user.getEmail(), current_user.getRole(), java.time.Duration.ofHours(8));
 
         // ! Local vs Dev Redirect
-        String redirect = "https://digileave.onrender.com/auth/callback#token=" + token;
+        String redirect = "https://digileave.vercel.app/auth/callback#token=" + token;
         return ResponseEntity.status(302)
                 .header(org.springframework.http.HttpHeaders.LOCATION, redirect)
                 .build();
