@@ -100,7 +100,7 @@
   border-radius: 10px;
   text-decoration: none;
   font-weight: 600;
-  font-size: 1.35rem;
+  font-size: 1.05rem;
   border: none;
   background: linear-gradient(90deg, var(--btn-grad-light), var(--btn-grad-dark));
   color: var(--btn-text);
@@ -137,6 +137,10 @@
 
   .user-data-value{
     font-size: 1.15rem;
+  }
+
+  .logout-btn{
+    font-size: 1.20rem;
   }
 }
 
