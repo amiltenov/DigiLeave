@@ -32,6 +32,8 @@ public record RequestPatchDto(
     @Size(max = 500)
     String comment,
 
+    Boolean decision_seen,
+
     String decidedByUserId,
     Instant decidedAt
 ) {

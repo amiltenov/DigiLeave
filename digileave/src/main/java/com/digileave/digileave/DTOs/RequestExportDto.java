@@ -18,6 +18,7 @@ public record RequestExportDto(
     Status status,
     LeaveType type,
     String comment,
+    Boolean decision_seen,
     String decidedByUserId,
     Instant decidedAt
 ) {
@@ -31,6 +32,7 @@ public record RequestExportDto(
             request.getStatus(),
             request.getType(),
             request.getComment(),
+            request.getDecision_Seen(),
             request.getDecidedByUserId(),
             request.getDecidedAt()
         );

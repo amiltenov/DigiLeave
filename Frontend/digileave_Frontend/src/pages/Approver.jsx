@@ -28,6 +28,7 @@ export default function Approver() {
         const res = await fetch("https://digileave.onrender.com/approver/assignees", { headers: authHeader() });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+        console.log(data);
         if (alive) setAssignees(Array.isArray(data) ? data : []);
       } catch (e) {
         if (alive) setAssigneesErr("Couldn't load assignees.");
@@ -50,6 +51,7 @@ export default function Approver() {
       const res = await fetch("https://digileave.onrender.com/approver/requests", { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+      console.log(data);
       setRequests(Array.isArray(data) ? data : []);
     } catch (e) {
       setRequestsErr("Couldn't load requests.");

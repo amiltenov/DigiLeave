@@ -1,107 +1,120 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { authHeader } from "../utils/auth";
 import "../styles/requests.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
-
-function prettyType(t) {
-  if (!t) return "—";
-  return t
-    .toLowerCase()
-    .split("_")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
+import RequestsViewModeModeMenu from "../components/RequestsViewModeMenu";
+import RequestsViewMode from "../components/RequestsViewMode";
+import { authHeader } from "../utils/auth";
+import { STATE } from "../utils/state";
+import { BASE_API_URL } from "../utils/base_api_url";
 
 export default function Requests() {
-  const [items, setItems] = useState([]);
-  const [state, setState] = useState("loading");
+  const [viewState, setViewState] = useState(STATE.LOADING);
+  const [data, setData] = useState([]);
+  const [view, setView] = useState("cards");
+  const [sortBy, setSortBy] = useState("recent");
+  const [sortOrder, setSortOrder] = useState("desc");
+
 
   useEffect(() => {
-    let cancelled = false;
+    let alive = true;
+    const ctrl = new AbortController();
 
-    async function load() {
-      setState("loading");
+    (async () => {
       try {
-        const res = await fetch(`${API}/requests`, { headers: authHeader() });
+        setViewState(STATE.LOADING);
+
+        const res = await fetch(`${BASE_API_URL}/requests`, {
+          headers: authHeader(),
+          signal: ctrl.signal,
+        });
+
         if (res.status === 401) {
-          if (!cancelled) setState("unauth");
+          if (alive) setViewState(STATE.UNAUTH);
           return;
         }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        if (!cancelled) setItems(data || []);
-        if (!cancelled) setState((data && data.length) ? "ready" : "empty");
-      } catch (e) {
-        console.error("[Requests] load error:", e);
-        if (!cancelled) setState("error");
-      }
-    }
 
-    load();
-    return () => { cancelled = true; };
+        const json = await res.json();
+        if (!alive) return;
+
+        const list = Array.isArray(json) ? json : [];
+        setData(list);
+        setViewState(list.length ? STATE.READY : STATE.EMPTY);
+      } catch (e) {
+        if (alive && e.name !== "AbortError") setViewState(STATE.ERROR);
+      }
+    })();
+
+    return () => { alive = false; ctrl.abort(); };
   }, []);
 
-  const fmtDate = (s) => {
-    if (!s) return "—";
-    try { return new Date(s).toLocaleDateString(); } catch { return s; }
+  const handleAfterAction = (updated) => {
+    setData(prev => prev.map(r => (r.id === updated.id ? updated : r)));
   };
-
-  if (state === "loading") return <div className="requests-root centered">Loading…</div>;
-  if (state === "unauth")
-    return (
-      <div className="requests-root centered">
-        <p>Not signed in.</p>
-        <a href={`${API}/oauth2/authorization/google`}>Login with Google</a>
-      </div>
-    );
-  if (state === "error") return <div className="requests-root centered">Couldn’t load your requests.</div>;
-  if (state === "empty")
-    return (
-      <div className="requests-root">
-        <div className="requests-inner">
-          <h1>My Requests</h1>
-          <p>You don’t have any requests yet.</p>
-          <Link to="/requests/new" className="new-request-btn">Create your first request →</Link>
-        </div>
-      </div>
-    );
 
   return (
     <div className="requests-root">
       <div className="requests-inner">
-        <div className="requests-header">
-          <h1>My Requests</h1>
-          <Link to="/requests/new" className="new-request-btn">+ New Request</Link>
+        <div className="rq-pagehead">
+          <div>
+            <h1 className="rq-h1">My Leave Requests</h1>
+            <p className="rq-muted">Track and manage your time off</p>
+          </div>
+          <Link className="new-request-btn" to="/requests/new">+ New Request</Link>
         </div>
 
-        <div className="requests-table-wrap">
-          <table className="requests-table">
-            <thead>
-              <tr>
-                <th>Start</th>
-                <th>End</th>
-                <th>Workdays</th>
-                <th>Leave type</th>
-                <th>Comment</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((r) => (
-                <tr key={r.id}>
-                  <td>{fmtDate(r.startDate)}</td>
-                  <td>{fmtDate(r.endDate)}</td>
-                  <td>{r.workdaysCount}</td>
-                  <td>{prettyType(r.type)}</td>
-                  <td>{r.comment || "—"}</td>
-                  <td className="status">{r.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <RequestsViewModeModeMenu
+           view={view}
+            onChangeView={setView}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onChangeSortBy={setSortBy}
+            onChangeSortOrder={setSortOrder}
+        />
+
+        {viewState === STATE.LOADING && (
+          <div className="centered rq-empty">
+            <div className="rq-skeleton" />
+            <p className="rq-muted">Loading…</p>
+          </div>
+        )}
+
+        {viewState === STATE.UNAUTH && (
+          <div className="centered rq-empty">
+            <h3>Sign in required</h3>
+            <a className="rq-oauth" href={`${BASE_API_URL}/oauth2/authorization/google`}>Continue with Google</a>
+          </div>
+        )}
+
+        {viewState === STATE.ERROR && (
+          <div className="centered rq-empty">
+            <h3>Something went wrong</h3>
+            <p className="rq-muted">Please try again.</p>
+          </div>
+        )}
+
+        {viewState === STATE.EMPTY && (
+          <div className="centered rq-blank">
+            <h3>No requests yet</h3>
+            <p className="rq-muted">Start by creating your first leave request.</p>
+            <Link className="new-request-btn" to="/requests/new">+ New Request</Link>
+          </div>
+        )}
+
+        {viewState === STATE.READY && (
+          <RequestsViewMode
+            items={data}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            view={view}
+            onChangeView={setView}
+            role="user"
+            apiOrigin={BASE_API_URL}
+            authHeader={authHeader}
+            onAfterAction={handleAfterAction}
+          />
+        )}
       </div>
     </div>
   );

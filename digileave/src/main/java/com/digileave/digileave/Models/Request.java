@@ -30,6 +30,8 @@ public class Request {
     private LeaveType type;
     
     private String comment;
+
+    private Boolean decision_seen = true;
     
     // Audit
     private String decidedByUserId;
@@ -60,6 +62,9 @@ public class Request {
 
     public String getComment() { return comment; }
     public void setComment(String comment) { this.comment = comment; }
+
+    public Boolean getDecision_Seen() { return decision_seen; }
+    public void setDecision_Seen(Boolean decision_seen) { this.decision_seen = decision_seen; }
 
     public String getDecidedByUserId() { return decidedByUserId; }
     public void setDecidedByUserId(String decidedByUserId) { this.decidedByUserId = decidedByUserId; }

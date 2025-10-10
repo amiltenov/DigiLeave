@@ -1,0 +1,24 @@
+/* Scoped helper classes for RequestsViewMode (rv-) and reuse your rq-* table/card styles */
+
+.rv-clickable { cursor: pointer; }
+.rv-inline-actions, .rv-inline-actions--table {
+  display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;
+}
+.rv-inline-actions--table { margin-top:0; margin-left:10px; }
+
+.rv-btn {
+  border: 1px solid var(--color-border, color-mix(in oklab, var(--color-text) 12%, transparent));
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background .15s ease, transform .06s ease, color .15s ease;
+  font-size: 12px;
+}
+.rv-btn:hover { background: color-mix(in oklab, var(--color-text) 6%, transparent); }
+.rv-btn:active { transform: scale(0.98); }
+.rv-btn--approve { color: var(--rq-approved, #16a34a); }
+.rv-btn--reject  { color: var(--rq-denied, #ef4444); }
+.rv-btn--cancel  { color: var(--rq-denied, #ef4444); }

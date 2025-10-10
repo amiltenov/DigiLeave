@@ -143,6 +143,7 @@ public class ApproverController {
         }
 
         r.setStatus(newStatus);
+        r.setDecision_Seen(false);
         r.setDecidedByUserId(approverId);
         r.setDecidedAt(java.time.Instant.now());
 

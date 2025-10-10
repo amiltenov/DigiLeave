@@ -22,7 +22,9 @@ public record RequestCreateDto(
     LeaveType type,
 
     @Size(max = 500)
-    String comment
+    String comment,
+
+    Boolean decision_seen
 
 ) {
     
