@@ -1,6 +1,6 @@
 /* === root layout (kept) === */
 .requests-root {
-  background: var(--color-bg);
+  background:transparent;
   color: var(--color-text);
   min-height: 100vh;
 }

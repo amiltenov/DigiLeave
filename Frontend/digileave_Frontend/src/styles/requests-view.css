@@ -1,24 +1,153 @@
-/* Scoped helper classes for RequestsViewMode (rv-) and reuse your rq-* table/card styles */
-
-.rv-clickable { cursor: pointer; }
-.rv-inline-actions, .rv-inline-actions--table {
-  display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;
+:root {
+  --rq-approved: #22c55e;
+  --rq-denied:   #ef4444;
+  --rq-submitted:#f59e0b;
+  --rq-cancelled:#5e79a8;
 }
-.rv-inline-actions--table { margin-top:0; margin-left:10px; }
 
-.rv-btn {
-  border: 1px solid var(--color-border, color-mix(in oklab, var(--color-text) 12%, transparent));
-  background: var(--color-bg);
+/* ===== Common pills ===== */
+.rq-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border-radius:999px;
+  font-weight:800; font-size:12px; letter-spacing:.02em;
+  border:1px solid var(--color-surface-border);
+  background: color-mix(in oklab, var(--color-surface) 88%, transparent);
   color: var(--color-text);
-  padding: 6px 10px;
-  border-radius: 10px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: background .15s ease, transform .06s ease, color .15s ease;
-  font-size: 12px;
 }
-.rv-btn:hover { background: color-mix(in oklab, var(--color-text) 6%, transparent); }
-.rv-btn:active { transform: scale(0.98); }
-.rv-btn--approve { color: var(--rq-approved, #16a34a); }
-.rv-btn--reject  { color: var(--rq-denied, #ef4444); }
-.rv-btn--cancel  { color: var(--rq-denied, #ef4444); }
+.rq-badge--approved { color:var(--rq-approved); background:color-mix(in oklab, var(--rq-approved) 5%, transparent); border-color:color-mix(in oklab, var(--rq-approved) 22%, transparent); }
+.rq-badge--denied,
+.rq-badge--rejected { color:var(--rq-denied); background:color-mix(in oklab, var(--rq-denied) 5%, transparent); border-color:color-mix(in oklab, var(--rq-denied) 18%, transparent); }
+.rq-badge--submitted { color:var(--rq-submitted); background:color-mix(in oklab, var(--rq-submitted) 12%, transparent); border-color:color-mix(in oklab, var(--rq-submitted) 18%, transparent); }
+.rq-badge--cancelled,
+.rq-badge--canceled { color:var(--rq-cancelled); background:color-mix(in oklab, var(--rq-cancelled) 12%, transparent); border-color:color-mix(in oklab, var(--rq-cancelled) 18%, transparent); }
+
+/* strike-through for cancelled */
+.is-cancelled .rq-card__dates,
+.is-cancelled .rq-card__type,
+.is-cancelled .rq-card__days,
+.is-cancelled .rq-compact__sub,
+.is-cancelled .rq-nowrap,
+.is-cancelled .rq-card__comment,
+.is-cancelled .rq-ellipsis { text-decoration: line-through; text-decoration-thickness:1.5px; opacity:.75; }
+
+/* NEW pill */
+.rq-new-pill {
+  position:absolute; top:10px; right:12px;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 10px; border-radius:999px; font-weight:800; font-size:11px;
+  background: color-mix(in oklab, var(--color-accent) 22%, var(--color-surface));
+  color:#111; border:1px solid color-mix(in oklab, var(--color-accent) 35%, transparent);
+  box-shadow:0 2px 6px var(--color-surface-shadow);
+}
+
+/* grid/list shells */
+.rq-grid { display:grid; grid-template-columns: repeat(12,1fr); gap:14px; }
+@media (max-width:1200px){ .rq-grid{ grid-template-columns: repeat(6,1fr); } }
+@media (max-width:700px){ .rq-grid{ grid-template-columns: repeat(2,1fr); } }
+@media (max-width:520px){ .rq-grid{ grid-template-columns: 1fr; } }
+.rq-list { display:grid; gap:8px; }
+
+/* ===== Card ===== */
+.rq-card {
+  position:relative; grid-column: span 4;
+  padding:18px; border-radius:12px;
+  border:1px solid var(--color-surface-border);
+  background: var(--color-surface);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow:0 6px 18px var(--color-surface-shadow);
+  transition: transform .08s ease, box-shadow .15s ease, background .15s ease;
+}
+.rq-card:hover { transform: translateY(-1px); box-shadow:0 10px 22px var(--color-surface-shadow); }
+.rq-card__status{
+  position: static;               /* was absolute */
+  margin-left: auto;              /* push to the right edge */
+}
+
+.rq-card__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin: top 10px;
+}
+
+/* Left cluster: avatar + title */
+.rq-card__head-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.rq-avatar{ width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; background:var(--color-accent); color:#111; }
+.rq-card__title{ min-width:0; }
+.rq-card__name{ font-weight:800; font-size:1.05rem; }
+.rq-card__email{ font-size:.92rem; opacity:.88; } /* slightly lighter than before */
+
+.rq-card__dates{
+  margin-top:12px; display:flex; align-items:center; gap:8px;
+  font-weight:700;                     /* less thick */
+  font-size:1.06rem;
+  color: color-mix(in oklab, var(--color-text) 85%, transparent); /* not pure white */
+}
+.rq-card__dates span{ opacity:.65; }
+.rq-datechip{ display:inline-flex; align-items:center; opacity:.9; }
+
+.rq-card__meta{ display:flex; align-items:center; gap:10px; margin-top:6px; color: color-mix(in oklab, var(--color-text) 92%, transparent); }
+.rq-card__type{ font-weight:700; opacity:.96; }
+.rq-card__days{ font-weight:800; opacity:.95; }
+.rq-card__days em{ font-style:normal; opacity:.82; font-weight:700; }
+.rq-card__dot{ width:4px; height:4px; border-radius:50%; background: color-mix(in oklab, var(--color-text) 45%, transparent); opacity:.45; }
+
+.rq-card__comment{
+  margin-top:12px; padding:10px 12px; border-radius:10px;
+  font-size:.95rem;
+  color: color-mix(in oklab, var(--color-text) 90%, transparent); /* lighter grey */
+  background: transparent;
+  border:1px solid var(--color-surface-border);
+}
+
+/* ===== Compact (glassmorphism) ===== */
+.rq-compact{
+  display:grid; grid-template-columns:40px 1fr; align-items:center; gap:10px;
+  padding:10px 12px; border:1px solid var(--color-surface-border);
+  border-radius:12px;
+  background: color-mix(in oklab, var(--color-surface) 88%, transparent); /* not solid */
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow:0 6px 18px var(--color-surface-shadow);
+}
+.rq-compact__avatar{ width:36px; height:36px; border-radius:50%; background:var(--color-accent); color:#111; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.rq-compact__top{ display:flex; align-items:center; gap:10px; }
+.rq-compact__name{ font-weight:800; }
+.rq-compact__sub{
+  font-size:.94rem;
+  color: color-mix(in oklab, var(--color-text) 92%, transparent); /* lighter grey */
+  display:flex; align-items:center; gap:8px;
+}
+
+/* ===== Table ===== */
+.rq-tablewrap{ border-radius:12px; border:1px solid var(--color-surface-border); background: color-mix(in oklab, var(--color-surface) 90%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow:0 6px 18px var(--color-surface-shadow); }
+.rq-scroll{ overflow:auto; }
+.rq-table{ width:100%; border-collapse:separate; border-spacing:0; }
+.rq-table thead th{
+  text-align:left; padding:12px; font-weight:800; font-size:.9rem;
+  border-bottom:1px solid var(--color-surface-border);
+  color: color-mix(in oklab, var(--color-text) 94%, transparent);
+}
+.rq-table tbody td{
+  padding:12px; border-bottom:1px solid var(--color-surface-border);
+  color: color-mix(in oklab, var(--color-text) 92%, transparent); /* lighter */
+}
+.rq-row--new{ background: color-mix(in oklab, var(--color-accent) 10%, transparent); }
+.rq-dot--pulse{ width:8px; height:8px; border-radius:50%; background:var(--color-accent); animation: rq-pulse 1.2s infinite ease-in-out; }
+@keyframes rq-pulse{ 0%{transform:scale(1);opacity:.6} 50%{transform:scale(1.3);opacity:1} 100%{transform:scale(1);opacity:.6} }
+.rq-statuscell{ display:flex; align-items:center; gap:10px; }
+
+.rv-clickable{ cursor:pointer; }
+
+/* Inline actions (unchanged) */
+.rv-inline-actions, .rv-inline-actions--table{ display:flex; gap:8px; flex-wrap:wrap; }
+.rv-btn{ border:1px solid var(--color-surface-border); background:var(--color-surface); color:var(--color-text); padding:6px 10px; border-radius:10px; font-weight:800; cursor:pointer; font-size:12px; transition:background .15s ease, transform .06s ease; }
+.rv-btn:hover{ background: color-mix(in oklab, var(--color-text) 6%, transparent); }
+.rv-btn:active{ transform: scale(0.98); }
+.rv-btn--approve{ color:var(--rq-approved); border-color:color-mix(in oklab, var(--rq-approved) 30%, transparent); }
+.rv-btn--reject{  color:var(--rq-denied);   border-color:color-mix(in oklab, var(--rq-denied) 30%, transparent); }
+.rv-btn--cancel{  color:var(--rq-denied);   border-color:color-mix(in oklab, var(--rq-denied) 30%, transparent); }

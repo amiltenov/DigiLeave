@@ -36,6 +36,8 @@ public class Request {
     // Audit
     private String decidedByUserId;
     private Instant decidedAt;
+    private Instant createdAt = Instant.now();
+
     
     
     
@@ -59,18 +61,20 @@ public class Request {
     
     public LeaveType getType() { return type; }
     public void setType(LeaveType type) { this.type = type; }
-
+    
     public String getComment() { return comment; }
     public void setComment(String comment) { this.comment = comment; }
-
+    
     public Boolean getDecision_Seen() { return decision_seen; }
     public void setDecision_Seen(Boolean decision_seen) { this.decision_seen = decision_seen; }
-
+    
     public String getDecidedByUserId() { return decidedByUserId; }
     public void setDecidedByUserId(String decidedByUserId) { this.decidedByUserId = decidedByUserId; }
-
+    
     public Instant getDecidedAt() { return decidedAt; }
     public void setDecidedAt(Instant decidedAt) { this.decidedAt = decidedAt; }
-
-
+    
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    
 }

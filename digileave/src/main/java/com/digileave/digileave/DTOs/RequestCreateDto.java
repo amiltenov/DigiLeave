@@ -1,5 +1,6 @@
 package com.digileave.digileave.DTOs;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 import com.digileave.digileave.Models.enums.LeaveType;
@@ -24,7 +25,9 @@ public record RequestCreateDto(
     @Size(max = 500)
     String comment,
 
-    Boolean decision_seen
+    Boolean decision_seen,
+    
+    Instant createdAt
 
 ) {
     

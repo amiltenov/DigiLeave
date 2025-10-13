@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, useId, useCallback } from "react";
-// import ExportMenu from "../components/ExportMenu";
+import ExportMenu from "../components/ExportMenu";
 import { authHeader } from "../utils/auth";
 import "../styles/admin.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
+const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
 const ROLES = ["USER", "APPROVER", "ADMIN"];
 
 // normalize assignee field name
@@ -208,6 +208,7 @@ export default function Admin() {
       <div className="admin-inner">
         <div className="admin-header">
           <h1>Users</h1>
+          <ExportMenu></ExportMenu>
         </div>
 
         <div className="admin-table-wrap">

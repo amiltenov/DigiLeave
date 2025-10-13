@@ -20,7 +20,8 @@ public record RequestExportDto(
     String comment,
     Boolean decision_seen,
     String decidedByUserId,
-    Instant decidedAt
+    Instant decidedAt,
+    Instant createdAt
 ) {
     public static RequestExportDto from(Request request){
         return new RequestExportDto(
@@ -34,7 +35,9 @@ public record RequestExportDto(
             request.getComment(),
             request.getDecision_Seen(),
             request.getDecidedByUserId(),
-            request.getDecidedAt()
+            request.getDecidedAt(),
+            request.getCreatedAt()
+
         );
     }
     

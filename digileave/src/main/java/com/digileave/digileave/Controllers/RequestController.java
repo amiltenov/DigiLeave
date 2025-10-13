@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.digileave.digileave.DTOs.RequestCreateDto;
 import com.digileave.digileave.DTOs.RequestExportDto;
-import com.digileave.digileave.DTOs.RequestPatchDto;
 import com.digileave.digileave.Models.Request;
 import com.digileave.digileave.Models.enums.Status;
 import com.digileave.digileave.Repositories.RequestRepository;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 

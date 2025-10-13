@@ -35,7 +35,9 @@ public record RequestPatchDto(
     Boolean decision_seen,
 
     String decidedByUserId,
-    Instant decidedAt
+    Instant decidedAt,
+
+    Instant createdAt
 ) {
     
 }
