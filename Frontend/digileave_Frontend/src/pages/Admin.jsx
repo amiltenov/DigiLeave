@@ -23,8 +23,13 @@ export default function Admin() {
   const [form, setForm] = useState(null);
   const [err, setErr] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  // export modal toggle
+  const [showExport, setShowExport] = useState(false);
+
   const rnd = useId();
 
+  // load users
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -49,6 +54,14 @@ export default function Admin() {
     };
   }, []);
 
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") setShowExport(false);
+    };
+    if (showExport) window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showExport]);
+
   const byId = useMemo(() => new Map(items.map((u) => [u.id, u])), [items]);
   const byEmail = useMemo(() => {
     const m = new Map();
@@ -62,7 +75,7 @@ export default function Admin() {
       const hit = byId.get(id);
       return hit
         ? { id: hit.id, email: hit.email, fullName: hit.fullName || "" }
-        : { id, email: id, fullName: "" }; // fallback so it still renders
+        : { id, email: id, fullName: "" };
     });
 
     setEditing(u);
@@ -79,27 +92,30 @@ export default function Admin() {
       showSuggest: false,
     });
   };
+
   const closeEdit = () => {
     setEditing(null);
     setForm(null);
     setErr(null);
   };
 
+  // suggestions for assignees input
   const lastToken = form?.assigneeInput?.trim().toLowerCase() || "";
-
   const suggestions = useMemo(() => {
     if (!editing || !lastToken) return [];
     const nameMatch = (u) => (u.fullName || "").toLowerCase().includes(lastToken);
     const emailMatch = (u) => (u.email || "").toLowerCase().includes(lastToken);
     const existingIds = new Set((form?.assignees || []).map((a) => a.id));
-    return items.filter((u) => (emailMatch(u) || nameMatch(u)) && !existingIds.has(u.id)).slice(0, 8);
+    return items
+      .filter((u) => (emailMatch(u) || nameMatch(u)) && !existingIds.has(u.id))
+      .slice(0, 8);
   }, [editing, items, lastToken, form?.assignees]);
 
   const addChip = useCallback((user) => {
     if (!user) return;
     setForm((f) => ({
       ...f,
-      assignees: [...(f.assignees || []), { id: user.id, email: user.email, fullName: user.fullName || "" }],
+      assignees: [ ...(f.assignees || []), { id: user.id, email: user.email, fullName: user.fullName || "" } ],
       assigneeInput: "",
       showSuggest: false,
     }));
@@ -138,7 +154,7 @@ export default function Admin() {
 
     const assigneeIds = (form.assignees || []).map((a) => a.id);
 
-    // include pending typed value (if user forgot to press Enter)
+    // include pending typed value
     if (form.assigneeInput) {
       const v = form.assigneeInput.trim();
       if (v.includes("@")) {
@@ -158,7 +174,7 @@ export default function Admin() {
       assignees: assigneeIds,
       assigneeIds: assigneeIds,
       contractLeaveDays:
-      form.contractLeaveDays === "" || form.contractLeaveDays == null ? null : Number(form.contractLeaveDays),
+        form.contractLeaveDays === "" || form.contractLeaveDays == null ? null : Number(form.contractLeaveDays),
       workingSince: form.workingSince || null,
     };
 
@@ -201,15 +217,33 @@ export default function Admin() {
   if (state === "unauth") return <div className="admin-root centered">Not authorized.</div>;
   if (state === "error") return <div className="admin-root centered">Could not load users.</div>;
 
-  const chipRows = chunk(form?.assignees || [], 2);
+  const chipRows = chunk((form?.assignees || []), 2);
 
   return (
     <div className="admin-root">
       <div className="admin-inner">
         <div className="admin-header">
           <h1>Users</h1>
-          <ExportMenu></ExportMenu>
+
+          {/* Toggle Export modal */}
+          <div className="header-actions" style={{ display: "flex", gap: 8 }}>
+            <button className="btn" onClick={() => setShowExport(true)}>Export CSV</button>
+          </div>
         </div>
+
+        {/* Export modal — single inner window owned by ExportMenu */}
+        {showExport && (
+          <div
+            className="admin-modal"
+            onClick={(e) => {
+              if (e.target.classList.contains("admin-modal")) setShowExport(false);
+            }}
+          >
+            <div className="admin-modal-card" role="dialog" aria-modal="true">
+              <ExportMenu onClose={() => setShowExport(false)} />
+            </div>
+          </div>
+        )}
 
         <div className="admin-table-wrap">
           <table className="admin-table">
@@ -219,7 +253,6 @@ export default function Admin() {
                 <th>Email</th>
                 <th>Role</th>
                 <th>Leave days</th>
-                {/* <th>Assignees</th> */}
                 <th></th>
               </tr>
             </thead>
@@ -230,14 +263,9 @@ export default function Admin() {
                   <td>{u.email}</td>
                   <td>{u.role}</td>
                   <td>{u.availableLeaveDays}</td>
-                  {/* <td>{getAssigneeIds(u).length}</td> */}
                   <td className="actions">
-                    <button className="btn small" onClick={() => openEdit(u)}>
-                      Edit
-                    </button>
-                    <button className="btn small danger" onClick={() => deleteUser(u)}>
-                      Delete
-                    </button>
+                    <button className="btn small" onClick={() => openEdit(u)}>Edit</button>
+                    <button className="btn small danger" onClick={() => deleteUser(u)}>Delete</button>
                   </td>
                 </tr>
               ))}
@@ -245,6 +273,7 @@ export default function Admin() {
           </table>
         </div>
 
+        {/* Edit user modal — restored exactly like your old version */}
         {editing && (
           <div
             className="admin-modal"
@@ -255,9 +284,7 @@ export default function Admin() {
             <div className="admin-modal-card">
               <div className="modal-header">
                 <h3>Edit user</h3>
-                <button className="icon-btn" onClick={closeEdit} aria-label="Close">
-                  ✕
-                </button>
+                <button className="icon-btn" onClick={closeEdit} aria-label="Close">✕</button>
               </div>
 
               {err && <div className="modal-alert err">{err}</div>}
@@ -282,6 +309,7 @@ export default function Admin() {
                       autoCapitalize="off"
                     />
                   </label>
+
                   <label>
                     <span>Email</span>
                     <input
@@ -294,6 +322,7 @@ export default function Admin() {
                       inputMode="email"
                     />
                   </label>
+
                   <label>
                     <span>Role</span>
                     <select
@@ -310,10 +339,11 @@ export default function Admin() {
                       ))}
                     </select>
                   </label>
+
                   <label>
                     <span>Available leave days</span>
                     <input
-                    className="themed-select"
+                      className="themed-select"
                       type="number"
                       min="0"
                       value={form.availableLeaveDays}
@@ -325,6 +355,7 @@ export default function Admin() {
                       inputMode="numeric"
                     />
                   </label>
+
                   <label>
                     <span>Yearly Contract Leave Days</span>
                     <input
@@ -335,8 +366,7 @@ export default function Admin() {
                       onChange={(e) =>
                         setForm({
                           ...form,
-                          contractLeaveDays:
-                            e.target.value === "" ? "" : Number(e.target.value),
+                          contractLeaveDays: e.target.value === "" ? "" : Number(e.target.value),
                         })
                       }
                       autoComplete="off"
@@ -355,10 +385,9 @@ export default function Admin() {
                       name={`${rnd}-working-since`}
                     />
                   </label>
-
                 </div>
-                  {form.role == "APPROVER" ? 
-                  (
+
+                {form.role === "APPROVER" ? (
                   <div className="span-2">
                     <span>Assignees</span>
                     <div className="chip-wrap">
@@ -408,7 +437,7 @@ export default function Admin() {
                           inputMode="search"
                         />
 
-                        {form.showSuggest && suggestions.length > 0 && (
+                        {form?.showSuggest && suggestions.length > 0 && (
                           <div className="suggest-list solid">
                             {suggestions.map((s) => (
                               <button
@@ -428,9 +457,7 @@ export default function Admin() {
                       </div>
                     </div>
                   </div>
-                  
                 ) : null}
-                  
 
                 <div className="modal-actions spaced">
                   <button className="btn" disabled={saving} type="submit">
