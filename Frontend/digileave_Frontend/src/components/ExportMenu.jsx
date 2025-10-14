@@ -2,8 +2,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { authHeader } from "../utils/auth";
 import { csvExport } from "../utils/csvExport";
+import { xlsxExport } from "../utils/xlsxExport"; // ⬅️ NEW
 import "../styles/exportmenu.css";
-
 
 const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
 
@@ -15,7 +15,8 @@ const PRESETS = {
 };
 
 const REQUEST_FIELDS_DEFAULT = [
-  "assigneeName", "assigneeEmail", "startDate", "endDate", "workdaysCount", "status", "type", "comment",
+  "assigneeName", "assigneeEmail", "startDate", "endDate",
+  "workdaysCount", "status", "type", "comment",
 ];
 const REQUEST_FIELDS_ALL = [
   "requestId", "assigneeId", "assigneeName", "assigneeEmail",
@@ -24,7 +25,10 @@ const REQUEST_FIELDS_ALL = [
 ];
 
 const USER_FIELDS_DEFAULT = ["fullName", "email", "role", "availableLeaveDays"];
-const USER_FIELDS_ALL = ["id","fullName","email","role","availableLeaveDays","contractLeaveDays","workingSince","assigneeIds"];
+const USER_FIELDS_ALL = [
+  "id","fullName","email","role","availableLeaveDays",
+  "contractLeaveDays","workingSince","assigneeIds"
+];
 
 const HEADERS = {
   requestId: "Request ID",
@@ -50,34 +54,25 @@ const HEADERS = {
 };
 
 function todayIso() { return new Date().toISOString().slice(0,10); }
-function firstOfMonthIso() {
-  const d = new Date(); d.setDate(1);
-  return d.toISOString().slice(0,10);
-}
-function firstOfYearIso() {
-  const d = new Date(); d.setMonth(0,1);
-  return d.toISOString().slice(0,10);
-}
-function loadLastExportTo() {
-  return localStorage.getItem("digileave:lastExportTo") || null;
-}
-function saveLastExportTo(dateIso) {
-  localStorage.setItem("digileave:lastExportTo", dateIso);
-}
+function firstOfMonthIso() { const d = new Date(); d.setDate(1); return d.toISOString().slice(0,10); }
+function firstOfYearIso() { const d = new Date(); d.setMonth(0,1); return d.toISOString().slice(0,10); }
+function loadLastExportTo() { return localStorage.getItem("digileave:lastExportTo") || null; }
+function saveLastExportTo(dateIso) { localStorage.setItem("digileave:lastExportTo", dateIso); }
 
 function overlaps(req, fromIso, toIso) {
   if (!fromIso && !toIso) return true;
-  const s = req.startDate; // yyyy-MM-dd
+  const s = req.startDate;
   const e = req.endDate;
-  if (fromIso && e < fromIso) return false; // request ends before window starts
-  if (toIso && s > toIso) return false;     // request starts after window ends
+  if (fromIso && e < fromIso) return false;
+  if (toIso && s > toIso) return false;
   return true;
 }
 
-export default function ExportMenu() {
-  const [role, setRole] = useState(null); // "ADMIN" | "APPROVER"
-  const [dataset, setDataset] = useState("REQUESTS"); // "REQUESTS" | "USERS"
-  const [assignees, setAssignees] = useState([]); // approver’s users (or all for admin via approver endpoint)
+export default function ExportMenu({ onClose }) {
+  const [role, setRole] = useState(null);
+  const [dataset, setDataset] = useState("REQUESTS");
+
+  const [assignees, setAssignees] = useState([]);
   const [requests, setRequests] = useState([]);
   const [adminUsers, setAdminUsers] = useState([]);
 
@@ -88,25 +83,24 @@ export default function ExportMenu() {
   const [requestFields, setRequestFields] = useState(REQUEST_FIELDS_DEFAULT);
   const [userFields, setUserFields] = useState(USER_FIELDS_DEFAULT);
 
-  const [sortBy, setSortBy] = useState("startDate"); // default for requests
+  const [sortBy, setSortBy] = useState("startDate");
   const [sortDir, setSortDir] = useState("asc");
 
-  // 1) load role
+  // NEW: file format state ("CSV" | "XLSX")
+  const [format, setFormat] = useState("CSV");
+
   useEffect(() => {
     (async () => {
       const r = await fetch(`${API}/account`, { headers: authHeader() });
       if (!r.ok) return;
-      const me = await r.json(); // { role: "ADMIN" | "APPROVER", ... }
+      const me = await r.json();
       setRole(me.role);
     })();
   }, []);
 
-  // 2) fetch data depending on role/dataset
   useEffect(() => {
     if (!role) return;
-
     const fetchForRequests = async () => {
-      // approver/requests returns ALL requests for approver’s assignees; admin also allowed there per your backend
       const [assigneesRes, requestsRes] = await Promise.all([
         fetch(`${API}/approver/assignees`, { headers: authHeader() }),
         fetch(`${API}/approver/requests`, { headers: authHeader() }),
@@ -114,23 +108,19 @@ export default function ExportMenu() {
       if (assigneesRes.ok) setAssignees(await assigneesRes.json());
       if (requestsRes.ok) setRequests(await requestsRes.json());
     };
-
     const fetchForUsers = async () => {
       if (role === "ADMIN") {
         const res = await fetch(`${API}/admin/users`, { headers: authHeader() });
         if (res.ok) setAdminUsers(await res.json());
       } else {
-        // approver: users == assignees
         const res = await fetch(`${API}/approver/assignees`, { headers: authHeader() });
         if (res.ok) setAdminUsers(await res.json());
       }
     };
-
     fetchForRequests();
     fetchForUsers();
   }, [role]);
 
-  // preset → from/to
   useEffect(() => {
     if (preset === PRESETS.LAST_TO_NOW) {
       const last = loadLastExportTo();
@@ -148,7 +138,6 @@ export default function ExportMenu() {
     }
   }, [preset]);
 
-  // build request rows (map userId→name/email, filter by overlap, sort, then project fields at export time)
   const requestRows = useMemo(() => {
     const byId = new Map(assignees.map(u => [u.id, u]));
     const rows = requests
@@ -172,11 +161,9 @@ export default function ExportMenu() {
         };
       });
 
-    // sort
     const dir = sortDir === "asc" ? 1 : -1;
     rows.sort((a, b) => {
-      const av = a[sortBy];
-      const bv = b[sortBy];
+      const av = a[sortBy], bv = b[sortBy];
       if (av == null && bv == null) return 0;
       if (av == null) return -1 * dir;
       if (bv == null) return 1 * dir;
@@ -187,41 +174,37 @@ export default function ExportMenu() {
     return rows;
   }, [assignees, requests, fromDate, toDate, sortBy, sortDir]);
 
-  // build user rows (admin: all users; approver: assignees only)
   const userRows = useMemo(() => {
-    // keep order by fullName asc by default
-    const rows = [...adminUsers].sort((a, b) =>
-      (a.fullName || "").localeCompare(b.fullName || "")
-    ).map(u => ({
-      id: u.id,
-      fullName: u.fullName,
-      email: u.email,
-      role: u.role,
-      availableLeaveDays: u.availableLeaveDays,
-      contractLeaveDays: u.contractLeaveDays,
-      workingSince: u.workingSince,
-      assigneeIds: Array.isArray(u.assigneeIds) ? u.assigneeIds : [],
-    }));
-    return rows;
+    return [...adminUsers]
+      .sort((a, b) => (a.fullName || "").localeCompare(b.fullName || ""))
+      .map(u => ({
+        id: u.id,
+        fullName: u.fullName,
+        email: u.email,
+        role: u.role,
+        availableLeaveDays: u.availableLeaveDays,
+        contractLeaveDays: u.contractLeaveDays,
+        workingSince: u.workingSince,
+        assigneeIds: Array.isArray(u.assigneeIds) ? u.assigneeIds : [],
+      }));
   }, [adminUsers]);
 
-  const onExport = () => {
-    if (dataset === "REQUESTS") {
-      // remember last export "to" date
-      if (toDate) saveLastExportTo(toDate);
-      csvExport(
-        requestRows,
-        requestFields,
-        "requests-export.csv",
-        HEADERS
-      );
+  // Unified export handler
+  const onExport = async () => {
+    const rows = dataset === "REQUESTS" ? requestRows : userRows;
+    const fields = dataset === "REQUESTS" ? requestFields : userFields;
+    const filenameBase = dataset === "REQUESTS" ? "requests-export" : "users-export";
+
+    if (format === "CSV") {
+      if (dataset === "REQUESTS" && toDate) saveLastExportTo(toDate);
+      csvExport(rows, fields, `${filenameBase}.csv`, HEADERS);
     } else {
-      csvExport(
-        userRows,
-        userFields,
-        "users-export.csv",
-        HEADERS
-      );
+      await xlsxExport({
+        rows,
+        fields,
+        headers: HEADERS,
+        filename: `${filenameBase}.xlsx`,
+      });
     }
   };
 
@@ -230,108 +213,102 @@ export default function ExportMenu() {
   const setSelectedFields = dataset === "REQUESTS" ? setRequestFields : setUserFields;
 
   return (
-  <div className="export-card">
-    <div className="export-card__head">
-      <div className="export-title">Export to CSV</div>
-      <div className="export-sub">Configure your export settings and download your data</div>
-    </div>
-
-    <div className="export-body">
-      {/* Dataset */}
-      <section className="export-section">
-        <div className="export-section__title">Choose Dataset</div>
-        <div className="dataset-row">
-          <label
-            className={`dataset-card ${dataset === "REQUESTS" ? "dataset-card--active" : ""}`}
-            onClick={() => setDataset("REQUESTS")}
-          >
-            <div className="dataset-card__main">Requests</div>
-            <div className="dataset-card__sub">Leave request data</div>
-          </label>
-          <label
-            className={`dataset-card ${dataset === "USERS" ? "dataset-card--active" : ""}`}
-            onClick={() => setDataset("USERS")}
-          >
-            <div className="dataset-card__main">Users</div>
-            <div className="dataset-card__sub">User information</div>
-          </label>
+    <div className="export-root" style={{ width: 720, height: 520, display: "flex", flexDirection: "column" }}>
+      <div className="export-head" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <div className="export-title">Export</div>
+          <div className="export-sub">Choose dataset, fields, and format</div>
         </div>
-      </section>
+        {onClose && <button className="icon-btn" onClick={onClose} aria-label="Close">✕</button>}
+      </div>
 
-      {/* Date Range (requests only) */}
-      {dataset === "REQUESTS" && (
+      <div className="export-body" style={{ flex: "1 1 auto", overflowY: "auto", paddingRight: 8 }}>
+        {/* Dataset */}
         <section className="export-section">
-          <div className="export-section__title">Date Range</div>
-          <div className="controls-row" style={{ alignItems: "center" }}>
-            <select className="select" value={preset} onChange={(e)=>setPreset(e.target.value)}>
-              <option value="LAST_TO_NOW">Last Export → Now (Default)</option>
-              <option value="THIS_MONTH">This Month</option>
-              <option value="THIS_YEAR">This Year</option>
-              <option value="ALL">All</option>
-            </select>
-            <input className="input" type="date" value={fromDate} onChange={(e)=>setFromDate(e.target.value)} />
-            <input className="input" type="date" value={toDate} onChange={(e)=>setToDate(e.target.value)} />
-            <div className="meta">Includes any request that overlaps the selected range</div>
+          <div className="export-section__title">Choose Dataset</div>
+          <div className="dataset-row">
+            <label
+              className={`dataset-card ${dataset === "REQUESTS" ? "dataset-card--active" : ""}`}
+              onClick={() => setDataset("REQUESTS")}
+            >
+              <div className="dataset-card__main">Requests</div>
+              <div className="dataset-card__sub">Leave request data</div>
+            </label>
+            <label
+              className={`dataset-card ${dataset === "USERS" ? "dataset-card--active" : ""}`}
+              onClick={() => setDataset("USERS")}
+            >
+              <div className="dataset-card__main">Users</div>
+              <div className="dataset-card__sub">User information</div>
+            </label>
           </div>
         </section>
-      )}
 
-      {/* Fields */}
-      <section className="export-section">
-        <div className="export-section__title">Fields to Export</div>
-        <div className="small-links" style={{ marginBottom: 8 }}>
-          <button onClick={() => setSelectedFields(fieldsForUi)}>Select All</button>
-          <button onClick={() => setSelectedFields([])}>Clear All</button>
-        </div>
-        <div className="chips">
-          {fieldsForUi.map((f) => {
-            const checked = selectedFields.includes(f);
-            return (
-              <label key={f} className="chip">
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => {
-                    if (checked) setSelectedFields(selectedFields.filter(x => x !== f));
-                    else setSelectedFields([...selectedFields, f]);
-                  }}
-                />
-                {HEADERS[f] || f}
-              </label>
-            );
-          })}
-        </div>
-      </section>
+        {/* Date Range (requests only) */}
+        {dataset === "REQUESTS" && (
+          <section className="export-section">
+            <div className="export-section__title">Date Range</div>
+            <div className="controls-row" style={{ alignItems: "center" }}>
+              <select className="select" value={preset} onChange={(e)=>setPreset(e.target.value)}>
+                <option value="LAST_TO_NOW">Last Export → Now (Default)</option>
+                <option value="THIS_MONTH">This Month</option>
+                <option value="THIS_YEAR">This Year</option>
+                <option value="ALL">All</option>
+              </select>
+              <input className="input" type="date" value={fromDate} onChange={(e)=>setFromDate(e.target.value)} />
+              <input className="input" type="date" value={toDate} onChange={(e)=>setToDate(e.target.value)} />
+              <div className="meta">Includes any request that overlaps the selected range</div>
+            </div>
+          </section>
+        )}
 
-      {/* Sort */}
-      <section className="export-section">
-        <div className="export-section__title">Sort Data</div>
-        <div className="controls-row">
-          <select
-            className="select"
-            value={dataset === "REQUESTS" ? sortBy : "fullName"}
-            onChange={(e)=> dataset === "REQUESTS" ? setSortBy(e.target.value) : null}
-            disabled={dataset !== "REQUESTS"}
-          >
-            {(dataset === "REQUESTS" ? REQUEST_FIELDS_ALL : USER_FIELDS_ALL)
-              .map(f => <option key={f} value={f}>{HEADERS[f] || f}</option>)}
-          </select>
-          <select className="select" value={sortDir} onChange={(e)=>setSortDir(e.target.value)}>
-            <option value="asc">Ascending (A→Z, 0→9)</option>
-            <option value="desc">Descending (Z→A, 9→0)</option>
-          </select>
-        </div>
-      </section>
+        {/* Fields */}
+        <section className="export-section">
+          <div className="export-section__title">Fields to Export</div>
+          <div className="small-links" style={{ marginBottom: 8 }}>
+            <button type="button" onClick={() => setSelectedFields(fieldsForUi)}>Select All</button>
+            <button type="button" onClick={() => setSelectedFields([])}>Clear All</button>
+          </div>
+          <div className="chips">
+            {fieldsForUi.map((f) => {
+              const checked = selectedFields.includes(f);
+              return (
+                <label key={f} className="chip">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => {
+                      if (checked) setSelectedFields(selectedFields.filter(x => x !== f));
+                      else setSelectedFields([...selectedFields, f]);
+                    }}
+                  />
+                  {HEADERS[f] || f}
+                </label>
+              );
+            })}
+          </div>
+        </section>
 
-      {/* Action */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <button className="btn-primary" onClick={onExport}>Export CSV</button>
+        {/* Format */}
+        <section className="export-section">
+          <div className="export-section__title">File Format</div>
+          <div className="controls-row">
+            <select className="select" value={format} onChange={(e)=>setFormat(e.target.value)}>
+              <option value="CSV">CSV (.csv)</option>
+              <option value="XLSX">Excel (.xlsx) — styled</option>
+            </select>
+          </div>
+        </section>
+      </div>
+
+      <div className="export-footer" style={{ flex: "0 0 auto", paddingTop: 12, display: "flex", alignItems: "center", gap: 12 }}>
+        <button className="btn-primary" onClick={onExport}>
+          Export {format === "CSV" ? "CSV" : "Excel"}
+        </button>
         <div className="meta">
           Role: {role || "…"} · Rows: {dataset === "REQUESTS" ? requestRows.length : userRows.length}
         </div>
       </div>
     </div>
-  </div>
-);
-
+  );
 }
