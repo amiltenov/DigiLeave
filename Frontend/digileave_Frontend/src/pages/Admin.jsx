@@ -3,7 +3,7 @@ import ExportMenu from "../components/ExportMenu";
 import { authHeader } from "../utils/auth";
 import "../styles/admin.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
+const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
 const ROLES = ["USER", "APPROVER", "ADMIN"];
 
 // normalize assignee field name

@@ -12,8 +12,8 @@ export default function Requests() {
   const [viewState, setViewState] = useState(STATE.LOADING);
   const [data, setData] = useState([]);
   const [view, setView] = useState("cards");
-  const [sortBy, setSortBy] = useState("recent");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortBy, setSortBy] = useState("pending-first");
+  const [sortOrder, setSortOrder] = useState("asc");
   const [userName, setUserName] = useState("User");
 
 

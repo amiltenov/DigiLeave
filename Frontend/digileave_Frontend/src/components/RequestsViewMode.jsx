@@ -188,10 +188,14 @@ const rows = useMemo(() => {
         </div>
 
         <div className="request-meta">
-          <span className="request-type">{String(r.type).replace(/_/g, " ")}</span>
+          <span className="request-type">{String(r.type).replace(/_/g, " ").toLowerCase()}</span>
         </div>
 
-        <div className="request-comment">{r.comment || "No Comment."}</div>
+        <div className="cancel-inline">
+          <div className="request-comment">{r.comment || "No Comment."}</div>
+          
+        </div>
+          
       </div>
     );
   };

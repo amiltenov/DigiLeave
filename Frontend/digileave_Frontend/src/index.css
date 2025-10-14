@@ -1,10 +1,10 @@
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+  /* font-weight: 400; */
 
   --color-bg: #ffffff;
-  --color-text: #383838;
+  --color-text: #000000;
   --color-accent: #ffd733;
   --color-accent-dark: #ffcc00;
   --color-surface: rgba(255,255,255,0.25);

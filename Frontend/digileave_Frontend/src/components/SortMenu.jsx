@@ -25,9 +25,9 @@ export default function SortMenu({
   useEffect(() => setLocalOrder(sortOrder), [sortOrder]);
 
   const OPTIONS = [
-    { value: "recent", label: "By Recently Created" },        // createdAt
-    { value: "start-date", label: "By Start Date" },     // startDate
-    { value: "pending-first", label: "By Pending First"} // pending first
+    { value: "pending-first", label: "By Pending First"},
+    { value: "start-date", label: "By Start Date" },
+    { value: "recent", label: "By Recently Created" }
   ];
 
   function applyChange(nextBy = localBy, nextOrder = localOrder) {

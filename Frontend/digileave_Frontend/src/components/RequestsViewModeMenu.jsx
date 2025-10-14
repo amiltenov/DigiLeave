@@ -12,7 +12,7 @@ export default function RequestsViewModeMenu({
   view,
   onChangeView,
   sortBy,
-  sortOrder = "desc",
+  sortOrder = "asc",
   onChangeSortBy,
   onChangeSortOrder,
 }) {

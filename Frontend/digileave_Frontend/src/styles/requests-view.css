@@ -4,9 +4,9 @@
 }
 
 /* containers */
-.request-grid{ display:grid; grid-template-columns:1fr; gap:16px; }
+.request-grid{ display:grid; grid-template-columns:1fr; gap:20px; }
 @media (min-width:768px){ .request-grid{ grid-template-columns:repeat(2,1fr);} }
-@media (min-width:1200px){ .request-grid{ grid-template-columns:repeat(3,1fr);} }
+@media (min-width:1200px){ .request-grid{ grid-template-columns:repeat(2,1fr);} }
 
 .request-list{
   display:flex; flex-direction:column; gap:8px;
@@ -107,7 +107,7 @@
   background: var(--color-surface);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 6px 18px var(--color-surface-shadow);
-  padding:18px 18px 16px; cursor:pointer;
+  padding:22px 22px 18px; cursor:pointer;
 }
 .request-card:hover{ transform: translateY(-2px) scale(1.04); box-shadow: var(--shadow-2); }
 
