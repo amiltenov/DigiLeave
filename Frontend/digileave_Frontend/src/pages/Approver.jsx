@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import ExportMenu from "../components/ExportMenu";
 import { authHeader } from "../utils/auth";
 import "../styles/approver.css";
+import "../styles/admin.css";
 
 export default function Approver() {
   const [assignees, setAssignees] = useState([]);
@@ -12,6 +14,15 @@ export default function Approver() {
   const [requestsErr, setRequestsErr] = useState("");
 
   const [selectedAssignee, setSelectedAssignee] = useState(null);
+
+  const [showExport, setShowExport] = useState(false);
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") setShowExport(false);
+    };
+    if (showExport) window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showExport]);
 
   const userById = useMemo(() => {
     const m = new Map();
@@ -28,7 +39,6 @@ export default function Approver() {
         const res = await fetch("http://localhost:8080/approver/assignees", { headers: authHeader() });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        console.log(data);
         if (alive) setAssignees(Array.isArray(data) ? data : []);
       } catch (e) {
         if (alive) setAssigneesErr("Couldn't load assignees.");
@@ -51,7 +61,6 @@ export default function Approver() {
       const res = await fetch("http://localhost:8080/approver/requests", { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      console.log(data);
       setRequests(Array.isArray(data) ? data : []);
     } catch (e) {
       setRequestsErr("Couldn't load requests.");
@@ -100,10 +109,24 @@ export default function Approver() {
     <div className="approver-page">
       <div className="approver-header glass">
         <h1>Approver</h1>
-        <div className="approver-actions">
+        <div className="approver-actions" style={{ display: "flex", gap: 8 }}>
           <button className="accent-btn" onClick={loadAllRequests}>All Requests</button>
+          <button className="accent-btn" onClick={() => setShowExport(true)}>Export</button>
         </div>
       </div>
+
+      {showExport && (
+        <div
+          className="admin-modal"
+          onClick={(e) => {
+            if (e.target.classList.contains("admin-modal")) setShowExport(false);
+          }}
+        >
+          <div className="admin-modal-card" role="dialog" aria-modal="true">
+            <ExportMenu onClose={() => setShowExport(false)} />
+          </div>
+        </div>
+      )}
 
       <section className="approver-section">
         <div className="section-head">
@@ -173,13 +196,13 @@ export default function Approver() {
                   <div className="req-top">
                     <div className="req-who">
                       <div className="who-avatar">{(u?.email || "").slice(0,2).toUpperCase()}</div>
-                        <div className="who-block">
-                          <div className="who-name">{u?.fullName || "—"}</div>
-                          <div className="who-email">{u?.email || r.userId}</div>
-                          <span className={`status pill ${cls}`}>{r.status}</span>
-                        </div>
+                      <div className="who-block">
+                        <div className="who-name">{u?.fullName || "—"}</div>
+                        <div className="who-email">{u?.email || r.userId}</div>
+                        <span className={`status pill ${cls}`}>{r.status}</span>
                       </div>
                     </div>
+                  </div>
 
                   <div className="req-mid">
                     <div className="req-dates">

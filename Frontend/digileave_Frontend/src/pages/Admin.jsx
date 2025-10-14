@@ -227,11 +227,10 @@ export default function Admin() {
 
           {/* Toggle Export modal */}
           <div className="header-actions" style={{ display: "flex", gap: 8 }}>
-            <button className="btn" onClick={() => setShowExport(true)}>Export CSV</button>
+            <button className="btn" onClick={() => setShowExport(true)}>Export</button>
           </div>
         </div>
 
-        {/* Export modal — single inner window owned by ExportMenu */}
         {showExport && (
           <div
             className="admin-modal"
@@ -273,7 +272,6 @@ export default function Admin() {
           </table>
         </div>
 
-        {/* Edit user modal — restored exactly like your old version */}
         {editing && (
           <div
             className="admin-modal"
