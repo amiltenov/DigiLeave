@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/requests.css";
 
-import RequestsViewModeModeMenu from "../components/RequestsViewModeMenu";
+import RequestsViewModeMenu from "../components/RequestsViewModeMenu";
 import RequestsViewMode from "../components/RequestsViewMode";
 import { authHeader } from "../utils/auth";
 import { STATE } from "../utils/state";
@@ -14,6 +14,7 @@ export default function Requests() {
   const [view, setView] = useState("cards");
   const [sortBy, setSortBy] = useState("recent");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [userName, setUserName] = useState("User");
 
 
   useEffect(() => {
@@ -49,6 +50,29 @@ export default function Requests() {
     return () => { alive = false; ctrl.abort(); };
   }, []);
 
+  useEffect(() =>{
+    fetch(`${BASE_API_URL}/account`, { headers: authHeader() })
+
+    .then(res => {
+      if (res.status === 401) {
+        setState(STATUS.UNAUTH);
+        return null;
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      return res.json();
+    })
+    .then(json => {
+      if(json){
+        setUserName(json.fullName.slice(0, json.fullName.indexOf(" ")));
+      }
+    })
+    .catch((err) => {
+      setState(STATE.ERROR)
+      console.warn(`Error: ${err}`);
+    })
+  }, []);
+
   const handleAfterAction = (updated) => {
     setData(prev => prev.map(r => (r.id === updated.id ? updated : r)));
   };
@@ -59,12 +83,12 @@ export default function Requests() {
         <div className="rq-pagehead">
           <div>
             <h1 className="rq-h1">My Leave Requests</h1>
-            <p className="rq-muted">Track and manage your time off</p>
+            <p className="rq-muted">Hello {userName}.</p>
           </div>
           <Link className="new-request-btn" to="/requests/new">+ New Request</Link>
         </div>
 
-        <RequestsViewModeModeMenu
+        <RequestsViewModeMenu
            view={view}
             onChangeView={setView}
             sortBy={sortBy}

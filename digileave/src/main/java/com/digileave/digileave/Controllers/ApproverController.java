@@ -128,7 +128,7 @@ public class ApproverController {
                 org.springframework.http.HttpStatus.BAD_REQUEST, "status must be APPROVED or REJECTED");
         }
 
-        if (r.getStatus() != Status.SUBMITTED) {
+        if (r.getStatus() != Status.PENDING) {
             throw new org.springframework.web.server.ResponseStatusException(
                 org.springframework.http.HttpStatus.BAD_REQUEST, "request already decided");
         }

@@ -1,7 +1,7 @@
 package com.digileave.digileave.Models.enums;
 
 public enum Status {
-    SUBMITTED,
+    PENDING,
     APPROVED,
     REJECTED,
     CANCELLED

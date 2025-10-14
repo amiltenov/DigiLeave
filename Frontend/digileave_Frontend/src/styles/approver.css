@@ -135,7 +135,7 @@
   border: 1px solid var(--color-surface-border);
 }
 
-.request-item.submitted { border-color: rgba(255,215,0,.55); }
+.request-item.pending { border-color: rgba(255,215,0,.55); }
 .request-item.approved  { border-color: rgba(50,205,50,.5); }
 .request-item.rejected  { border-color: rgba(220,20,60,.5); }
 .request-item.cancelled { border-color: rgba(128,128,128,.45); }
@@ -183,7 +183,7 @@
   color: var(--color-text);
 }
 
-.status.pill.submitted { border-color: rgba(255,215,0,.55); }
+.status.pill.pending { border-color: rgba(255,215,0,.55); }
 .status.pill.approved  { border-color: rgba(50,205,50,.5); }
 .status.pill.rejected  { border-color: rgba(220,20,60,.5); }
 .status.pill.cancelled { border-color: rgba(128,128,128,.45); }

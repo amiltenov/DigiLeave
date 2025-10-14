@@ -29,6 +29,8 @@
 
 .rq-muted {
   color: var(--color-muted, color-mix(in oklab, var(--color-text) 60%, transparent));
+  font-size:large;
+  padding-left: 2px;
 }
 
 /* --- page header --- */
@@ -120,15 +122,15 @@
   --rq-approved-bg: color-mix(in oklab, #16a34a 14%, white);
   --rq-denied: #ef4444;   /* red */
   --rq-denied-bg: color-mix(in oklab, #ef4444 14%, white);
-  --rq-submitted: #f59e0b; /* amber */
-  --rq-submitted-bg: color-mix(in oklab, #f59e0b 18%, white);
+  --rq-pending: #f59e0b; /* amber */
+  --rq-pending-bg: color-mix(in oklab, #f59e0b 18%, white);
   --rq-primary: var(--color-accent, #f6c445);
 }
 
 [data-theme="dark"] {
   --rq-approved-bg: color-mix(in oklab, #16a34a 22%, black);
   --rq-denied-bg: color-mix(in oklab, #ef4444 22%, black);
-  --rq-submitted-bg: color-mix(in oklab, #f59e0b 26%, black);
+  --rq-pending-bg: color-mix(in oklab, #f59e0b 26%, black);
 }
 
 .rq-badge{
@@ -143,7 +145,7 @@
 }
 .rq-badge--approved{ background: var(--rq-approved-bg); color: var(--rq-approved); border-color: var(--rq-approved-bg); }
 .rq-badge--denied{ background: var(--rq-denied-bg); color: var(--rq-denied); border-color: var(--rq-denied-bg); }
-.rq-badge--submitted{ background: var(--rq-submitted-bg); color: var(--rq-submitted); border-color: var(--rq-submitted-bg); }
+.rq-badge--pending{ background: var(--rq-pending-bg); color: var(--rq-pending); border-color: var(--rq-pending-bg); }
 
 /* --- NEW pill --- */
 .rq-new-pill{

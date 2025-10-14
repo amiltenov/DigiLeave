@@ -24,7 +24,7 @@ public class Request {
     private int workdaysCount;
 
     @Indexed
-    private Status status = Status.SUBMITTED;
+    private Status status = Status.PENDING;
 
     @Indexed
     private LeaveType type;

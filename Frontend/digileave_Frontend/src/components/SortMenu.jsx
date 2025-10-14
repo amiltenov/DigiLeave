@@ -1,66 +1,114 @@
-import React from "react";
+import { useEffect, useRef, useState } from "react";
 import "../styles/sort-menu.css";
+import { IconSort } from "../utils/icons";
 
-const Icon = {
-  Sort: (p) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" {...p}>
-      <path fill="currentColor" d="M3 7h14v2H3V7zm0 4h10v2H3v-2zm0 4h6v2H3v-2zM18 5l3 3h-2v8h-2V8h-2l3-3z"/>
-    </svg>
-  ),
-  AZ: (p) => (
-    <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" {...p}>
-      <path fill="currentColor" d="M5 17h6v2H3v-1l6-8H3V8h8v1L5 17zm10-7h6v2h-3l3 5v1h-8v-2h5l-3-5v-1z"/>
-    </svg>
-  ),
-  ZA: (p) => (
-    <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" {...p}>
-      <path fill="currentColor" d="M5 7h6V5H3v1l6 8H3v2h8v-1L5 7zm11 10h5v2h-8v-1l3-5h-3v-2h8v1l-3 5z"/>
-    </svg>
-  ),
-};
-
-export default function SortControl({
-  sortKey,
-  sortOrder = "desc",          // 'asc' | 'desc'
-  onChange,                    // (next:{key, order}) => void
-  options = [
-    { value: "recent", label: "Most Recent" },
-    { value: "pending-first", label: "Pending First" },
-    { value: "status", label: "By Status" },
-  ],
-  size = "md",                 // 'sm' | 'md'
-  label = "Sort",
+/**
+ * Props
+ * - sortBy: "recent" | "start-date" | "pending-first"
+ * - sortOrder: "asc" | "desc"
+ * - onChange: ({ sortBy, sortOrder }) => void
+ */
+export default function SortMenu({
+  sortBy = "recent",
+  sortOrder = "desc",
+  onChange,
 }) {
-  const toggleOrder = () =>
-    onChange?.({ key: sortKey, order: sortOrder === "asc" ? "desc" : "asc" });
+  const [open, setOpen] = useState(false);
+  const [localBy, setLocalBy] = useState(sortBy);
+  const [localOrder, setLocalOrder] = useState(sortOrder);
+
+  const triggerRef = useRef(null);
+  const panelRef = useRef(null);
+
+  // keep local state in sync with parent
+  useEffect(() => setLocalBy(sortBy), [sortBy]);
+  useEffect(() => setLocalOrder(sortOrder), [sortOrder]);
+
+  const OPTIONS = [
+    { value: "recent", label: "By Recently Created" },        // createdAt
+    { value: "start-date", label: "By Start Date" },     // startDate
+    { value: "pending-first", label: "By Pending First"} // pending first
+  ];
+
+  function applyChange(nextBy = localBy, nextOrder = localOrder) {
+    setLocalBy(nextBy);
+    setLocalOrder(nextOrder);
+    onChange?.({ sortBy: nextBy, sortOrder: nextOrder });
+  }
+
+  function pick(v) {
+    applyChange(v, localOrder);
+    setOpen(false);
+  }
+
+  function toggleOrder() {
+    const next = localOrder === "asc" ? "desc" : "asc";
+    applyChange(localBy, next);
+  }
+
+  // close on outside click
+  useEffect(() => {
+    function onDocClick(e) {
+      if (!open) return;
+      const t = e.target;
+      if (
+        panelRef.current &&
+        !panelRef.current.contains(t) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(t)
+      ) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
+  }, [open]);
+
+  const currentLabel = OPTIONS.find(o => o.value === localBy)?.label ?? "Sort";
 
   return (
-    <div className={`sc bar sc--${size}`}>
-      <div className="sc left">
-        <Icon.Sort className="sc ico" />
-        <div className="sc select">
-          <select
-            aria-label={label}
-            value={sortKey}
-            onChange={(e) => onChange?.({ key: e.target.value, order: sortOrder })}
-          >
-            {options.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+    <div className="sort-menu" data-open={open ? "1" : "0"}>
+      <button
+        ref={triggerRef}
+        type="button"
+        className="sort-trigger"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen(v => !v)}
+      >
+        <IconSort className="sort-ico" />
+        <span>{currentLabel}</span>
+      </button>
 
       <button
-        className="sc orderbtn"
-        onClick={toggleOrder}
         type="button"
-        aria-label={sortOrder === "asc" ? "Ascending" : "Descending"}
-        title={sortOrder === "asc" ? "Ascending" : "Descending"}
+        className="sort-order"
+        title={localOrder === "asc" ? "Ascending (A→Z / 0→9)" : "Descending (Z→A / 9→0)"}
+        onClick={toggleOrder}
       >
-        {sortOrder === "asc" ? <Icon.AZ /> : <Icon.ZA />}
-        <span className="sc ordertxt">{sortOrder === "asc" ? "A→Z / 0→9" : "Z→A / 9→0"}</span>
+        {localOrder === "asc" ? "A→Z / 0→9" : "Z→A / 9→0"}
       </button>
+
+      {open && (
+        <div ref={panelRef} className="sort-panel" role="listbox">
+          {OPTIONS.map((o) => {
+            const active = o.value === localBy;
+            return (
+              <button
+                key={o.value}
+                type="button"
+                role="option"
+                aria-selected={active}
+                className={`sort-item${active ? " is-active" : ""}`}
+                onClick={() => pick(o.value)}
+              >
+                <span className="sort-item-label">{o.label}</span>
+                {active && <span className="sort-check">✓</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

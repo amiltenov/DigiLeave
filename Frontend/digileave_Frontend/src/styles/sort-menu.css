@@ -1,27 +1,57 @@
-/* scoped to sc-; uses your global tokens */
-.sc.bar {
-  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-}
-.sc.left { display:flex; align-items:center; gap:8px; }
-.sc.ico { opacity:.7; }
+.sort-menu{
+  position:relative; display:flex; align-items:center; gap:8px;
 
-.sc.select select{
-  appearance:none;
-  background: var(--surface-1, color-mix(in oklab, var(--color-text) 6%, var(--color-bg)));
-  color: var(--color-text);
-  border:1px solid var(--color-border, color-mix(in oklab, var(--color-text) 12%, transparent));
-  padding:8px 12px; border-radius:10px; font-weight:700; min-width:190px;
 }
 
-.sc.orderbtn{
+/* trigger */
+.sort-trigger{
   display:inline-flex; align-items:center; gap:8px;
-  border:1px solid var(--color-border, color-mix(in oklab, var(--color-text) 12%, transparent));
-  background: var(--color-bg); color: var(--color-text);
-  padding:8px 12px; border-radius:10px; font-weight:800; cursor:pointer;
-  transition: background .15s ease, transform .06s ease;
+  height:38px; padding:0 14px; cursor:pointer;
+  border-radius:12px; border:1px solid var(--color-surface-border);
+  background: color-mix(in oklab, var(--color-surface) 94%, transparent);
+  color: var(--color-text); font-weight:780;
+  box-shadow: 0 4px 12px var(--color-surface-shadow);
+  transition: background-color .25s ease, border-color .25s ease, box-shadow .25s ease, transform .12s ease, color .25s ease;
 }
-.sc.orderbtn:hover{ background: color-mix(in oklab, var(--color-text) 6%, transparent); }
-.sc.orderbtn:active{ transform: scale(0.98); }
+.sort-trigger:hover{ transform: translateY(-1px); box-shadow: 0 8px 18px var(--color-surface-shadow); }
+.sort-menu[data-open="1"] .sort-trigger{ border-color: color-mix(in oklab, var(--color-text) 18%, transparent); }
+.sort-ico{ opacity:.95; }
 
-.sc.ordertxt{ font-size:12px; opacity:.8; }
-.sc--sm .sc.select select, .sc--sm .sc.orderbtn{ padding:6px 10px; border-radius:8px; }
+/* order button */
+.sort-order{
+  height:38px; padding:0 10px; cursor:pointer;
+  border-radius:10px; border:1px dashed var(--color-surface-border);
+  background: transparent; color: var(--color-text);
+  font-weight:700; font-size:.85rem;
+  transition: color .25s ease, border-color .25s ease, background-color .25s ease, transform .12s ease;
+}
+.sort-order:hover{
+  background: color-mix(in oklab, var(--color-surface) 86%, transparent);
+  transform: translateY(-1px);
+}
+
+/* dropdown panel */
+.sort-panel{
+  position:absolute; top:46px; left:0; min-width:220px;
+  padding:6px; border-radius:12px; z-index:1001; /* above trigger */
+  border:1px solid var(--color-surface-border);
+  background: var(--color-surface);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 14px 28px var(--color-surface-shadow);
+  animation: panelIn .14s ease forwards;
+}
+@keyframes panelIn{ from{ opacity:0; transform: translateY(-4px);} to{ opacity:1; transform: translateY(0);} }
+
+.sort-item{
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  gap:10px; padding:10px 12px; border-radius:10px; cursor:pointer;
+  color: var(--color-text); background: transparent; border:0;
+  font-weight:700;
+  transition: background-color .12s ease, color .12s ease, transform .12s ease;
+}
+.sort-item:hover{ background: color-mix(in oklab, var(--color-surface) 88%, transparent); transform: translateX(2px); }
+.sort-item.is-active{
+  background: color-mix(in oklab, var(--color-accent) 10%, var(--color-surface));
+  border:1px solid color-mix(in oklab, var(--color-accent) 35%, transparent);
+}
+/* .sort-item .sort-check{ font-weight:1000; opacity:.9; } */
