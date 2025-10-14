@@ -5,7 +5,8 @@ import { csvExport } from "../utils/csvExport";
 import { xlsxExport } from "../utils/xlsxExport"; // ⬅️ NEW
 import "../styles/exportmenu.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
+
+const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
 
 const PRESETS = {
   LAST_TO_NOW: "LAST_TO_NOW",

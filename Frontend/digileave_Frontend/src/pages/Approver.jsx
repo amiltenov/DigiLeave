@@ -25,7 +25,7 @@ export default function Approver() {
       setAssigneesLoading(true);
       setAssigneesErr("");
       try {
-        const res = await fetch("http://localhost:8080/approver/assignees", { headers: authHeader() });
+        const res = await fetch("https://digileave.onrender.com/approver/assignees", { headers: authHeader() });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         console.log(data);
@@ -48,7 +48,7 @@ export default function Approver() {
     setRequestsLoading(true);
     setRequestsErr("");
     try {
-      const res = await fetch("http://localhost:8080/approver/requests", { headers: authHeader() });
+      const res = await fetch("https://digileave.onrender.com/approver/requests", { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       console.log(data);
@@ -65,7 +65,7 @@ export default function Approver() {
     setRequestsLoading(true);
     setRequestsErr("");
     try {
-      const res = await fetch(`http://localhost:8080/approver/assignee/${assignee.id}/requests`, { headers: authHeader() });
+      const res = await fetch(`https://digileave.onrender.com/approver/assignee/${assignee.id}/requests`, { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRequests(Array.isArray(data) ? data : []);
@@ -78,7 +78,7 @@ export default function Approver() {
 
   async function decide(reqId, status) {
     try {
-      const res = await fetch(`http://localhost:8080/approver/request/${reqId}`, {
+      const res = await fetch(`https://digileave.onrender.com/approver/request/${reqId}`, {
         method: "PATCH",
         headers: { ...authHeader(), "Content-Type": "application/json" },
         body: JSON.stringify({ status })
@@ -92,7 +92,7 @@ export default function Approver() {
   }
 
   const sortedRequests = useMemo(() => {
-    const order = { SUBMITTED: 0, APPROVED: 1, REJECTED: 2, CANCELLED: 3 };
+    const order = { PENDING: 0, APPROVED: 1, REJECTED: 2, CANCELLED: 3 };
     return [...requests].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
   }, [requests]);
 
@@ -195,7 +195,7 @@ export default function Approver() {
 
                   {r.comment && <div className="req-comment">“{r.comment}”</div>}
 
-                  {r.status === "SUBMITTED" && (
+                  {r.status === "PENDING" && (
                     <div className="req-actions">
                       <button className="btn-approve" onClick={() => decide(r.id, "APPROVED")}>Approve</button>
                       <button className="btn-reject" onClick={() => decide(r.id, "REJECTED")}>Reject</button>

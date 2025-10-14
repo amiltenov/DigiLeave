@@ -73,10 +73,10 @@ public class RequestController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can cancel only your own requests");
         }
         if (req.getStatus() == Status.CANCELLED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Only SUBMITTED requests can be cancelled");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Only PENDING requests can be cancelled");
         }
-        if (req.getStatus() != Status.SUBMITTED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Only SUBMITTED requests can be cancelled");
+        if (req.getStatus() != Status.PENDING) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Only PENDING requests can be cancelled");
         }
 
         req.setStatus(Status.CANCELLED);

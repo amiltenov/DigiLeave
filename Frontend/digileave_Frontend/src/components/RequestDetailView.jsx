@@ -20,7 +20,7 @@ const statusTone = (status) => {
     case "rejected":
       return "denied";
     default:
-      return "submitted";
+      return "pending";
   }
 };
 
@@ -98,7 +98,7 @@ export default function RequestDetailView({
             </div>
             <div className="rd-card">
               <div className="rd-label">Leave Type</div>
-              <div className="rd-value">{toTitle(request.leaveType || "")}</div>
+              <div className="rd-value">{toTitle(request.type || "")}</div>
             </div>
           </div>
 
@@ -110,10 +110,10 @@ export default function RequestDetailView({
           )}
 
           <div className="rd-times">
-            {request.submittedAt && (
+            {request.createdAt && (
               <div>
-                <span>Submitted:</span>{" "}
-                <strong>{formatDate(request.submittedAt)}</strong>
+                <span>Created:</span>{" "}
+                <strong>{formatDate(request.createdAt)}</strong>
               </div>
             )}
             {request.decidedAt && (
