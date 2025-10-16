@@ -29,7 +29,8 @@
 .header-sub {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  justify-self: end;
   gap: 10px;
 }
 

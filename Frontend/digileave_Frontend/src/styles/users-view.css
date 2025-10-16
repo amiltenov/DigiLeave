@@ -72,27 +72,89 @@
 .user-dot{ width:4px; height:4px; border-radius:50%; background: currentColor; opacity:.45; display:inline-block; }
 .user-actions-row{ margin-top:14px; display:flex; gap:10px; justify-content:flex-end; }
 
-/* ========= COMPACT ROWS (tight info, not cardy) ========= */
-.user-compact{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  gap:12px;
-  padding:12px 14px;
-  border-bottom:1px solid var(--color-surface-border);
-}
-.user-compact:hover{ background: color-mix(in oklab, var(--color-text) 6%, transparent); }
-.user-compact:last-child{ border-bottom:none; }
+/* ========= COMPACT (Admin Users) ========= */
 
-.user-compact-avatar{
-  width:46px; height:46px; border-radius:50%; display:grid; place-items:center;
-  background:var(--color-accent); color:#111; font-weight:700; font-size:0.95rem;
+/* base row — very tight, minimal chrome */
+.user-compact{
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* actions | content | role */
+  column-gap: 12px;
+  row-gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-surface-border);
+  background: var(--color-surface);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
-.user-compact-body{ min-width:0; }
-.user-compact-top{ display:flex; align-items:center; gap:8px; min-width:0; }
-.user-compact-name{ font-weight:700; }
-.user-compact-sub{ display:flex; align-items:center; gap:8px; opacity:.9; flex-wrap:wrap; min-width:0; }
-.user-compact-email{ max-width:34ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.user-compact-actions{ display:flex; gap:10px; align-self:center; }
+.user-compact:last-child{ border-bottom: none; }
+.user-compact:hover{ background: color-mix(in oklab, var(--color-text) 6%, transparent); }
+
+/* left column (desktop), will move on mobile */
+.user-compact-actions{
+  grid-column: 1; align-self: center;
+  display: inline-flex; gap: 8px;
+}
+
+/* center content */
+.user-compact-content{ grid-column: 2; min-width: 0; display: grid; gap: 4px; }
+.user-compact-id{ display: flex; align-items: center; gap: 10px; min-width: 0; }
+.user-compact-avatar{
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-weight: 700; font-size: .82rem;
+  background: var(--color-accent); color: #111; flex: 0 0 auto;
+}
+.user-compact-text{ min-width: 0; }
+.user-compact-name{ font-weight: 700; line-height: 1.1; }
+.user-compact-email{ display: flex; align-items: center; gap: 6px; opacity: .9; }
+.user-compact-email span{
+  max-width: 34ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.user-compact-since{ display: flex; align-items: center; gap: 6px; opacity: .9; }
+
+/* right column */
+.user-compact-role{
+  grid-column: 3; align-self: start; justify-self: end;
+  height: 28px; padding: 0 10px; border-radius: 999px;
+  display: inline-flex; align-items: center; white-space: nowrap;
+  font-weight: 700; font-size: .78rem;
+  border: 1px solid color-mix(in oklab, var(--color-text) 16%, transparent);
+}
+
+/* ======= Mobile layout (≤756px)
+   Left: all info (name, email, since)
+   Top-right: role pill
+   Under role: actions  */
+@media (max-width: 756px){
+  .user-compact{
+    grid-template-columns: 1fr auto;   /* content | right rail */
+    grid-template-rows: auto auto;     /* top | bottom */
+    align-items: start;
+    padding: 10px;
+    font-size: 90%;
+  }
+
+  .user-compact-content{
+    grid-column: 1; grid-row: 1 / span 2;  /* left column spans both rows */
+  }
+
+  .user-compact-role{
+    grid-column: 2; grid-row: 1; justify-self: end; align-self: start;
+    height: 26px; padding: 0 8px; font-size: .74rem;
+  }
+
+  .user-compact-actions{
+    grid-column: 2; grid-row: 2; justify-self: end; align-self: center;
+    gap: 6px;
+  }
+  .user-compact-actions .btn{
+    padding: 6px 8px; font-size: .8rem; line-height: 1; border-radius: 8px;
+  }
+
+  .user-compact-avatar{ width: 30px; height: 30px; font-size: .8rem; }
+  .user-compact-email span{ max-width: 22ch; }
+}
+
 
 /* ========= TABLE ========= */
 .user-table-wrap{
@@ -158,83 +220,36 @@
   }
 }
 
-/* =========================
-   3) COMPACT — MOBILE ONLY
-   Role pill pinned right (top row).
-   Email on its own line.
-   "Working Since …" + small buttons on the next line.
-   ========================= */
-@media (max-width: 640px){
-  /* 2 rows: top (name + role), row 2 (email + since + actions) */
-  .user-list .user-compact{
-    display: grid;
-    grid-template-columns: auto 1fr auto;  /* avatar | content | right side */
-    grid-template-rows: auto auto;         /* top | details */
-    column-gap: 10px;
+/* DESKTOP ONLY: info left; RIGHT rail = role (top-right) + actions (bottom-right) */
+@media (min-width: 757px){
+  .user-compact{
+    grid-template-columns: 1fr auto;  /* content | right rail */
+    grid-template-rows: auto auto;    /* top | bottom */
+    column-gap: 12px;
     row-gap: 6px;
-    align-items: center;
-    padding: 8px 10px;
-  }
-  .user-list .user-compact-body{ display: contents; }
-
-  /* Row 1 (left): name */
-  .user-list .user-compact-top{
-    grid-column: 2; grid-row: 1;
-    min-width: 0;
   }
 
-  /* Row 1 (right): role pinned right */
-  .user-list .role-badge{
+  /* left column spans both rows */
+  .user-compact-content{
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    margin-bottom: 6px;
+    margin-top: 2px;
+  }
+
+  /* right column */
+  .user-compact-role{
+    grid-column: 2;
+    grid-row: 1;             /* top-right */
     justify-self: end;
-    height: 26px;
-    padding: 0 10px;
-    font-size: .74rem;
-    white-space: nowrap;
+    align-self: start;
   }
 
-  /* Row 2 (left block): email then since on a new line */
-  .user-list .user-compact-sub{
-    grid-column: 2; grid-row: 2;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;        /* allow a controlled wrap */
-    min-width: 0;
-    font-size: .9rem;
-  }
-  /* trim long emails */
-  .user-list .user-compact-email{
-    max-width: 22ch;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  /* hide the dot and force "Since ..." to next line */
-  .user-list .user-compact-sub .user-dot{ display: none; }
-  .user-list .user-compact-sub span:last-child{
-    flex-basis: 100%;
-    margin-top: 2px;        /* "Working Since …" below the email */
-    white-space: nowrap;
-  }
-
-  /* Row 2 (right): actions on same line as "Since ..." */
-  .user-list .user-compact-actions{
-    grid-column: 3; grid-row: 2;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-  }
-  .user-list .user-compact-actions .btn{
-    padding: 6px 8px;
-    font-size: .8rem;
-    line-height: 1;
-    border-radius: 8px;
-    margin-bottom: -10%;
-  }
-
-  /* slightly smaller avatar to free width */
-  .user-list .user-compact-avatar{
-    width: 34px; height: 34px; font-size: .82rem;
+  .user-compact-actions{
+    grid-column: 2;
+    grid-row: 2;             /* bottom-right */
+    justify-self: end;
+    align-self: end;
+    gap: 10px;
   }
 }

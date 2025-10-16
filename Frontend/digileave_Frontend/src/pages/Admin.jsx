@@ -79,15 +79,6 @@ export default function Admin() {
 
           {/* Sub row: A→Z (left) · View Mode (right) */}
           <div className="header-sub">
-            <button
-              type="button"
-              className={`btn small ghost sort-toggle ${sortOrder === "asc" ? "is-active" : ""}`}
-              title={sortOrder === "asc" ? "Ascending A→Z" : "Descending Z→A"}
-              onClick={() => setSortOrder((o) => (o === "asc" ? "desc" : "asc"))}
-            >
-              {sortOrder === "asc" ? "A→Z" : "Z→A"}
-            </button>
-
             <UsersViewModeMenu view={view} onChangeView={setView} />
           </div>
         </div>

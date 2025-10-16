@@ -49,6 +49,7 @@ export default function UsersViewMode({
 
   const roleCls = (role) => `role-badge role-${String(role || "").toLowerCase()}`;
 
+  /* ======= CARDS (unchanged) ======= */
   const Card = ({ u }) => (
     <div className="user-card">
       <header className="user-card-head">
@@ -64,7 +65,9 @@ export default function UsersViewMode({
 
       <div className="user-meta">
         <div className="user-meta-row">
-          <span className="user-working">Working Since {u.workingSince ? formatDate(u.workingSince) : "—"}</span>
+          <span className="user-working">
+            Working Since {u.workingSince ? formatDate(u.workingSince) : "—"}
+          </span>
         </div>
       </div>
 
@@ -72,25 +75,37 @@ export default function UsersViewMode({
     </div>
   );
 
+  /* ======= COMPACT (redesigned) ======= */
   const CompactRow = ({ u }) => (
     <div className="user-compact">
-      {/* <div className="user-compact-avatar">{initials(u.fullName, u.email)}</div> */}
-      <div className="user-compact-body">
-        <div className="user-compact-top">
-          <span className="user-compact-name">{u.fullName || "—"}</span>
-          <span className={roleCls(u.role)}>{u.role}</span>
+      {/* left (desktop) / bottom-right (mobile) */}
+      {renderActions && (
+        <div className="user-compact-actions">
+          {renderActions(u)}
         </div>
-        <div className="user-compact-sub">
-          <Icon.Mail />
-          <span className="user-compact-email">{u.email}</span>
-          <span className="user-dot" />
-          {u.workingSince && <span>Since {formatDate(u.workingSince)}</span>}
+      )}
+
+      {/* center content (mobile: left column) */}
+      <div className="user-compact-content">
+        <div className="user-compact-id">
+          {/* <div className="user-compact-avatar">{initials(u.fullName, u.email)}</div> */}
+          <div className="user-compact-text">
+            <div className="user-compact-name">{u.fullName || "—"}</div>
+            <div className="user-compact-email"><Icon.Mail /> <span>{u.email}</span></div>
+          </div>
+        </div>
+
+        <div className="user-compact-since">
+          <Icon.Calendar /> <span>Since {u.workingSince ? formatDate(u.workingSince) : "—"}</span>
         </div>
       </div>
-      {renderActions && <div className="user-compact-actions">{renderActions(u)}</div>}
+
+      {/* right (desktop) / top-right (mobile) */}
+      <span className={`user-compact-role ${roleCls(u.role)}`}>{u.role}</span>
     </div>
   );
 
+  /* ======= TABLE (unchanged) ======= */
   const TableView = () => (
     <div className="user-table-wrap">
       <div className="user-scroll">
