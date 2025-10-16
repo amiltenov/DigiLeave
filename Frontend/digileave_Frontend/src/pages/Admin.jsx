@@ -75,7 +75,7 @@ export default function Admin() {
           {/* Top row: Users (left) · Export (right) */}
           <div className="header-top">
             <h1>Users</h1>
-            <button className="btn export-btn" onClick={() => setShowExport(true)}><ExportIcon></ExportIcon><span className="export-btn-text">Export</span></button>
+            <button className="btn export-btn" onClick={() => setShowExport(true)}><span className="export-btn-text">Export</span><ExportIcon></ExportIcon></button>
           </div>
 
           {/* Sub row: A→Z (left) · View Mode (right) */}
