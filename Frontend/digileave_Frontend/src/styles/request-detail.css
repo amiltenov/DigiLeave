@@ -122,5 +122,5 @@
 
 @media (max-width: 756px){
   .rd-modal{ align-items: flex-start; }                 /* stop hard-centering */
-  .rd-panel{ margin-top: calc(46px + env(safe-area-inset-top, 0px)); }
+  .rd-panel{ margin-top: calc(66px + env(safe-area-inset-top, 0px)); }
 }
