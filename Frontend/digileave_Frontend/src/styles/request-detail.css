@@ -118,3 +118,9 @@
 .rd-badge--denied   { background: var(--rd-denied-bg);   color: var(--rd-denied);   border-color: var(--rd-denied-bg); }
 .rd-badge--pending{ background: var(--rd-pending-bg);color: var(--rd-pending); border-color: var(--rd-pending-bg); }
 .rd-badge--cancelled{ background: var(--rd-cancelled-bg);color: var(--rd-cancelled-bg); border-color: var(--rd-cancelled-bg); }
+
+
+@media (max-width: 756px){
+  .rd-modal{ align-items: flex-start; }                 /* stop hard-centering */
+  .rd-panel{ margin-top: calc(74px + env(safe-area-inset-top, 0px)); }
+}
