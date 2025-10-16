@@ -31,10 +31,46 @@
 .vm.btn.is-active { background: var(--color-bg); color: var(--color-text); box-shadow: 0 2px 6px rgba(0,0,0,.05); transform: scale(1.02); }
 .vm.hide-sm { display:none; }
 @media (min-width:640px){ .vm.hide-sm{ display:inline; } }
-
-@media(max-width: 756px){
-  .vm.toggle{
-    margin-left: auto; 
+/* MOBILE: pin Sort left and View right */
+@media (max-width: 756px){
+  .vm.bar .vm-row{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between; /* ← pushes ends apart */
+    gap: 8px;
+    position: relative;
+    margin-bottom: 24px;            /* space for A–Z row */
+    width: 100%;
   }
 
+  /* explicit pinning */
+  .vm.bar .vm-row .sort-menu{ margin-right: auto; } /* left */
+  .vm.bar .vm-row .vm.toggle{
+    margin-left: auto;              /* right */
+    justify-content: flex-end;
+  }
 }
+
+/* DESKTOP: restore original left/right placement */
+@media (min-width: 757px){
+  .vm.bar .vm-row{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;  /* controls start on the left */
+    gap: 12px;
+    margin-bottom: 0;
+    position: static;
+    width: 100%;
+  }
+  /* view-mode goes to the far right */
+  .vm.bar .vm-row .vm.toggle{
+    margin-left: auto;
+    justify-content: flex-end;
+  }
+  /* don't force sort to a side on desktop */
+  .vm.bar .vm-row .sort-menu{
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+

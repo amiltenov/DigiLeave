@@ -25,9 +25,9 @@ export default function SortMenu({
   useEffect(() => setLocalOrder(sortOrder), [sortOrder]);
 
   const OPTIONS = [
-    { value: "pending-first", label: "By Pending First"},
+    { value: "pending-first", label: "By Pending First" },
     { value: "start-date", label: "By Start Date" },
-    { value: "recent", label: "By Recently Created" }
+    { value: "recent", label: "By Recently Created" },
   ];
 
   function applyChange(nextBy = localBy, nextOrder = localOrder) {
@@ -64,51 +64,62 @@ export default function SortMenu({
     return () => document.removeEventListener("click", onDocClick);
   }, [open]);
 
-  const currentLabel = OPTIONS.find(o => o.value === localBy)?.label ?? "Sort";
+  const currentLabel =
+    OPTIONS.find((o) => o.value === localBy)?.label ?? "Sort";
 
   return (
     <div className="sort-menu" data-open={open ? "1" : "0"}>
-      <button
-        ref={triggerRef}
-        type="button"
-        className="sort-trigger"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen(v => !v)}
-      >
-        <IconSort className="sort-ico" />
-        <span>{currentLabel}</span>
-      </button>
+      {/* Row 1: trigger (and its dropdown) */}
+      <div className="sort-top">
+        <button
+          ref={triggerRef}
+          type="button"
+          className="sort-trigger"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+        >
+          <IconSort className="sort-ico" />
+          <span>{currentLabel}</span>
+        </button>
 
-      <button
-        type="button"
-        className="sort-order"
-        title={localOrder === "asc" ? "Ascending (A→Z / 0→9)" : "Descending (Z→A / 9→0)"}
-        onClick={toggleOrder}
-      >
-        {localOrder === "asc" ? "A→Z / 0→9" : "Z→A / 9→0"}
-      </button>
+        {open && (
+          <div ref={panelRef} className="sort-panel" role="listbox">
+            {OPTIONS.map((o) => {
+              const active = o.value === localBy;
+              return (
+                <button
+                  key={o.value}
+                  type="button"
+                  role="option"
+                  aria-selected={active}
+                  className={`sort-item${active ? " is-active" : ""}`}
+                  onClick={() => pick(o.value)}
+                >
+                  <span className="sort-item-label">{o.label}</span>
+                  {active && <span className="sort-check">✓</span>}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-      {open && (
-        <div ref={panelRef} className="sort-panel" role="listbox">
-          {OPTIONS.map((o) => {
-            const active = o.value === localBy;
-            return (
-              <button
-                key={o.value}
-                type="button"
-                role="option"
-                aria-selected={active}
-                className={`sort-item${active ? " is-active" : ""}`}
-                onClick={() => pick(o.value)}
-              >
-                <span className="sort-item-label">{o.label}</span>
-                {active && <span className="sort-check">✓</span>}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {/* Row 2: order toggle */}
+      <div className="sort-bottom">
+        <button
+          type="button"
+          className="sort-order"
+          title={
+            localOrder === "asc"
+              ? "Ascending (A→Z / 0→9)"
+              : "Descending (Z→A / 9→0)"
+          }
+          onClick={toggleOrder}
+        >
+          {localOrder === "asc" ? "A→Z / 0→9" : "Z→A / 9→0"}
+        </button>
+      </div>
     </div>
   );
 }

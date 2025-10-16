@@ -5,6 +5,8 @@ import { formatDate } from "../utils/formatDate";
 import { BASE_API_URL } from "../utils/base_api_url";
 import { getInitials } from "../utils/getInitials";
 import { IconCalendar, IconEye } from "../utils/icons";
+import CommentClamp from "../components/CommentClamp";
+
 
 /**
  * Props:
@@ -290,9 +292,11 @@ export default function RequestsViewMode({
                   <td className="request-nowrap"><span className="request-cal"><IconCalendar /></span>{formatDate(r.endDate)}</td>
                   <td><span className="request-days">{r.workdaysCount} <em>days</em></span></td>
                   <td className="request-type">{String(r.type).replace(/_/g, " ").toLowerCase()}</td>
-                  <td className="request-ellipsis">{r.comment || "—"}</td>
+                  <td className="request-ellipsis">
+                    <CommentClamp text={r.comment} />
+                  </td>
                   <td className="col-action">
-                    {window.location.pathname === "/requests" && isPending ? (
+                    {window.location.pathname === "/requests"  && r.status === "PENDING" ? (
                       <button
                         type="button"
                         className="cancel-btn"

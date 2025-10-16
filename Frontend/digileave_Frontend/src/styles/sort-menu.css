@@ -54,11 +54,66 @@
   background: color-mix(in oklab, var(--color-accent) 10%, var(--color-surface));
   border:1px solid color-mix(in oklab, var(--color-accent) 35%, transparent);
 }
-/* .sort-item .sort-check{ font-weight:1000; opacity:.9; } */
+/* MOBILE: keep A–Z under the trigger, left-aligned */
+@media (max-width: 756px){
+  .sort-menu{
+    display: inline-block;
+    position: relative;
+    min-width: 0;
+    margin-left: 2px;
+    margin-top: 4px;
+  }
 
-@media(max-width: 756px){
-.sort-menu{
-  margin-left: auto;
+  .sort-top{ display: inline-block; }
+
+  .sort-menu .sort-panel{
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    /* z-index: 1001; */
+  }
+
+  .sort-bottom{
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;    /* ← left align A–Z */
+  }
+
+  .sort-bottom .sort-order{
+    width: auto;
+    white-space: nowrap;
+  }
 }
 
+/* DESKTOP: keep Sort trigger and A–Z on one line, next to each other */
+@media (min-width: 757px){
+  .sort-menu{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: relative; /* anchor for dropdown */
+    min-width: 0;
+  }
+
+  /* flatten the two inner wrappers so they behave like the old inline layout */
+  .sort-top{ display: contents; }
+  .sort-bottom{ display: contents; margin-top: 0; }
+
+  /* A–Z button normal inline pill (no absolute, no centering) */
+  .sort-bottom .sort-order{
+    position: static;
+    width: auto;
+    white-space: nowrap;
+    transform: none;
+    justify-content: initial;
+  }
+
+  /* dropdown under the sort menu */
+  .sort-menu .sort-panel{
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 1001;
+  }
 }

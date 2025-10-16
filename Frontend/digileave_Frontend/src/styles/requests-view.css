@@ -355,19 +355,75 @@
 .request-table th.col-action,
 .request-table td.col-action {
   white-space: nowrap;
-  width: 1%;          /* shrink-to-fit */
+  width: 1%;
 }
 
 /* make the cancel button sit nicely inside table cells */
 .request-table .cancel-btn{
   height: 36px;
-  padding: 0 10px;
+  /* padding: 0 10px; */
+  margin-left: -8px;
 }
 
 /* On small screens, allow horizontal scroll instead of wrapping Type */
-@media (max-width: 640px){
-  .request-table th.col-type,
-  .request-table td.col-type{
-    white-space: nowrap;
+/* mobile: keep "Type" on one line and allow horizontal scroll */
+@media (max-width: 756px){
+  /* ensure the table's scroll wrapper can scroll horizontally */
+  .request-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
+
+  /* let columns size to content instead of fixed distribution */
+  .request-table {
+    table-layout: auto;
+  }
+
+  /* prevent wrapping in the Type column */
+  .request-table th.col-type,
+  .request-table td.col-type {
+    white-space: nowrap;
+    word-break: keep-all;
+    hyphens: none;
+    min-width: 12ch; /* adjust if you need a bit more */
+  }
+}
+.comment-clamp{
+  display:inline-flex;
+  align-items:baseline;
+  gap:4px;
+  max-width:100%;
+}
+.comment-clamp__text{
+  overflow-wrap:anywhere;
+  line-height:1.4;
+}
+.comment-clamp__more{
+  appearance:none;
+  border:0;
+  background:transparent;
+  padding:0;
+  margin:0;
+  font:inherit;
+  cursor:pointer;
+  color: var(--color-primary, #f4c20d);
+  line-height:1;
+}
+.comment-clamp__more:hover{ text-decoration: underline; }
+
+
+/* mobile: make the grid/ cards use full width with even gutters */
+@media (max-width: 756px){
+  .request-grid{ justify-items: stretch; 
+   justify-content:center;
+  }
+  .request-card{ width: 100%; margin-inline: 0; }
+
+  /* equal page gutters + iPhone safe areas */
+  .requests-inner{
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    box-sizing: border-box;
+  }
+  
 }

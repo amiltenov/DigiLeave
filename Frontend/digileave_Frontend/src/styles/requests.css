@@ -3,12 +3,13 @@
   background:transparent;
   color: var(--color-text);
   min-height: 100vh;
+  display:flex; justify-content:center;
 }
 
 .requests-inner {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 24px 16px;
+  /* padding: 24px 16px; */
 }
 
 /* utility */
@@ -317,3 +318,84 @@
 .table-striped tr:nth-child(odd){ background: var(--color-bg); }
 
 
+/* MOBILE ONLY: put sort trigger next to view toggle, push A–Z under them */
+@media (max-width: 756px){
+  /* let the top bar wrap items onto a second row */
+   /* .vm.bar{
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  } */
+
+  /* flatten the sort-menu so its two buttons behave like direct siblings
+     of .vm.bar (no markup changes needed) */
+     
+     /* first row items */
+  /* .vm.toggle{
+    margin-left: auto;
+    justify-content: flex-end;
+  } */
+
+ 
+
+    /* .vm.toggle{ margin-left: auto; justify-content: flex-end; } */
+   
+}
+
+
+/* ===== Mobile: fix uneven gutters for cards/list ===== */
+@media (max-width: 756px){
+  /* make the page container use equal gutters AND respect iOS safe areas */
+  .requests-inner{
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  /* ensure card containers don’t introduce extra horizontal offsets */
+  .request-grid,
+  .request-list{
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* cards should fill available width with those gutters only */
+  .request-card{
+    width: 100%;
+    box-sizing: border-box;
+    margin-left: 0;   /* neutralize any stray margins */
+    margin-right: 0;
+  }
+}
+
+/* Fallback for browsers without `env()` support (older Android) */
+@supports not (padding: max(0px)) {
+  @media (max-width: 756px){
+    .requests-inner{ padding-left: 16px; padding-right: 16px; }
+  }
+}
+
+/* mobile: clip horizontal overflow so the page can't drift sideways */
+@media (max-width: 756px){
+  html, body, .requests-root, .requests-inner { overflow-x: hidden; }
+  .requests-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  /* padding: 24px 16px; */
+  width: 100%;
+}
+.new-request-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 90%;
+
+    /* let it grow to fit the text */
+    width: auto;                /* ← remove 30vw */
+    height: auto;               /* ← remove fixed height */
+    min-height: 30px;           /* good tap target */
+    white-space: nowrap;        /* keep label on one line */
+    flex-shrink: 0;             /* don’t get squished in a flex row */
+    max-width: 100%;            /* don’t overflow container */
+  }
+}

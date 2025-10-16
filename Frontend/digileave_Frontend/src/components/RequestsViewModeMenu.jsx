@@ -18,6 +18,8 @@ export default function RequestsViewModeMenu({
 }) {
   return (
     <div className="vm bar">
+      <div className="vm-row">
+
       <SortMenu
         sortBy={sortBy}
         sortOrder={sortOrder}
@@ -25,30 +27,31 @@ export default function RequestsViewModeMenu({
           onChangeSortBy?.(sortBy);
           onChangeSortOrder?.(sortOrder);
         }}
-      />
+        />
 
       <div className="vm toggle">
         <button
           className={`vm btn ${view === "cards" ? "is-active" : ""}`}
           onClick={() => onChangeView?.("cards")}
           type="button"
-        >
+          >
           <Icon.Grid /><span className="vm hide-sm">Cards</span>
         </button>
         <button
           className={`vm btn ${view === "table" ? "is-active" : ""}`}
           onClick={() => onChangeView?.("table")}
           type="button"
-        >
+          >
           <Icon.Table /><span className="vm hide-sm">Table</span>
         </button>
         <button
           className={`vm btn ${view === "compact" ? "is-active" : ""}`}
           onClick={() => onChangeView?.("compact")}
           type="button"
-        >
+          >
           <Icon.List /><span className="vm hide-sm">Compact</span>
         </button>
+          </div>
       </div>
     </div>
   );
