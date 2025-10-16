@@ -6,7 +6,7 @@ import EditUserMenu from "../components/EditUserMenu";
 import ExportMenu from "../components/ExportMenu";
 import { authHeader } from "../utils/auth";
 import { BASE_API_URL } from "../utils/base_api_url";
-import { ExportIcon } from "../utils/icons";
+import { ExportIcon, IconSearch } from "../utils/icons"; 
 import "../styles/admin.css";
 
 export default function Admin() {
@@ -19,6 +19,8 @@ export default function Admin() {
 
   const [editing, setEditing] = useState(null);
   const [showExport, setShowExport] = useState(false);
+
+  const [fakeQuery, setFakeQuery] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -75,11 +77,62 @@ export default function Admin() {
           {/* Top row: Users (left) · Export (right) */}
           <div className="header-top">
             <h1>Users</h1>
-            <button className="btn export-btn" onClick={() => setShowExport(true)}><ExportIcon></ExportIcon><span className="export-btn-text">Export</span></button>
+            <button className="btn export-btn" onClick={() => setShowExport(true)}>
+              <span className="export-btn-text">Export</span>
+              <ExportIcon />
+            </button>
           </div>
 
-          {/* Sub row: A→Z (left) · View Mode (right) */}
-          <div className="header-sub">
+          {/* Sub row: search (left) · View Mode (right) */}
+          <div
+            className="header-sub"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "1rem"
+            }}
+          >
+            {/* search bar*/}
+            <div
+              className="searchbar"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: ".5rem",
+                border: "1px solid var(--color-surface-border)",
+                background: "var(--color-surface)",
+                padding: ".4rem .6rem",
+                borderRadius: "6px",
+                maxWidth: "360px",
+                width: "100%",
+                boxShadow: "0 2px 6px var(--color-surface-shadow, transparent)"
+              }}
+            >
+              <svg
+                src={IconSearch}
+                alt=""
+                aria-hidden="true"
+                width="16"
+                height="16"
+                style={{ display: "block", opacity: 0.85 }}
+              />
+              <input
+                type="search"
+                placeholder="Search users…"
+                aria-label="Search users"
+                value={fakeQuery}
+                onChange={(e) => setFakeQuery(e.target.value)}
+                style={{
+                  border: 0,
+                  outline: 0,
+                  background: "transparent",
+                  color: "var(--color-text)",
+                  width: "100%"
+                }}
+              />
+            </div>
+
             <UsersViewModeMenu view={view} onChangeView={setView} />
           </div>
         </div>

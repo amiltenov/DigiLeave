@@ -6,6 +6,7 @@ import { authHeader } from "../utils/auth";
 import { BASE_API_URL } from "../utils/base_api_url";
 import "../styles/approver.css";
 import "../styles/admin.css";
+import { ExportIcon } from "../utils/icons";
 
 export default function Approver() {
   const [assignees, setAssignees] = useState([]);
@@ -108,8 +109,9 @@ export default function Approver() {
       <div className="approver-header glass">
         <h1>Approver</h1>
         <div className="approver-actions" style={{ display: "flex", gap: 8 }}>
-          <button className="accent-btn" onClick={loadAllRequests}>All Requests</button>
-          <button className="accent-btn" onClick={() => setShowExport(true)}>Export</button>
+          <button className="export-btn" onClick={loadAllRequests}>All Requests</button>
+          <button className="export-btn" onClick={() => setShowExport(true)}><span>Export</span>
+      <ExportIcon /></button>
         </div>
       </div>
 
