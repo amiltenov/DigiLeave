@@ -20,6 +20,13 @@ function prettyType(t) {
     .join(" ");
 }
 
+function toLocalISO(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`; // YYYY-MM-DD
+}
+
 export default function NewRequest() {
   const [type, setType] = useState(LEAVE_TYPES[0]);
   const [startDate, setStartDate] = useState("");
@@ -30,6 +37,9 @@ export default function NewRequest() {
 
   const [availableDays, setAvailableDays] = useState(null);
 
+
+  const [holidayDates, setHolidayDates] = useState(() => new Set());
+
   useEffect(() => {
     const h = new Headers();
     Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
@@ -39,20 +49,63 @@ export default function NewRequest() {
       .catch(() => setAvailableDays(null));
   }, []);
 
+  useEffect(() => {
+    if (!startDate || !endDate) {
+      setHolidayDates(new Set());
+      return;
+    }
+    const s = new Date(startDate);
+    const e = new Date(endDate);
+    if (Number.isNaN(s) || Number.isNaN(e) || s > e) {
+      setHolidayDates(new Set());
+      return;
+    }
+
+    const years = [];
+    for (let y = s.getFullYear(); y <= e.getFullYear(); y++) years.push(y);
+
+    Promise.all(
+      years.map((y) =>
+        fetch(`https://date.nager.at/api/v3/PublicHolidays/${y}/BG`)
+          .then((r) => (r.ok ? r.json() : Promise.resolve([])))
+          .catch(() => [])
+      )
+    )
+      .then((lists) => {
+        const ddmmyyyySet = new Set(
+          lists
+            .flat()
+            .map((h) => formatDate(String(h.date))) // -> "DD-MM-YYYY"
+            .filter(Boolean)
+        );
+        setHolidayDates(ddmmyyyySet);
+      })
+      .catch(() => {
+        setHolidayDates(new Set());
+      });
+  }, [startDate, endDate]);
+
   const workdaysCount = useMemo(() => {
     if (!startDate || !endDate) return 0;
     const s = new Date(startDate);
     const e = new Date(endDate);
     if (Number.isNaN(s) || Number.isNaN(e) || s > e) return 0;
+
     let d = new Date(s);
     let count = 0;
     while (d <= e) {
       const day = d.getDay(); // 0..6
-      if (day !== 0 && day !== 6) count++;
+      if (day !== 0 && day !== 6) {
+        // Mon–Fri only
+        const isoLocal = toLocalISO(d);     // "YYYY-MM-DD" (local)
+        const dmy = formatDate(isoLocal);   // "DD-MM-YYYY" to match Set
+        const isHoliday = holidayDates.has(dmy);
+        if (!isHoliday) count++;
+      }
       d.setDate(d.getDate() + 1);
     }
     return count;
-  }, [startDate, endDate]);
+  }, [startDate, endDate, holidayDates]);
 
   const remainingDays = useMemo(() => {
     if (availableDays == null) return null;
