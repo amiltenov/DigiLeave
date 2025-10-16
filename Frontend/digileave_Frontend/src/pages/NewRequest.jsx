@@ -20,11 +20,12 @@ function prettyType(t) {
     .join(" ");
 }
 
+// --- helper for YYYY-MM-DD in localtime
 function toLocalISO(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`; // YYYY-MM-DD
+  return `${y}-${m}-${day}`;
 }
 
 export default function NewRequest() {
@@ -37,7 +38,7 @@ export default function NewRequest() {
 
   const [availableDays, setAvailableDays] = useState(null);
 
-
+  // BG public holiday dates (YYYY-MM-DD)
   const [holidayDates, setHolidayDates] = useState(() => new Set());
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function NewRequest() {
       .catch(() => setAvailableDays(null));
   }, []);
 
+  // Fetch BG official holidays for all years in the selected range
   useEffect(() => {
     if (!startDate || !endDate) {
       setHolidayDates(new Set());
@@ -72,13 +74,15 @@ export default function NewRequest() {
       )
     )
       .then((lists) => {
-        const ddmmyyyySet = new Set(
+        const isoSet = new Set(
           lists
             .flat()
-            .map((h) => formatDate(String(h.date))) // -> "DD-MM-YYYY"
-            .filter(Boolean)
+            .filter((h) =>
+              Array.isArray(h.types) ? h.types.includes("Public") : true
+            )
+            .map((h) => h.date) // already YYYY-MM-DD
         );
-        setHolidayDates(ddmmyyyySet);
+        setHolidayDates(isoSet);
       })
       .catch(() => {
         setHolidayDates(new Set());
@@ -90,18 +94,14 @@ export default function NewRequest() {
     const s = new Date(startDate);
     const e = new Date(endDate);
     if (Number.isNaN(s) || Number.isNaN(e) || s > e) return 0;
-
     let d = new Date(s);
     let count = 0;
     while (d <= e) {
       const day = d.getDay(); // 0..6
-      if (day !== 0 && day !== 6) {
-        // Mon–Fri only
-        const isoLocal = toLocalISO(d);     // "YYYY-MM-DD" (local)
-        const dmy = formatDate(isoLocal);   // "DD-MM-YYYY" to match Set
-        const isHoliday = holidayDates.has(dmy);
-        if (!isHoliday) count++;
-      }
+      const isWeekend = day === 0 || day === 6;
+      const iso = toLocalISO(d); // use local date to match API dates
+      const isHoliday = holidayDates.has(iso);
+      if (!isWeekend && !isHoliday) count++;
       d.setDate(d.getDate() + 1);
     }
     return count;
