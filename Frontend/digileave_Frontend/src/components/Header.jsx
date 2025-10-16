@@ -126,8 +126,8 @@ export default function Header() {
               {user.role == "ADMIN" ? 
               (
               <>
-                <Link className="nav-btn" to="/admin">Admin</Link>
-                <Link className="nav-btn" to="/approver">Approver</Link>
+                <Link className="nav-btn" to="/admin" onClick={() => setMenuOpen(false)}>Admin</Link>
+                <Link className="nav-btn" to="/approver" onClick={() => setMenuOpen(false)}>Approver</Link>
               </>
               ) 
               : 
