@@ -109,7 +109,7 @@ export default function Admin() {
                 boxShadow: "0 2px 6px var(--color-surface-shadow, transparent)"
               }}
             >
-              <img
+              <svg
                 src={IconSearch}
                 alt=""
                 aria-hidden="true"
