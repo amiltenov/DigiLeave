@@ -120,52 +120,7 @@
 .rd-badge--cancelled{ background: var(--rd-cancelled-bg);color: var(--rd-cancelled-bg); border-color: var(--rd-cancelled-bg); }
 
 
-/* =======================
-   MOBILE FIXES (≤756px)
-   ======================= */
 @media (max-width: 756px){
-  /* give the overlay breathing room + respect safe areas */
-  .rd-modal{
-    /* override place-items: center; with explicit align/justify + padding */
-    align-items: start;
-    justify-items: center;
-    padding: calc(16px + env(safe-area-inset-top)) 12px
-             calc(16px + env(safe-area-inset-bottom));
-  }
-
-  /* constrain height, make the inner body scroll, keep header/foot visible */
-  .rd-panel{
-    width: 100%;
-    max-width: 680px;
-    display: flex;
-    flex-direction: column;
-
-    /* viewport-limited height so content can scroll inside */
-    max-height: calc(100vh - (32px + env(safe-area-inset-top) + env(safe-area-inset-bottom)));
-    overflow: hidden; /* hide scrollbars on the panel itself */
-    border-radius: 16px;
-  }
-
-  /* stick header to top while body scrolls */
-  .rd-head{
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background: var(--color-bg);
-  }
-
-  /* scroll area */
-  .rd-body{
-    overflow: auto;
-    -webkit-overflow-scrolling: touch; /* smooth iOS scrolling */
-    padding: 16px;
-    /* if your desktop had bigger padding, keep it here — this is mobile */
-  }
-
-  /* stick footer (actions) to bottom */
-  .rd-foot{
-    position: sticky;
-    bottom: 0;
-    background: var(--color-bg);
-  }
+  .rd-modal{ align-items: flex-start; }                 /* stop hard-centering */
+  .rd-panel{ margin-top: calc(36px + env(safe-area-inset-top, 0px)); }
 }
