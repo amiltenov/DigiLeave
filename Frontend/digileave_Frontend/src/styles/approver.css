@@ -347,3 +347,11 @@
   .approver-header.glass { padding: 4px 8px; margin-bottom: 6px; }
   .approver-header h1 { font-size: 1rem; }
 }
+
+
+.section-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}

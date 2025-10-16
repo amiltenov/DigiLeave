@@ -8,7 +8,7 @@
   --color-accent: #ffd733;
   --color-accent-dark: #ffcc00;
   --color-surface: rgba(255,255,255,0.25);
-  --color-surface-border: rgba(255,255,255,0.4);
+  --color-surface-border: rgba(134, 134, 134, 0.281);
   --color-surface-shadow: rgba(0,0,0,0.15);
 
 
@@ -34,6 +34,8 @@
   --footer-background: #e7e7e7;
   --footer-background2: #e3e3e3;
   --footer-background3: #ededed;
+
+  --new-tint: 20%;
 }
 
 /* Dark theme */
@@ -69,6 +71,8 @@
   --footer-background: #131313;
   --footer-background2: #101010;
   --footer-background3: #474747;
+
+  --new-tint: 6%;
 }
 
 

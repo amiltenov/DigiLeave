@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import ExportMenu from "../components/ExportMenu";
+import RequestsViewMode from "../components/RequestsViewMode";
+import RequestsViewModeMenu from "../components/RequestsViewModeMenu";
 import { authHeader } from "../utils/auth";
 import "../styles/approver.css";
 import "../styles/admin.css";
@@ -15,11 +17,14 @@ export default function Approver() {
 
   const [selectedAssignee, setSelectedAssignee] = useState(null);
 
+  // view + sorting for REQUESTS (underneath the assignees)
+  const [view, setView] = useState("cards");          // "cards" | "table" | "compact"
+  const [sortBy, setSortBy] = useState("recent");     // "recent" | "start-date" | "pending-first"
+  const [sortOrder, setSortOrder] = useState("asc"); // "asc" | "desc"
+
   const [showExport, setShowExport] = useState(false);
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") setShowExport(false);
-    };
+    const onKey = (e) => { if (e.key === "Escape") setShowExport(false); };
     if (showExport) window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [showExport]);
@@ -36,11 +41,11 @@ export default function Approver() {
       setAssigneesLoading(true);
       setAssigneesErr("");
       try {
-        const res = await fetch("http://localhost:8080/approver/assignees", { headers: authHeader() });
+        const res = await fetch("https://digileave.onrender.com/approver/assignees", { headers: authHeader() });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (alive) setAssignees(Array.isArray(data) ? data : []);
-      } catch (e) {
+      } catch {
         if (alive) setAssigneesErr("Couldn't load assignees.");
       } finally {
         if (alive) setAssigneesLoading(false);
@@ -58,11 +63,11 @@ export default function Approver() {
     setRequestsLoading(true);
     setRequestsErr("");
     try {
-      const res = await fetch("http://localhost:8080/approver/requests", { headers: authHeader() });
+      const res = await fetch("https://digileave.onrender.com/approver/requests", { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRequests(Array.isArray(data) ? data : []);
-    } catch (e) {
+    } catch {
       setRequestsErr("Couldn't load requests.");
     } finally {
       setRequestsLoading(false);
@@ -74,36 +79,28 @@ export default function Approver() {
     setRequestsLoading(true);
     setRequestsErr("");
     try {
-      const res = await fetch(`http://localhost:8080/approver/assignee/${assignee.id}/requests`, { headers: authHeader() });
+      const res = await fetch(`https://digileave.onrender.com/approver/assignee/${assignee.id}/requests`, { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRequests(Array.isArray(data) ? data : []);
-    } catch (e) {
+    } catch {
       setRequestsErr("Couldn't load requests for this user.");
     } finally {
       setRequestsLoading(false);
     }
   }
 
-  async function decide(reqId, status) {
-    try {
-      const res = await fetch(`http://localhost:8080/approver/request/${reqId}`, {
-        method: "PATCH",
-        headers: { ...authHeader(), "Content-Type": "application/json" },
-        body: JSON.stringify({ status })
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const updated = await res.json();
-      setRequests(prev => prev.map(r => (r.id === reqId ? updated : r)));
-    } catch (e) {
-      setRequestsErr("Couldn't update request.");
-    }
-  }
+  // decorate with user display info
+  const decoratedRequests = useMemo(() => {
+    return requests.map((r) => {
+      const u = userById.get(r.userId);
+      return { ...r, userName: u?.fullName || null, userEmail: u?.email || null };
+    });
+  }, [requests, userById]);
 
-  const sortedRequests = useMemo(() => {
-    const order = { PENDING: 0, APPROVED: 1, REJECTED: 2, CANCELLED: 3 };
-    return [...requests].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
-  }, [requests]);
+  const handleAfterAction = (updated) => {
+    setRequests((prev) => prev.map((x) => (x.id === updated.id ? updated : x)));
+  };
 
   return (
     <div className="approver-page">
@@ -163,11 +160,24 @@ export default function Approver() {
 
       <section className="approver-section">
         <div className="section-head">
-          <h2>
-            {selectedAssignee
-              ? `Requests — ${selectedAssignee.fullName || selectedAssignee.email}`
-              : `Requests — All Assignees`}
-          </h2>
+          {/* pin sort/menu LEFT next to the title */}
+          <div className="section-left">
+            <h2>
+              {selectedAssignee
+                ? `Requests — ${selectedAssignee.fullName || selectedAssignee.email}`
+                : `Requests — All Assignees`}
+            </h2>
+
+            <RequestsViewModeMenu
+              view={view}
+              onChangeView={setView}
+              sortBy={sortBy}
+              sortOrder={sortOrder}
+              onChangeSortBy={(v) => setSortBy(v)}
+              onChangeSortOrder={(v) => setSortOrder(v)}
+            />
+          </div>
+
           {selectedAssignee && (
             <button
               className="ghost-btn"
@@ -184,50 +194,24 @@ export default function Approver() {
         {requestsErr && <div className="msg glass">{requestsErr}</div>}
         {requestsLoading ? (
           <div className="msg glass">Loading requests…</div>
-        ) : sortedRequests.length === 0 ? (
+        ) : decoratedRequests.length === 0 ? (
           <div className="msg glass">No requests.</div>
         ) : (
-          <div className="request-list">
-            {sortedRequests.map(r => {
-              const u = userById.get(r.userId);
-              const cls = (r.status || "").toLowerCase();
-              return (
-                <div key={r.id} className={`request-item glass ${cls}`}>
-                  <div className="req-top">
-                    <div className="req-who">
-                      <div className="who-avatar">{(u?.email || "").slice(0,2).toUpperCase()}</div>
-                      <div className="who-block">
-                        <div className="who-name">{u?.fullName || "—"}</div>
-                        <div className="who-email">{u?.email || r.userId}</div>
-                        <span className={`status pill ${cls}`}>{r.status}</span>
-                      </div>
-                    </div>
-                  </div>
+          <RequestsViewMode
+            items={decoratedRequests}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            view={view}
+            role="approver"
+            apiOrigin={"https://digileave.onrender.com"}
+            authHeader={authHeader}
+            onAfterAction={handleAfterAction}
 
-                  <div className="req-mid">
-                    <div className="req-dates">
-                      <span>{r.startDate}</span>
-                      <span className="dash">→</span>
-                      <span>{r.endDate}</span>
-                    </div>
-                    <div className="req-meta">
-                      <span className="badge">{r.type}</span>
-                      <span className="badge">{r.workdaysCount ?? 0} days</span>
-                    </div>
-                  </div>
-
-                  {r.comment && <div className="req-comment">“{r.comment}”</div>}
-
-                  {r.status === "PENDING" && (
-                    <div className="req-actions">
-                      <button className="btn-approve" onClick={() => decide(r.id, "APPROVED")}>Approve</button>
-                      <button className="btn-reject" onClick={() => decide(r.id, "REJECTED")}>Reject</button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+            showNewPill={false}
+            markSeenOnOpen={false}
+            prioritizeUnseen={false}
+            showIdentityInTable={true}
+          />
         )}
       </section>
     </div>

@@ -1,4 +1,3 @@
-
 .admin-root {
   padding: 16px 24px;
   display: flex;
@@ -13,16 +12,38 @@
   padding: 0 16px;
 }
 
-.admin-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
+/* ===== Header ===== */
+.admin-header { display: grid; gap: 8px; margin-bottom: 14px; }
 .admin-header h1 { margin: 0; font-size: 2rem; }
 
+/* Users (left) – Export (right) on one line */
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.export-btn { white-space: nowrap; }
 
+/* Sub row: A→Z (left) – View Mode (right) */
+.header-sub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Make A→Z match the View Mode menu (neutral—no yellow) */
+.sort-toggle {
+  font-weight: 700;
+  background: transparent;
+  border: 1px solid var(--color-surface-border);
+  color: var(--color-text);
+}
+.sort-toggle.is-active { border-color: var(--color-surface-border); }
+
+/* ===== Table (legacy support) ===== */
+.admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .admin-table {
   width: 100%;
   border-collapse: separate;
@@ -46,6 +67,7 @@
 .admin-table tbody td { border-bottom: 1px solid var(--color-surface-border); }
 .admin-table thead th {
   font-weight: 700;
+  /* subtle header tint with your accent, but not strong */
   background: color-mix(in srgb, var(--color-accent) 22%, transparent);
 }
 .admin-table tbody tr:last-child td:first-child { border-bottom-left-radius: 14px; }
@@ -54,6 +76,7 @@
 .admin-table td.actions { white-space: nowrap; }
 .admin-table td.actions .btn + .btn { margin-left: 12px; }
 
+/* ===== Buttons ===== */
 .btn {
   padding: 10px 16px;
   border-radius: 10px;
@@ -70,13 +93,14 @@
 .btn.ghost { background: transparent; border: 1px solid var(--color-surface-border); color: var(--color-text); }
 .btn.danger { background: #ff6b6b; }
 
-.admin-modal {
+/* ===== EditUserMenu overlay (existing) ===== */
+.admin-menu {
   position: fixed; inset: 0;
   display: grid; place-items: center;
   background: rgba(0, 0, 0, 0.25);
   z-index: 50;
 }
-.admin-modal-card {
+.admin-menu-card {
   width: 100%; max-width: 700px;
   padding: 18px; border-radius: 14px;
   background: var(--color-surface);
@@ -85,201 +109,54 @@
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   color-scheme: var(--color-scheme, light);
 }
-:root[data-theme="dark"] .admin-modal-card { --color-scheme: dark; }
-:root[data-theme="light"] .admin-modal-card { --color-scheme: light; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.icon-btn { background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--color-text); }
-.modal-alert.err {
-  padding: 10px 12px; margin: 8px 0 10px; border: 1px solid rgba(200,0,0,.35);
-  background: rgba(200,0,0,.08); border-radius: 10px;
-}
-.modal-actions { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; }
-.modal-actions.spaced { gap: 14px; }
+:root[data-theme="dark"] .admin-menu-card { --color-scheme: dark; }
+:root[data-theme="light"] .admin-menu-card { --color-scheme: light; }
 
-
-.modal-form { width: 100%; }
-.grid { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
-.grid .span-2 { grid-column: span 2; }
-.grid label { display: grid; gap: 6px; }
-.grid input, .grid select, .grid textarea {
-  padding: 10px 12px; border: 1px solid var(--color-surface-border);
-  border-radius: 10px; background: var(--color-background); color: var(--color-text);
-}
-
-.themed-select {
-  appearance: none; -webkit-appearance: none;
-  background: var(--color-background); color: var(--color-text);
-  border: 1px solid var(--color-surface-border); border-radius: 10px; padding: 10px 12px;
-}
-:root[data-theme="dark"] .themed-select { color-scheme: dark; }
-:root[data-theme="light"] .themed-select { color-scheme: light; }
-/*!*/
-.themed-select option { 
-  background: var(--color-background);
-  color: var(--color-text);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.suggest-wrap { position: relative; }
-.suggest-list {
-  position: absolute; left: 0; right: 0; top: 100%; margin-top: 8px;
-  border-radius: 10px; border: 1px solid var(--color-surface-border);
-  box-shadow: 0 10px 24px var(--color-surface-shadow);
-  z-index: 10; max-height: 240px; overflow: auto;
-}
-.suggest-list.solid { background: rgba(20,20,20,.98); }
-:root[data-theme="light"] .suggest-list.solid { background: rgba(255,255,255,.98); }
-.suggest-item {
-  width: 100%; display: flex; justify-content: space-between; gap: 12px;
-  padding: 10px 12px; background: transparent; border: none; cursor: pointer; color: var(--color-text); text-align: left;
-}
-.suggest-item:hover { background: rgba(255,215,51,.12); }
-.s-name { opacity: .9; } .s-email { font-weight: 700; }
-
-
-.chip-wrap {
-  border: 1px solid var(--color-surface-border);
-  border-radius: 10px;
-  padding: 12px;
-  background: var(--color-background);
-  
-}
-
-
-.chip-row {
-  display: flex;
-  gap: 12px;
-  justify-content: space-evenly;
-  margin-bottom: 12px;
-}
-
-.chip-row.center { justify-content: center; }
-.chip-row:last-of-type { margin-bottom: 0; }
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--color-surface-border);
-  background: var(--color-surface);
-  box-shadow: 0 3px 10px var(--color-surface-shadow);
-  flex: 0 0 auto;
-}
-
-.chip-avatar {
-  width: 22px; height: 22px;
+/* ===== Export modal overlay (matches Admin.jsx usage) ===== */
+.admin-modal {
+  position: fixed; inset: 0;
   display: grid; place-items: center;
-  border-radius: 50%;
-  font-size: 12px; font-weight: 800;
-  background: var(--color-accent); color: #111; user-select: none;
+  background: rgba(0,0,0,0.25);
+  z-index: 60;
 }
-
-.chip-text { display: grid; }
-.chip-name { font-size: 12px; opacity: .9; }
-.chip-email { font-size: 12px; font-weight: 700; }
-
-.chip-x {
-  background: transparent; border: none;
-  font-size: 14px; cursor: pointer;
-  color: var(--color-text); opacity: .85;
-}
-.chip-x:hover { opacity: 1; }
-
-.chip-add {
-  position: relative;
-  margin-top: 12px;
-
-}
-.chip-add input {
-  width: 96%;
+.admin-modal-card {
+  width: 100%; max-width: 760px;
+  padding: 18px; border-radius: 14px;
+  background: var(--color-surface);
   border: 1px solid var(--color-surface-border);
-  border-radius: 10px;
-  background: var(--color-background);
-  color: var(--color-text);
-} 
-
-#role-dropdown {
-  background-color: var(--color-surface);
+  box-shadow: 0 10px 28px var(--color-surface-shadow);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
 
-/* ! MOBILE ! */
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .admin-inner { padding: 0 8px; }
+  .header-top { gap: 8px; }
+  .header-sub { gap: 8px; }
+}
+
+@media (max-width: 720px) {
+  /* Keep Users + Export on one line; move sub-controls below */
+  .admin-header { gap: 10px; }
+  .header-top { flex-wrap: nowrap; }
+  .header-sub { flex-wrap: wrap; }
+  .sort-toggle { order: 1; }
+  /* Let the view-mode menu sit on the right when wrapped */
+  .vm.bar { order: 2; margin-left: auto; }
+}
+
+@media (max-width: 480px) {
+  .export-btn { padding: 8px 12px; }
+}
+
+/* Legacy mobile table widths (if table view forces scroll) */
 @media (max-width: 768px) {
   .admin-root { padding: 12px; }
   .admin-inner { padding: 0; }
-
-  .admin-table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .admin-table thead th,
-  .admin-table tbody td {
-    white-space: nowrap !important;
-    word-break: normal !important;
-    overflow-wrap: normal !important;
-    hyphens: manual !important;
-  }
-
-
   .admin-table { min-width: 720px; }
   .admin-table td.actions .btn { padding: 8px 12px; }
   .admin-table td.actions .btn + .btn { margin-left: 8px; }
-
-@media (max-width: 768px) {
-  .admin-modal {
-    align-items: start;
-    justify-content: center;
-    padding: 92px 12px 12px;
-  }
-  .admin-modal-card {
-    width: 100%;
-    max-width: 96vw;
-    max-height: calc(100vh - 92px - 16px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    border-radius: 16px;
-    padding: 16px;
-    box-sizing: border-box;
-  }
-
-  @media (max-width: 768px) {
-  .admin-modal .chip-wrap{ text-align: center;}
-  .admin-modal .chip-row { display: block !important; }
-
-  .admin-modal .chip {
-    margin: 8px auto !important;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  .admin-modal .chip-text { flex: 1 1 auto; min-width: 0; }
-  .admin-modal .chip-name,
-  .admin-modal .chip-email {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .admin-modal .chip-x {
-    margin-left: 8px;
-    flex: 0 0 auto;
-  }
 }
-
-  .admin-modal .chip-add {
-    margin: 12px 0 0;
-  }
-  .admin-modal .chip-add input {
-    width: 92%;
-    height: 44px;
-    font-size: 1rem;
-  }
-  .admin-modal .suggest-list { left: 0; right: 0; }
-}
-}
-
 @media (max-width: 420px) {
   .admin-table { min-width: 640px; }
 }

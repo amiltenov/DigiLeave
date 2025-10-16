@@ -16,7 +16,7 @@
 /* helpers */
 .request-nowrap{ white-space:nowrap; }
 .request-ellipsis{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.request-cal{ display:inline-flex; align-items:center; margin-right:8px; opacity:.9; }
+.request-cal{ display:inline-flex; align-items:center; margin-right:4px;margin-left:3px; opacity:.9; }
 
 /* shared transitions (smooth theme + motion) */
 .request-card,
@@ -120,7 +120,7 @@
 .request-avatar{
   width:44px; height:44px; border-radius:999px;
   display:flex; align-items:center; justify-content:center;
-  background: var(--color-accent); color:#111; font-weight:800; flex:0 0 auto;
+  background: var(--color-accent); color:#3a3a3a; font-weight:800; flex:0 0 auto;
   box-shadow: inset 0 -2px 0 rgba(0,0,0,.15);
 }
 .request-card-title{ display:flex; flex-direction:column; min-width:0; }
@@ -138,7 +138,7 @@
   display:flex; align-items:center; gap:10px; margin-top:6px;
   color: color-mix(in oklab, var(--color-text) 90%, transparent);
 }
-.request-type{ font-weight:400; text-transform:capitalize; font-size: 16px; margin:2px}
+.request-type{ font-weight:400; text-transform:capitalize; font-size: 16px; margin:2px; margin-top: 4px; margin-bottom: -2px;}
 
 .request-comment{
   margin-top:10px; padding:12px 14px;
@@ -151,6 +151,48 @@
 .request-card.is-cancelled{ opacity:.92; filter:saturate(.9);}
 .request-card.is-cancelled .request-name{ text-decoration: line-through; opacity:.85; }
 
+.cancel-inline{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:10px;
+}
+
+/* let the comment take the remaining width */
+.cancel-inline .request-comment{
+  flex:1 1 auto;
+}
+
+/* gradient cancel button, consistent with Account styles */
+.cancel-btn{
+  height:44px;
+  padding:0 14px;
+  border:none;
+  border-radius:10px;
+  font-weight:750;
+  white-space:nowrap;
+  background: #3030302c;
+  color: var(--color-text);
+  box-shadow: 0 2px 4px var(--btn-shadow);
+  transition: transform .15s ease, box-shadow .15s ease, opacity .25s ease;
+  margin-top: 5px;
+}
+
+.cancel-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px var(--btn-shadow-hover);
+}
+
+.cancel-btn:active{
+  transform: translateY(0);
+  box-shadow: 0 2px 4px var(--btn-shadow-active);
+}
+
+.cancel-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
 /* Compact */
 .request-compact{
   position:relative; overflow:visible;
@@ -161,23 +203,29 @@
   background: var(--color-surface);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 6px 18px var(--color-surface-shadow);
+  text-transform: capitalize;
+  
 }
 .request-compact:hover{ transform: translateY(-2px) scale(1.008); box-shadow: var(--shadow-1); }
 
 .request-compact-avatar{
   width:36px; height:36px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  background: var(--color-accent); color:#111; font-weight:700; flex:0 0 auto;
+  background: var(--color-accent); color:#313131; font-weight:700; flex:0 0 auto;
   box-shadow: inset 0 -2px 0 rgba(0,0,0,.15);
+  align-self: baseline;
 }
 .request-compact-body{ flex:1 1 auto; min-width:0; }
 .request-compact-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
 .request-compact-name{ font-weight:700; color: var(--color-text); }
 .request-compact-sub{
-  display:flex; align-items:center; gap:8px; margin-top:2px;
+  display:flex; align-items:center; gap:8px; margin-top:8px;
   color: color-mix(in oklab, var(--color-text) 82%, transparent);
+  font-size: clamp(70%, 85% , 100%); 
+  margin-left: -40px;
+  margin-bottom:-6px;
 }
-.request-compact.is-new{ border-left:4px solid var(--color-accent); }
+.request-compact.is-new{ border-left:4px solid var(--color-accent);  }
 
 /* Table */
 .request-tablewrap{
@@ -192,7 +240,7 @@
 .request-table thead th{
   text-align:left; font-weight:700; font-size:.9rem; padding:14px;
   background: color-mix(in oklab, var(--color-surface) 82%, transparent);
-  color: color-mix(in oklab, var(--color-text) 92%, transparent);
+  color: color-mix(in oklab, var(--color-text) 80%, transparent);
   border-bottom:1px solid var(--color-surface-border);
 }
 .request-table tbody tr{
@@ -207,6 +255,91 @@
 .request-table td{ padding:12px 14px; font-size:.95rem; color: var(--color-text); }
 
 .request-row--new{
-  background: color-mix(in oklab, var(--color-accent) 6%, transparent);
+  background: color-mix(in oklab, var(--color-accent) var(--new-tint), transparent);
   border-left:4px solid var(--color-accent);
+}
+
+
+@media (max-width: 640px){
+  .request-compact-sub{
+    display: grid !important;
+    grid-template-columns: auto 1fr auto auto; /* calendar | dates | days | type */
+    grid-template-rows: auto auto;            /* row1=start, row2=end */
+    column-gap: 8px;
+    row-gap: 0px;
+    align-items: center;
+    margin-top: -2px;
+    font-size: 80%;
+    padding-left: 4px;
+
+    /* margin-bottom: 0px; */
+  }
+
+  /* calendar icon spans both date rows on the left */
+  .request-compact-sub .request-cal{
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  /* start date (row 1, middle) */
+  .request-compact-sub > :nth-child(2){
+    grid-column: 2;
+    grid-row: 1;
+    white-space: nowrap;
+  }
+
+  /* end date (row 2, middle) */
+  .request-compact-sub > :nth-child(3){
+    grid-column: 2;
+    grid-row: 2;
+    white-space: nowrap;
+  }
+
+  /* days (row 1, right) */
+  .request-compact-sub > :nth-child(4){
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    white-space: nowrap;
+  }
+
+  /* type (row 1, far right; trimmed if long) */
+  .request-compact-sub > :nth-child(5){
+    grid-column: 4;
+    grid-row: 1;
+    justify-self: end;
+    white-space: nowrap;
+    max-width: 16ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .request-compact-avatar{
+  width:28px; height:28px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--color-accent); color:#313131; font-weight:700; flex:0 0 auto;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,.15);
+  align-self: baseline;
+  font-size: 12px;
+  padding:0px;
+  /* margin-top: -2%; */
+}
+.request-compact-name{ 
+  font-weight:600; color: var(--color-text);
+  /* margin-top: -4%;
+   */
+   font-size: 95%;
+}
+
+  .request-badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:4px 6px; border-radius:100px; font-size:12px; font-weight:700;
+    border:1px solid transparent; backdrop-filter: blur(6px);
+
+  }
+
+  .request-compact-sub > :nth-child(4),
+  .request-compact-sub > :nth-child(5){
+    align-self: end;
+    transform: translateY(8px);
+  }
 }
