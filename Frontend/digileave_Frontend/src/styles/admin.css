@@ -191,3 +191,14 @@
 @media (max-width: 420px) {
   .admin-table { min-width: 640px; }
 }
+
+
+
+.searchbar svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: block;
+  color: var(--color-text, #333);
+  opacity: 0.85;
+}
