@@ -320,31 +320,6 @@
 .table-striped tr:nth-child(odd){ background: var(--color-bg); }
 
 
-/* MOBILE ONLY: put sort trigger next to view toggle, push A–Z under them */
-@media (max-width: 756px){
-  /* let the top bar wrap items onto a second row */
-   /* .vm.bar{
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-  } */
-
-  /* flatten the sort-menu so its two buttons behave like direct siblings
-     of .vm.bar (no markup changes needed) */
-     
-     /* first row items */
-  /* .vm.toggle{
-    margin-left: auto;
-    justify-content: flex-end;
-  } */
-
- 
-
-    /* .vm.toggle{ margin-left: auto; justify-content: flex-end; } */
-   
-}
-
-
 /* ===== Mobile: fix uneven gutters for cards/list ===== */
 @media (max-width: 756px){
   /* make the page container use equal gutters AND respect iOS safe areas */
