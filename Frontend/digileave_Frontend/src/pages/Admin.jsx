@@ -110,7 +110,7 @@ export default function Admin() {
               }}
             >
               <img
-                src={searchIcon}
+                src={IconSearch}
                 alt=""
                 aria-hidden="true"
                 width="16"
