@@ -6,6 +6,7 @@ import EditUserMenu from "../components/EditUserMenu";
 import ExportMenu from "../components/ExportMenu";
 import { authHeader } from "../utils/auth";
 import { BASE_API_URL } from "../utils/base_api_url";
+import { ExportIcon } from "../utils/icons";
 import "../styles/admin.css";
 
 export default function Admin() {
@@ -74,7 +75,7 @@ export default function Admin() {
           {/* Top row: Users (left) · Export (right) */}
           <div className="header-top">
             <h1>Users</h1>
-            <button className="btn export-btn" onClick={() => setShowExport(true)}>Export</button>
+            <button className="btn export-btn" onClick={() => setShowExport(true)}><ExportIcon></ExportIcon><span className="export-btn-text">Export</span></button>
           </div>
 
           {/* Sub row: A→Z (left) · View Mode (right) */}

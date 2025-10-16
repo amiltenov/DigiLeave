@@ -260,7 +260,7 @@ export default function NewRequest() {
           </label>
 
           <div className="nr-previewCard">
-            <span className="nr-chip">Preview</span>
+            <span className="nr-stat">Preview</span>
             <div className="nr-previewText">
               {workdaysCount} workday{workdaysCount === 1 ? "" : "s"} (Mon–Fri)
             </div>
