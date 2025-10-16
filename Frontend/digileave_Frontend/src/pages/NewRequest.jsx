@@ -1,8 +1,10 @@
 import { useMemo, useState, useEffect } from "react";
 import { authHeader } from "../utils/auth";
+import { hasOverlapWithRequests } from "../utils/overlapcheck";
+
 import "../styles/newrequest.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "http://localhost:8080";
+const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
 
 const LEAVE_TYPES = [
   "ANNUAL_PAID_LEAVE",
@@ -41,6 +43,8 @@ export default function NewRequest() {
   // BG public holiday dates (YYYY-MM-DD)
   const [holidayDates, setHolidayDates] = useState(() => new Set());
 
+  const [myRequests, setMyRequests] = useState([]);
+
   useEffect(() => {
     const h = new Headers();
     Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
@@ -48,6 +52,11 @@ export default function NewRequest() {
       .then((r) => (r.ok ? r.json() : null))
       .then((u) => setAvailableDays(u?.availableLeaveDays ?? null))
       .catch(() => setAvailableDays(null));
+
+    fetch(`${API}/requests`, { headers: h })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((list) => (Array.isArray(list) ? setMyRequests(list) : setMyRequests([])))
+      .catch(() => setMyRequests([]));
   }, []);
 
   // Fetch BG official holidays for all years in the selected range
@@ -134,6 +143,13 @@ export default function NewRequest() {
       return;
     }
 
+    const hasOverlap = hasOverlapWithRequests(startDate, endDate, myRequests);
+
+    if (hasOverlap) {
+      setMsg({ type: "err", text: "This request overlaps with an existing leave request." });
+      return;
+    }
+
     const payload = {
       type,
       startDate,
@@ -163,10 +179,16 @@ export default function NewRequest() {
       const saved = await res.json().catch(() => null);
       setMsg({
         type: "ok",
-        text: saved?.id
-          ? `Request submitted successfully.`
-          : "Request submitted successfully.",
+        text: saved?.id ? `Request submitted successfully.` : "Request submitted successfully.",
       });
+      
+
+      const h = new Headers();
+      Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
+      fetch(`${API}/requests`, { headers: h })
+        .then((r) => (r.ok ? r.json() : []))
+        .then((list) => (Array.isArray(list) ? setMyRequests(list) : null))
+        .catch(() => {});
 
       setType(LEAVE_TYPES[0]);
       setStartDate("");
