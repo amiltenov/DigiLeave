@@ -19,24 +19,26 @@
 .request-cal{ display:inline-flex; align-items:center; margin-right:4px;margin-left:3px; opacity:.9; }
 
 /* shared transitions (smooth theme + motion) */
-.request-card,
-.request-compact,
-.request-tablewrap,
-.request-table th,
-.request-table td,
-.request-table tbody tr,
-.request-badge,
-.request-new,
-.request-comment,
-.request-type,
-.request-name,
-.request-email{
-  transition:
-    background-color .45s ease,
-    color .45s ease,
-    border-color .45s ease,
-    box-shadow .45s ease,
-    transform .6s ease;
+@media(min-width:800px){
+  .request-card,
+  .request-compact,
+  .request-tablewrap,
+  .request-table th,
+  .request-table td,
+  .request-table tbody tr,
+  .request-badge,
+  .request-new,
+  .request-comment,
+  .request-type,
+  .request-name,
+  .request-email{
+    transition:
+      background-color .45s ease,
+      color .45s ease,
+      border-color .45s ease,
+      box-shadow .45s ease,
+      transform .6s ease;
+  }
 }
 
 /* tiny dot + pulse for NEW in table rows */
