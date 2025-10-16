@@ -195,8 +195,8 @@
 
 
 .searchbar svg {
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
   display: block;
   color: var(--color-text, #333);
