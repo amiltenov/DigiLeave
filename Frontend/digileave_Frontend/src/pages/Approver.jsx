@@ -41,7 +41,7 @@ export default function Approver() {
       setAssigneesLoading(true);
       setAssigneesErr("");
       try {
-        const res = await fetch("http://localhost:8080/approver/assignees", { headers: authHeader() });
+        const res = await fetch("https://digileave.onrender.com/approver/assignees", { headers: authHeader() });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (alive) setAssignees(Array.isArray(data) ? data : []);
@@ -63,7 +63,7 @@ export default function Approver() {
     setRequestsLoading(true);
     setRequestsErr("");
     try {
-      const res = await fetch("http://localhost:8080/approver/requests", { headers: authHeader() });
+      const res = await fetch("https://digileave.onrender.com/approver/requests", { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRequests(Array.isArray(data) ? data : []);
@@ -79,7 +79,7 @@ export default function Approver() {
     setRequestsLoading(true);
     setRequestsErr("");
     try {
-      const res = await fetch(`http://localhost:8080/approver/assignee/${assignee.id}/requests`, { headers: authHeader() });
+      const res = await fetch(`https://digileave.onrender.com/approver/assignee/${assignee.id}/requests`, { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRequests(Array.isArray(data) ? data : []);
@@ -203,7 +203,7 @@ export default function Approver() {
             sortOrder={sortOrder}
             view={view}
             role="approver"
-            apiOrigin={"http://localhost:8080"}
+            apiOrigin={"https://digileave.onrender.com"}
             authHeader={authHeader}
             onAfterAction={handleAfterAction}
 

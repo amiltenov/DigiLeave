@@ -4,11 +4,13 @@
   color: var(--color-text);
   min-height: 100vh;
   display:flex; justify-content:center;
+  width: 100%;
 }
 
 .requests-inner {
   max-width: 1120px;
   margin: 0 auto;
+  width: 100%;
   /* padding: 24px 16px; */
 }
 
@@ -376,7 +378,7 @@
 
 /* mobile: clip horizontal overflow so the page can't drift sideways */
 @media (max-width: 756px){
-  html, body, .requests-root, .requests-inner { overflow-x: hidden; }
+  /* html, body, .requests-root, .requests-inner { overflow-x: hidden; } */
   .requests-inner {
   max-width: 1100px;
   margin: 0 auto;
@@ -398,4 +400,6 @@
     flex-shrink: 0;             /* don’t get squished in a flex row */
     max-width: 100%;            /* don’t overflow container */
   }
+
 }
+.rq-controls{ width: 100%; }

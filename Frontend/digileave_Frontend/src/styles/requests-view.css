@@ -1,6 +1,7 @@
 :root{
   --shadow-1: 0 6px 16px rgba(0,0,0,.18);
   --shadow-2: 0 10px 28px rgba(0,0,0,.28);
+
 }
 
 /* containers */
@@ -110,7 +111,6 @@
   box-shadow: 0 6px 18px var(--color-surface-shadow);
   padding:22px 22px 18px; cursor:pointer;
 }
-.request-card:hover{ transform: translateY(-2px) scale(1.04); box-shadow: var(--shadow-2); }
 
 .request-card-head{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -425,5 +425,10 @@
     padding-right: max(16px, env(safe-area-inset-right));
     box-sizing: border-box;
   }
-  
+
+}
+
+@media ( min-width: 900px){
+  .request-card:hover{ transform: translateY(-2px) scale(1.04); box-shadow: var(--shadow-2); }
+
 }
