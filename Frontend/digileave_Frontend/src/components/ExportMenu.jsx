@@ -2,11 +2,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { authHeader } from "../utils/auth";
 import { csvExport } from "../utils/csvExport";
-import { xlsxExport } from "../utils/xlsxExport"; // ⬅️ NEW
+import { xlsxExport } from "../utils/xlsxExport"; 
+import { BASE_API_URL } from "../utils/base_api_url";
+
 import "../styles/exportmenu.css";
-
-
-const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
 
 const PRESETS = {
   LAST_TO_NOW: "LAST_TO_NOW",
@@ -92,7 +91,7 @@ export default function ExportMenu({ onClose }) {
 
   useEffect(() => {
     (async () => {
-      const r = await fetch(`${API}/account`, { headers: authHeader() });
+      const r = await fetch(`${BASE_API_URL}/account`, { headers: authHeader() });
       if (!r.ok) return;
       const me = await r.json();
       setRole(me.role);
@@ -103,18 +102,18 @@ export default function ExportMenu({ onClose }) {
     if (!role) return;
     const fetchForRequests = async () => {
       const [assigneesRes, requestsRes] = await Promise.all([
-        fetch(`${API}/approver/assignees`, { headers: authHeader() }),
-        fetch(`${API}/approver/requests`, { headers: authHeader() }),
+        fetch(`${BASE_API_URL}/approver/assignees`, { headers: authHeader() }),
+        fetch(`${BASE_API_URL}/approver/requests`, { headers: authHeader() }),
       ]);
       if (assigneesRes.ok) setAssignees(await assigneesRes.json());
       if (requestsRes.ok) setRequests(await requestsRes.json());
     };
     const fetchForUsers = async () => {
       if (role === "ADMIN") {
-        const res = await fetch(`${API}/admin/users`, { headers: authHeader() });
+        const res = await fetch(`${BASE_API_URL}/admin/users`, { headers: authHeader() });
         if (res.ok) setAdminUsers(await res.json());
       } else {
-        const res = await fetch(`${API}/approver/assignees`, { headers: authHeader() });
+        const res = await fetch(`${BASE_API_URL}/approver/assignees`, { headers: authHeader() });
         if (res.ok) setAdminUsers(await res.json());
       }
     };

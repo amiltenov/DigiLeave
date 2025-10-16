@@ -1,14 +1,13 @@
 import { authHeader } from "./auth";
 import { csvExport } from "./csvExport";
+import { BASE_API_URL } from "../utils/base_api_url";
 
-// if you prefer, swap baseUrl with your API constant
-const baseUrl = "https://digileave.onrender.com";
 
 export async function exportApproverRequestsCsv() {
   // 1) fetch assignees + requests in parallel
   const [assigneesRes, requestsRes] = await Promise.all([
-    fetch(`${baseUrl}/approver/assignees`, { headers: authHeader() }),
-    fetch(`${baseUrl}/approver/requests`, { headers: authHeader() }),
+    fetch(`${BASE_API_URL}/approver/assignees`, { headers: authHeader() }),
+    fetch(`${BASE_API_URL}/approver/requests`, { headers: authHeader() }),
   ]);
 
   if (!assigneesRes.ok) throw new Error("Failed to fetch assignees");

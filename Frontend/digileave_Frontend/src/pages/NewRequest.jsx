@@ -1,8 +1,8 @@
 import { useMemo, useState, useEffect } from "react";
 import { authHeader } from "../utils/auth";
+import { BASE_API_URL } from "../utils/base_api_url";
 import "../styles/newrequest.css";
 
-const API = import.meta.env.VITE_API_ORIGIN || "https://digileave.onrender.com";
 
 const LEAVE_TYPES = [
   "ANNUAL_PAID_LEAVE",
@@ -57,12 +57,12 @@ export default function NewRequest() {
   useEffect(() => {
     const h = new Headers();
     Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
-    fetch(`${API}/account`, { headers: h })
+    fetch(`${BASE_API_URL}/account`, { headers: h })
       .then((r) => (r.ok ? r.json() : null))
       .then((u) => setAvailableDays(u?.availableLeaveDays ?? null))
       .catch(() => setAvailableDays(null));
 
-    fetch(`${API}/requests`, { headers: h })
+    fetch(`${BASE_API_URL}/requests`, { headers: h })
       .then((r) => (r.ok ? r.json() : []))
       .then((list) => (Array.isArray(list) ? setMyRequests(list) : setMyRequests([])))
       .catch(() => setMyRequests([]));
@@ -178,7 +178,7 @@ export default function NewRequest() {
 
     setSubmitting(true);
     try {
-      const res = await fetch(`${API}/requests`, {
+      const res = await fetch(`${BASE_API_URL}/requests`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...authHeader() },
         body: JSON.stringify(payload),
@@ -203,7 +203,7 @@ export default function NewRequest() {
 
       const h = new Headers();
       Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
-      fetch(`${API}/requests`, { headers: h })
+      fetch(`${BASE_API_URL}/requests`, { headers: h })
         .then((r) => (r.ok ? r.json() : []))
         .then((list) => (Array.isArray(list) ? setMyRequests(list) : null))
         .catch(() => {});

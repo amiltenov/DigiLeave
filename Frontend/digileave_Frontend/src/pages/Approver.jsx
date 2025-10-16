@@ -3,6 +3,7 @@ import ExportMenu from "../components/ExportMenu";
 import RequestsViewMode from "../components/RequestsViewMode";
 import RequestsViewModeMenu from "../components/RequestsViewModeMenu";
 import { authHeader } from "../utils/auth";
+import { BASE_API_URL } from "../utils/base_api_url";
 import "../styles/approver.css";
 import "../styles/admin.css";
 
@@ -41,7 +42,7 @@ export default function Approver() {
       setAssigneesLoading(true);
       setAssigneesErr("");
       try {
-        const res = await fetch("https://digileave.onrender.com/approver/assignees", { headers: authHeader() });
+        const res = await fetch(`${BASE_API_URL}/approver/assignees`, { headers: authHeader() });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (alive) setAssignees(Array.isArray(data) ? data : []);
@@ -63,7 +64,7 @@ export default function Approver() {
     setRequestsLoading(true);
     setRequestsErr("");
     try {
-      const res = await fetch("https://digileave.onrender.com/approver/requests", { headers: authHeader() });
+      const res = await fetch(`${BASE_API_URL}/approver/requests`, { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRequests(Array.isArray(data) ? data : []);
@@ -79,7 +80,7 @@ export default function Approver() {
     setRequestsLoading(true);
     setRequestsErr("");
     try {
-      const res = await fetch(`https://digileave.onrender.com/approver/assignee/${assignee.id}/requests`, { headers: authHeader() });
+      const res = await fetch(`${BASE_API_URL}/approver/assignee/${assignee.id}/requests`, { headers: authHeader() });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRequests(Array.isArray(data) ? data : []);
@@ -203,7 +204,7 @@ export default function Approver() {
             sortOrder={sortOrder}
             view={view}
             role="approver"
-            apiOrigin={"https://digileave.onrender.com"}
+            apiOrigin={`${BASE_API_URL}`}
             authHeader={authHeader}
             onAfterAction={handleAfterAction}
 

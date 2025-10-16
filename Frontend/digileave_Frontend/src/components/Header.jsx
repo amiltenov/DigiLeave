@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { BASE_API_URL } from "../utils/base_api_url";
 import "../styles/header.css";
 
 
@@ -24,7 +25,7 @@ export default function Header() {
     const h = new Headers();
     import("../utils/auth").then(({ authHeader }) => {
       Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
-      fetch("https://digileave.onrender.com/account", { headers: h })
+      fetch(`${BASE_API_URL}/account`, { headers: h })
         .then((res) => (res.ok ? res.json() : null))
         .then(setUser)
         .catch(() => setUser(null));
@@ -105,7 +106,7 @@ export default function Header() {
               <Link className="account_google-btn" to="/account">Account</Link>
             </>
           ) : (
-            <a className="account_google-btn" href={"https://digileave.onrender.com/oauth2/authorization/google"}>
+            <a className="account_google-btn" href={`${BASE_API_URL}/oauth2/authorization/google`}>
               Login with Google
             </a>
           )}
@@ -136,7 +137,7 @@ export default function Header() {
               <Link className="account_google-btn" to="/account" onClick={() => setMenuOpen(false)}>Account</Link>
             </>
           ) : (
-            <a className="account_google-btn" href={`https://digileave.onrender.com/oauth2/authorization/google`}>
+            <a className="account_google-btn" href={`${BASE_API_URL}/oauth2/authorization/google`}>
               Login with Google
             </a>
           )}
