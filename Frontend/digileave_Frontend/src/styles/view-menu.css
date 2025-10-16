@@ -83,3 +83,26 @@
     margin-right: 0;
   }
 }
+
+/* DESKTOP: keep Sort on the left, pin View-mode group to the far right */
+@media (min-width: 900px){
+  .vm.bar{
+    display: flex;
+    width: 100%;
+  }
+  .vm.bar .vm-row{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 12px;
+  }
+  /* don't let Sort grow/shrink weirdly */
+  .vm.bar .vm-row .sort-menu{
+    flex: 0 0 auto;
+  }
+  /* pin the view mode toggle to the right edge */
+  .vm.bar .vm-row .vm.toggle{
+    margin-left: auto !important;
+    justify-content: flex-end;
+  }
+}

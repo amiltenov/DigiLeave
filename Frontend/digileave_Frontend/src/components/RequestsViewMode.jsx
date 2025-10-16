@@ -7,7 +7,6 @@ import { getInitials } from "../utils/getInitials";
 import { IconCalendar, IconEye } from "../utils/icons";
 import CommentClamp from "../components/CommentClamp";
 
-
 /**
  * Props:
  * - items: Array<Request>
@@ -18,10 +17,10 @@ import CommentClamp from "../components/CommentClamp";
  * - apiOrigin, authHeader
  * - onSelectRow(row), onAfterAction(updatedRow)
  * - endpoints: { cancel(id), approve(id, role), reject(id, role), markSeen(id) }
- * - showNewPill: boolean            (default true)  // controls "NEW" pill and its column in table
- * - markSeenOnOpen: boolean         (default true)  // calls markDecisionSeen when opening detail
- * - prioritizeUnseen: boolean       (default true)  // sorts unseen on top
- * - showIdentityInTable: boolean    (default false) // adds avatar+name+email column to table
+ * - showNewPill: boolean
+ * - markSeenOnOpen: boolean
+ * - prioritizeUnseen: boolean
+ * - showIdentityInTable: boolean
  */
 export default function RequestsViewMode({
   items,
@@ -86,7 +85,7 @@ export default function RequestsViewMode({
       }
       if (sortBy === "start-date")    return byStartDate(a, b);
       if (sortBy === "pending-first") return byPendingFirst(a, b);
-      return byRecent(a, b); // default "recent"
+      return byRecent(a, b);
     });
 
     return sorted;
@@ -128,10 +127,7 @@ export default function RequestsViewMode({
 
   async function markDecisionSeen(row) {
     try {
-      const res = await fetch(urlMarkSeen(row.id), {
-        method: "PATCH",
-        headers: { ...(authHeader?.() || {}) },
-      });
+      const res = await fetch(urlMarkSeen(row.id), { method: "PATCH", headers: { ...(authHeader?.() || {}) } });
       if (res.ok) {
         let updated;
         try { updated = await res.json(); } catch { updated = { ...row, decision_seen: true }; }
@@ -167,12 +163,11 @@ export default function RequestsViewMode({
     const cancelled = String(r.status).toUpperCase() === "CANCELED";
     const displayName = r.userName || accountName || "Request";
     const initials = getInitials(displayName, r.userEmail);
+    const isPending = String(r.status).toUpperCase() === "PENDING";
+    const isApprover = role !== "user";
 
     return (
-      <div
-        className={`request-card ${cancelled ? "is-cancelled" : ""}`}
-        onClick={() => openDetail(r)}
-      >
+      <div className={`request-card ${cancelled ? "is-cancelled" : ""}`} onClick={() => openDetail(r)}>
         {showNewPill && r.decision_seen === false && <NewPill />}
 
         <header className="request-card-head">
@@ -200,19 +195,31 @@ export default function RequestsViewMode({
           </span>
         </div>
 
-        <div className="cancel-inline">
-          <div className="request-comment">{r.comment || "No Comment."}</div>
-          {window.location.pathname == "/requests" && String(r.status).toUpperCase() === "PENDING" && (
-            <button
-              type="button"
-              className="cancel-btn"
-              onClick={(e) => { e.stopPropagation(); cancelRequest(r); }}
-              title="Cancel this request"
-            >
-              Cancel
-            </button>
-          )}
-        </div>
+        {/* comment + (user) cancel share the same row */}
+<div className="cancel-inline">
+  <div className="request-comment">{r.comment || "No Comment."}</div>
+
+  {/* USER cancel (only on /requests) */}
+  {!isApprover && isPending && window.location.pathname === "/requests" && (
+    <button
+      type="button"
+      className="cancel-btn"
+      onClick={(e) => { e.stopPropagation(); cancelRequest(r); }}
+      title="Cancel this request"
+    >
+      Cancel
+    </button>
+  )}
+</div>
+
+{/* APPROVER/ADMIN: buttons are in their own row BELOW the comment */}
+{isApprover && isPending && (
+  <div className="approver-actions" onClick={(e)=>e.stopPropagation()}>
+    <button className="btn-approve" onClick={() => decideRequest(r, "APPROVED")}>Approve</button>
+    <button className="btn-reject"  onClick={() => decideRequest(r, "REJECTED")}>Reject</button>
+  </div>
+)}
+
       </div>
     );
   };
@@ -268,6 +275,8 @@ export default function RequestsViewMode({
               const displayName = r.userName || accountName || "Request";
               const initials = getInitials(displayName, r.userEmail);
               const cancelled = String(r.status).toUpperCase() === "CANCELED";
+              const isPending = String(r.status).toUpperCase() === "PENDING";
+              const isApprover = role !== "user";
               return (
                 <tr
                   key={r.id}
@@ -295,17 +304,26 @@ export default function RequestsViewMode({
                   <td className="request-ellipsis">
                     <CommentClamp text={r.comment} />
                   </td>
-                  <td className="col-action">
-                    {window.location.pathname === "/requests"  && r.status === "PENDING" ? (
+                  <td className="col-action" onClick={(e)=>e.stopPropagation()}>
+                    {/* USER cancel on /requests */}
+                    {!isApprover && isPending && window.location.pathname === "/requests" ? (
                       <button
                         type="button"
                         className="cancel-btn"
-                        onClick={(e) => { e.stopPropagation(); cancelRequest(r); }}
+                        onClick={() => cancelRequest(r)}
                         title="Cancel this request"
                       >
                         Cancel
                       </button>
                     ) : null}
+
+                    {/* APPROVER/ADMIN decide */}
+                    {isApprover && isPending && (
+                      <div className="request-approve-actions">
+                        <button className="btn-approve" onClick={() => decideRequest(r, "APPROVED")}>Approve</button>
+                        <button className="btn-reject"  onClick={() => decideRequest(r, "REJECTED")}>Reject</button>
+                      </div>
+                    )}
                   </td>
                   <td><Badge status={r.status} /></td>
                 </tr>

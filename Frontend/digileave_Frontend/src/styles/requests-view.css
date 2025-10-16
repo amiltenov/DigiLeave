@@ -1,7 +1,6 @@
 :root{
   --shadow-1: 0 6px 16px rgba(0,0,0,.18);
   --shadow-2: 0 10px 28px rgba(0,0,0,.28);
-
 }
 
 /* containers */
@@ -39,7 +38,6 @@
       box-shadow .45s ease,
       transform .6s ease;
   }
-
 
 /* tiny dot + pulse for NEW in table rows */
 .request-dot{ display:inline-block; width:4px; height:4px; border-radius:50%; background: color-mix(in oklab, var(--color-text) 40%, transparent); }
@@ -143,7 +141,6 @@
 
 .request-comment{
   margin-top:10px; padding:12px 14px;
-  /* background: color-mix(in oklab, var(--color-surface) 82%, transparent); */
   border:1px solid var(--color-surface-border);
   border-radius:12px; color: color-mix(in oklab, var(--color-text) 92%, transparent);
   text-transform: capitalize;
@@ -158,11 +155,8 @@
   gap:12px;
   margin-top:10px;
 }
-
 /* let the comment take the remaining width */
-.cancel-inline .request-comment{
-  flex:1 1 auto;
-}
+.cancel-inline .request-comment{ flex:1 1 auto; }
 
 /* gradient cancel button, consistent with Account styles */
 .cancel-btn{
@@ -178,21 +172,9 @@
   transition: transform .15s ease, box-shadow .15s ease, opacity .25s ease;
   margin-top: 5px;
 }
-
-.cancel-btn:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px var(--btn-shadow-hover);
-}
-
-.cancel-btn:active{
-  transform: translateY(0);
-  box-shadow: 0 2px 4px var(--btn-shadow-active);
-}
-
-.cancel-btn:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-}
+.cancel-btn:hover{ transform: translateY(-1px); box-shadow: 0 4px 8px var(--btn-shadow-hover); }
+.cancel-btn:active{ transform: translateY(0); box-shadow: 0 2px 4px var(--btn-shadow-active); }
+.cancel-btn:disabled{ opacity:.6; cursor:not-allowed; }
 
 /* Compact */
 .request-compact{
@@ -205,7 +187,6 @@
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 6px 18px var(--color-surface-shadow);
   text-transform: capitalize;
-  
 }
 .request-compact:hover{ transform: translateY(-2px) scale(1.008); box-shadow: var(--shadow-1); }
 
@@ -260,7 +241,7 @@
   border-left:4px solid var(--color-accent);
 }
 
-
+/* compact mobile grid tweaks */
 @media (max-width: 640px){
   .request-compact-sub{
     display: grid !important;
@@ -272,72 +253,29 @@
     margin-top: -2px;
     font-size: 80%;
     padding-left: 4px;
-
-    /* margin-bottom: 0px; */
   }
+  .request-compact-sub .request-cal{ grid-column: 1; grid-row: 1 / span 2; }
+  .request-compact-sub > :nth-child(2){ grid-column: 2; grid-row: 1; white-space: nowrap; }
+  .request-compact-sub > :nth-child(3){ grid-column: 2; grid-row: 2; white-space: nowrap; }
+  .request-compact-sub > :nth-child(4){ grid-column: 3; grid-row: 1; justify-self: end; white-space: nowrap; }
+  .request-compact-sub > :nth-child(5){ grid-column: 4; grid-row: 1; justify-self: end; white-space: nowrap; max-width: 16ch; overflow: hidden; text-overflow: ellipsis; }
 
-  /* calendar icon spans both date rows on the left */
-  .request-compact-sub .request-cal{
-    grid-column: 1;
-    grid-row: 1 / span 2;
-  }
-
-  /* start date (row 1, middle) */
-  .request-compact-sub > :nth-child(2){
-    grid-column: 2;
-    grid-row: 1;
-    white-space: nowrap;
-  }
-
-  /* end date (row 2, middle) */
-  .request-compact-sub > :nth-child(3){
-    grid-column: 2;
-    grid-row: 2;
-    white-space: nowrap;
-  }
-
-  /* days (row 1, right) */
-  .request-compact-sub > :nth-child(4){
-    grid-column: 3;
-    grid-row: 1;
-    justify-self: end;
-    white-space: nowrap;
-  }
-
-  /* type (row 1, far right; trimmed if long) */
-  .request-compact-sub > :nth-child(5){
-    grid-column: 4;
-    grid-row: 1;
-    justify-self: end;
-    white-space: nowrap;
-    max-width: 16ch;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
   .request-compact-avatar{
-  width:28px; height:28px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  background: var(--color-accent); color:#313131; font-weight:700; flex:0 0 auto;
-  box-shadow: inset 0 -2px 0 rgba(0,0,0,.15);
-  align-self: baseline;
-  font-size: 12px;
-  padding:0px;
-  /* margin-top: -2%; */
-}
-.request-compact-name{ 
-  font-weight:600; color: var(--color-text);
-  /* margin-top: -4%;
-   */
-   font-size: 95%;
-}
+    width:28px; height:28px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--color-accent); color:#313131; font-weight:700; flex:0 0 auto;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,.15);
+    align-self: baseline;
+    font-size: 12px;
+    padding:0;
+  }
+  .request-compact-name{ font-weight:600; color: var(--color-text); font-size: 95%; }
 
   .request-badge{
     display:inline-flex; align-items:center; justify-content:center;
     padding:4px 6px; border-radius:100px; font-size:12px; font-weight:700;
     border:1px solid transparent; backdrop-filter: blur(6px);
-
   }
-
   .request-compact-sub > :nth-child(4),
   .request-compact-sub > :nth-child(5){
     align-self: end;
@@ -345,77 +283,59 @@
   }
 }
 
-
 /* Table: keep Type on one line and give Action a tight, non-wrapping cell */
 .request-table th.col-type,
-.request-table td.col-type {
-  white-space: nowrap;
-}
+.request-table td.col-type { white-space: nowrap; }
 
 .request-table th.col-action,
-.request-table td.col-action {
-  white-space: nowrap;
-  width: 1%;
+.request-table td.col-action { white-space: nowrap; width: 1%; }
+
+/* center the Action header + cell, and center the buttons block */
+.request-table thead th.col-action{ text-align: center; }
+.request-table td.col-action{ text-align: center; }
+.request-table td.col-action .request-approve-actions{
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+}
+@media (max-width: 700px){
+  .request-table td.col-action .request-approve-actions{
+    flex-direction: column;
+    width: 100%;
+  }
+  .request-table td.col-action .request-approve-actions > *{ width: 100%; }
 }
 
 /* make the cancel button sit nicely inside table cells */
 .request-table .cancel-btn{
   height: 36px;
-  /* padding: 0 10px; */
   margin-left: -8px;
 }
 
 /* On small screens, allow horizontal scroll instead of wrapping Type */
-/* mobile: keep "Type" on one line and allow horizontal scroll */
 @media (max-width: 756px){
-  /* ensure the table's scroll wrapper can scroll horizontally */
-  .request-scroll {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* let columns size to content instead of fixed distribution */
-  .request-table {
-    table-layout: auto;
-  }
-
-  /* prevent wrapping in the Type column */
+  .request-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .request-table { table-layout: auto; }
   .request-table th.col-type,
-  .request-table td.col-type {
-    white-space: nowrap;
-    word-break: keep-all;
-    hyphens: none;
-    min-width: 12ch; /* adjust if you need a bit more */
+  .request-table td.col-type{
+    white-space: nowrap; word-break: keep-all; hyphens: none; min-width: 12ch;
   }
 }
-.comment-clamp{
-  display:inline-flex;
-  align-items:baseline;
-  gap:4px;
-  max-width:100%;
-}
-.comment-clamp__text{
-  overflow-wrap:anywhere;
-  line-height:1.4;
-}
+
+/* Comment clamp */
+.comment-clamp{ display:inline-flex; align-items:baseline; gap:4px; max-width:100%; }
+.comment-clamp__text{ overflow-wrap:anywhere; line-height:1.4; }
 .comment-clamp__more{
-  appearance:none;
-  border:0;
-  background:transparent;
-  padding:0;
-  margin:0;
-  font:inherit;
-  cursor:pointer;
-  color: var(--color-primary, #f4c20d);
-  line-height:1;
+  appearance:none; border:0; background:transparent; padding:0; margin:0; font:inherit;
+  cursor:pointer; color: var(--color-primary, #f4c20d); line-height:1;
 }
 .comment-clamp__more:hover{ text-decoration: underline; }
 
-
 /* mobile: make the grid/ cards use full width with even gutters */
 @media (max-width: 756px){
-  .request-grid{ justify-items: stretch; 
-   justify-content:center;
+  .request-grid{
+    justify-items: stretch;
+    justify-content:center;
   }
   .request-card{ width: 100%; margin-inline: 0; }
 
@@ -425,10 +345,52 @@
     padding-right: max(16px, env(safe-area-inset-right));
     box-sizing: border-box;
   }
-
 }
 
 @media ( min-width: 900px){
   .request-card:hover{ transform: translateY(-2px) scale(1.04); box-shadow: var(--shadow-2); }
+}
 
+/* Card: approve/reject row (sits right under the comment) */
+.request-comment{ margin: 8px 0 0; }
+.request-decide{ display: flex; gap: 12px; margin-top: 10px; }
+.request-decide .btn-approve,
+.request-decide .btn-reject{ flex: 1 1 0; min-width: 0; }
+
+/* Table: approval actions cell (mobile stacks) */
+.request-approve-actions{ display: flex; gap: 8px; }
+@media (max-width: 700px){
+  .request-approve-actions{ flex-direction: column; }
+  .request-approve-actions .btn-approve,
+  .request-approve-actions .btn-reject{ width: 100%; }
+}
+
+/* mobile: keep the grid centered & cards filling width nicely */
+/* MOBILE: center cards and give them a comfortable max-width */
+@media (max-width: 756px){
+  .request-grid{
+    justify-content: center;
+  }
+  .request-card{
+    width: 90%;
+    /* margin-left: 10px;
+    margin-right: 10px; */
+    box-sizing: border-box;
+    justify-self: center;
+  }
+}
+
+
+/* Approver-only row under the comment (cards) */
+.approver-actions{
+  display:flex;
+  gap:12px;
+  margin-top:10px;      /* sits right under the comment row */
+  height: auto;
+}
+.approver-actions .btn-approve,
+.approver-actions .btn-reject{
+  flex:1 1 0;           /* equal widths */
+  min-width:0;
+  height: 40px;
 }

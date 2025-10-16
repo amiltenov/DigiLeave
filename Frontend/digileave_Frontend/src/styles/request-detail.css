@@ -16,18 +16,18 @@
   --rd-cancelled-bg: color-mix(in oklab, #8b8b8b 26%, black);
 }
 
-/* Modal shell */
 .rd-modal {
-  position: fixed;
+  position:sticky;
   inset: 0;
   display: grid; place-items: center;
-  background: #1111115e ;
+  background:transparent ;
   backdrop-filter: blur(4px);
-  z-index: 60;
+  /* z-index: 60; */
+  width: auto;
 }
 
 .rd-panel {
-  width: min(680px, 92%);
+  width: 100%;
   background: var(--color-bg);
   backdrop-filter: blur(4px);
   color: var(--color-text);
@@ -35,8 +35,8 @@
   border-radius: 16px;
   box-shadow: 0 18px 48px rgba(0,0,0,.18);
   overflow: hidden;
-}
 
+}
 .rd-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 16px;
@@ -123,4 +123,18 @@
 @media (max-width: 756px){
   .rd-modal{ align-items: flex-start; }                 /* stop hard-centering */
   .rd-panel{ margin-top: calc(74px + env(safe-area-inset-top, 0px)); }
+  .rq-modal{
+    position: fixed;
+    inset: 0;
+    overflow: auto;                 /* overlay scrolls if needed */
+    overscroll-behavior: contain;   /* don't scroll the page behind */
+    margin-bottom: 200px;
+  }
+  
+  /* panel scrolls internally when tall */
+  .rq-modal__panel{
+    max-height: calc(100dvh - 96px);
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }

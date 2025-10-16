@@ -355,3 +355,14 @@
   gap: 10px;
   flex-wrap: wrap;
 }
+/* desktop: keep the menu beside the section title */
+@media (min-width: 900px){
+  .section-left{ display:flex; align-items:center; gap:12px; flex-wrap: nowrap; }
+  .section-left .vm.bar{ width:auto; margin:0; }
+  .section-left .vm.bar .vm-row{ width:auto; gap:8px; }
+}
+
+/* ensure the requests cards look centered on mobile */
+@media (max-width: 756px){
+  .request-grid{ justify-content: center; }
+}

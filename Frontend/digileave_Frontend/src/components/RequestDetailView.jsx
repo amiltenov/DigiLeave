@@ -93,7 +93,7 @@ export default function RequestDetailView({
             <div className="rd-card">
               <div className="rd-label"><Icon.Clock /> Duration</div>
               <div className="rd-value rd-big">
-                {safeNum(request.workdays)} <span>workdays</span>
+                {safeNum(request.workdaysCount)} <span>workdays</span>
               </div>
             </div>
             <div className="rd-card">
