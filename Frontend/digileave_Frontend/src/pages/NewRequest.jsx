@@ -20,6 +20,14 @@ function prettyType(t) {
     .join(" ");
 }
 
+// --- helper for YYYY-MM-DD in localtime
+function toLocalISO(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 export default function NewRequest() {
   const [type, setType] = useState(LEAVE_TYPES[0]);
   const [startDate, setStartDate] = useState("");
@@ -30,6 +38,9 @@ export default function NewRequest() {
 
   const [availableDays, setAvailableDays] = useState(null);
 
+  // BG public holiday dates (YYYY-MM-DD)
+  const [holidayDates, setHolidayDates] = useState(() => new Set());
+
   useEffect(() => {
     const h = new Headers();
     Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
@@ -38,6 +49,45 @@ export default function NewRequest() {
       .then((u) => setAvailableDays(u?.availableLeaveDays ?? null))
       .catch(() => setAvailableDays(null));
   }, []);
+
+  // Fetch BG official holidays for all years in the selected range
+  useEffect(() => {
+    if (!startDate || !endDate) {
+      setHolidayDates(new Set());
+      return;
+    }
+    const s = new Date(startDate);
+    const e = new Date(endDate);
+    if (Number.isNaN(s) || Number.isNaN(e) || s > e) {
+      setHolidayDates(new Set());
+      return;
+    }
+
+    const years = [];
+    for (let y = s.getFullYear(); y <= e.getFullYear(); y++) years.push(y);
+
+    Promise.all(
+      years.map((y) =>
+        fetch(`https://date.nager.at/api/v3/PublicHolidays/${y}/BG`)
+          .then((r) => (r.ok ? r.json() : Promise.resolve([])))
+          .catch(() => [])
+      )
+    )
+      .then((lists) => {
+        const isoSet = new Set(
+          lists
+            .flat()
+            .filter((h) =>
+              Array.isArray(h.types) ? h.types.includes("Public") : true
+            )
+            .map((h) => h.date) // YYYY-MM-DD
+        );
+        setHolidayDates(isoSet);
+      })
+      .catch(() => {
+        setHolidayDates(new Set());
+      });
+  }, [startDate, endDate]);
 
   const workdaysCount = useMemo(() => {
     if (!startDate || !endDate) return 0;
@@ -48,11 +98,14 @@ export default function NewRequest() {
     let count = 0;
     while (d <= e) {
       const day = d.getDay(); // 0..6
-      if (day !== 0 && day !== 6) count++;
+      const isWeekend = day === 0 || day === 6;
+      const iso = toLocalISO(d); // use local date to match API dates
+      const isHoliday = holidayDates.has(iso);
+      if (!isWeekend && !isHoliday) count++;
       d.setDate(d.getDate() + 1);
     }
     return count;
-  }, [startDate, endDate]);
+  }, [startDate, endDate, holidayDates]);
 
   const remainingDays = useMemo(() => {
     if (availableDays == null) return null;
