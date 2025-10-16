@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { authHeader } from "../utils/auth";
 import { BASE_API_URL } from "../utils/base_api_url";
+import { hasOverlapWithRequests } from "../utils/overlap";
 import "../styles/newrequest.css";
 
 
@@ -28,16 +29,6 @@ function toLocalISO(d) {
   return `${y}-${m}-${day}`;
 }
 
-// --- overlap helpers
-function parseYMD(s) {
-  // accepts "YYYY-MM-DD"; returns Date at local midnight
-  const [y, m, d] = String(s).slice(0, 10).split("-").map(Number);
-  return new Date(y, (m || 1) - 1, d || 1);
-}
-function rangesOverlap(aStart, aEnd, bStart, bEnd) {
-  // Inclusive overlap: [aStart, aEnd] intersects [bStart, bEnd]
-  return aStart <= bEnd && bStart <= aEnd;
-}
 
 export default function NewRequest() {
   const [type, setType] = useState(LEAVE_TYPES[0]);
@@ -152,16 +143,7 @@ export default function NewRequest() {
       return;
     }
 
-    const aStart = parseYMD(startDate);
-    const aEnd = parseYMD(endDate);
-    const hasOverlap = myRequests.some((r) => {
-      const status = String(r.status || "").toLowerCase();
-      if (["rejected", "cancelled", "canceled", "declined"].includes(status)) return false;
-      const bStart = parseYMD(r.startDate || r.start || r.fromDate || r.from);
-      const bEnd = parseYMD(r.endDate || r.end || r.toDate || r.to);
-      if (Number.isNaN(bStart) || Number.isNaN(bEnd)) return false;
-      return rangesOverlap(aStart, aEnd, bStart, bEnd);
-    });
+    const hasOverlap = hasOverlapWithRequests(startDate, endDate, myRequests);
 
     if (hasOverlap) {
       setMsg({ type: "err", text: "This request overlaps with an existing leave request." });
