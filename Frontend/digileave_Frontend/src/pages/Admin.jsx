@@ -1,4 +1,3 @@
-// src/pages/Admin.jsx
 import { useEffect, useState } from "react";
 import UsersViewMode from "../components/UsersViewMode";
 import UsersViewModeMenu from "../components/UsersViewModeMenu"; // view-only toggle
@@ -19,6 +18,10 @@ export default function Admin() {
 
   const [editing, setEditing] = useState(null);
   const [showExport, setShowExport] = useState(false);
+
+  // search bar
+  const [fakeQuery, setFakeQuery] = useState("");
+  // ---------------------------------------------------------------
 
   useEffect(() => {
     let cancelled = false;
@@ -79,7 +82,47 @@ export default function Admin() {
           </div>
 
           {/* Sub row: A→Z (left) · View Mode (right) */}
-          <div className="header-sub">
+          <div className="header-sub" style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "space-between" }}>
+            {/* search bar*/}
+            <div
+              className="fake-searchbar"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: ".5rem",
+                border: "1px solid #ddd",
+                padding: ".5rem .75rem",
+                borderRadius: "999px",
+                background: "#fff",
+                flex: "0 1 420px",
+              }}
+            >
+              <input
+                type="search"
+                placeholder="Search users…"
+                aria-label="Search users"
+                value={fakeQuery}
+                onChange={(e) => setFakeQuery(e.target.value)}
+                style={{
+                  border: 0,
+                  outline: 0,
+                  background: "transparent",
+                  width: "100%",
+                }}
+              />
+              <button
+                type="button"
+                className="btn"
+                aria-label="Search"
+                style={{ background: "transparent", border: 0, padding: 0, cursor: "pointer" }}
+                onClick={() => {/* does nothing */}}
+                title="Search"
+              >
+                🔍
+              </button>
+            </div>
+            {/* ----------------------------------------------------------- */}
+
             <UsersViewModeMenu view={view} onChangeView={setView} />
           </div>
         </div>
