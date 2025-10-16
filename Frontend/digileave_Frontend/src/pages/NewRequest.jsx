@@ -199,10 +199,7 @@ export default function NewRequest() {
         type: "ok",
         text: saved?.id ? `Request submitted successfully.` : "Request submitted successfully.",
       });
-
-      setTimeout(() => {
-      navigate("/requests");
-      }, 1000);
+      
 
       const h = new Headers();
       Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
