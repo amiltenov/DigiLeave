@@ -240,7 +240,7 @@ export default function NewRequest() {
 
           <label>
             <span>Leave type</span>
-            <select id="role-dropdown" value={type} onChange={(e) => setType(e.target.value)} required>
+            <select id="type-dropdown" value={type} onChange={(e) => setType(e.target.value)} required>
               {LEAVE_TYPES.map((t) => (
                 <option key={t} value={t}>
                   {prettyType(t)}

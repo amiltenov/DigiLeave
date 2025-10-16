@@ -221,7 +221,7 @@ export default function EditUsermenu({
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
                 className="themed-select"
-                id="role-dropdown"
+                id="type-dropdown"
                 name={`${rnd}-role`}
               >
                 {ROLES.map((r) => (
