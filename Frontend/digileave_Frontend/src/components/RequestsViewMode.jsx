@@ -255,8 +255,9 @@ export default function RequestsViewMode({
               <th>Start Date</th>
               <th>End Date</th>
               <th>Duration</th>
-              <th>Type</th>
+              <th className="col-type">Type</th>
               <th>Comment</th>
+              <th className="col-action">Action</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -290,6 +291,18 @@ export default function RequestsViewMode({
                   <td><span className="request-days">{r.workdaysCount} <em>days</em></span></td>
                   <td className="request-type">{String(r.type).replace(/_/g, " ").toLowerCase()}</td>
                   <td className="request-ellipsis">{r.comment || "—"}</td>
+                  <td className="col-action">
+                    {window.location.pathname === "/requests" && isPending ? (
+                      <button
+                        type="button"
+                        className="cancel-btn"
+                        onClick={(e) => { e.stopPropagation(); cancelRequest(r); }}
+                        title="Cancel this request"
+                      >
+                        Cancel
+                      </button>
+                    ) : null}
+                  </td>
                   <td><Badge status={r.status} /></td>
                 </tr>
               );

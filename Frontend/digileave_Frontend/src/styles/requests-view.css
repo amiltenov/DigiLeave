@@ -19,7 +19,6 @@
 .request-cal{ display:inline-flex; align-items:center; margin-right:4px;margin-left:3px; opacity:.9; }
 
 /* shared transitions (smooth theme + motion) */
-@media(min-width:800px){
   .request-card,
   .request-compact,
   .request-tablewrap,
@@ -39,7 +38,7 @@
       box-shadow .45s ease,
       transform .6s ease;
   }
-}
+
 
 /* tiny dot + pulse for NEW in table rows */
 .request-dot{ display:inline-block; width:4px; height:4px; border-radius:50%; background: color-mix(in oklab, var(--color-text) 40%, transparent); }
@@ -343,5 +342,32 @@
   .request-compact-sub > :nth-child(5){
     align-self: end;
     transform: translateY(8px);
+  }
+}
+
+
+/* Table: keep Type on one line and give Action a tight, non-wrapping cell */
+.request-table th.col-type,
+.request-table td.col-type {
+  white-space: nowrap;
+}
+
+.request-table th.col-action,
+.request-table td.col-action {
+  white-space: nowrap;
+  width: 1%;          /* shrink-to-fit */
+}
+
+/* make the cancel button sit nicely inside table cells */
+.request-table .cancel-btn{
+  height: 36px;
+  padding: 0 10px;
+}
+
+/* On small screens, allow horizontal scroll instead of wrapping Type */
+@media (max-width: 640px){
+  .request-table th.col-type,
+  .request-table td.col-type{
+    white-space: nowrap;
   }
 }
