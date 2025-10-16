@@ -28,6 +28,17 @@ function toLocalISO(d) {
   return `${y}-${m}-${day}`;
 }
 
+// --- overlap helpers
+function parseYMD(s) {
+  // accepts "YYYY-MM-DD"; returns Date at local midnight
+  const [y, m, d] = String(s).slice(0, 10).split("-").map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+}
+function rangesOverlap(aStart, aEnd, bStart, bEnd) {
+  // Inclusive overlap: [aStart, aEnd] intersects [bStart, bEnd]
+  return aStart <= bEnd && bStart <= aEnd;
+}
+
 export default function NewRequest() {
   const [type, setType] = useState(LEAVE_TYPES[0]);
   const [startDate, setStartDate] = useState("");
@@ -41,6 +52,8 @@ export default function NewRequest() {
   // BG public holiday dates (YYYY-MM-DD)
   const [holidayDates, setHolidayDates] = useState(() => new Set());
 
+  const [myRequests, setMyRequests] = useState([]);
+
   useEffect(() => {
     const h = new Headers();
     Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
@@ -48,6 +61,11 @@ export default function NewRequest() {
       .then((r) => (r.ok ? r.json() : null))
       .then((u) => setAvailableDays(u?.availableLeaveDays ?? null))
       .catch(() => setAvailableDays(null));
+
+    fetch(`${API}/requests`, { headers: h })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((list) => (Array.isArray(list) ? setMyRequests(list) : setMyRequests([])))
+      .catch(() => setMyRequests([]));
   }, []);
 
   // Fetch BG official holidays for all years in the selected range
@@ -134,6 +152,22 @@ export default function NewRequest() {
       return;
     }
 
+    const aStart = parseYMD(startDate);
+    const aEnd = parseYMD(endDate);
+    const hasOverlap = myRequests.some((r) => {
+      const status = String(r.status || "").toLowerCase();
+      if (["rejected", "cancelled", "canceled", "declined"].includes(status)) return false;
+      const bStart = parseYMD(r.startDate || r.start || r.fromDate || r.from);
+      const bEnd = parseYMD(r.endDate || r.end || r.toDate || r.to);
+      if (Number.isNaN(bStart) || Number.isNaN(bEnd)) return false;
+      return rangesOverlap(aStart, aEnd, bStart, bEnd);
+    });
+
+    if (hasOverlap) {
+      setMsg({ type: "err", text: "This request overlaps with an existing leave request." });
+      return;
+    }
+
     const payload = {
       type,
       startDate,
@@ -163,10 +197,16 @@ export default function NewRequest() {
       const saved = await res.json().catch(() => null);
       setMsg({
         type: "ok",
-        text: saved?.id
-          ? `Request submitted successfully.`
-          : "Request submitted successfully.",
+        text: saved?.id ? `Request submitted successfully.` : "Request submitted successfully.",
       });
+      
+
+      const h = new Headers();
+      Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
+      fetch(`${API}/requests`, { headers: h })
+        .then((r) => (r.ok ? r.json() : []))
+        .then((list) => (Array.isArray(list) ? setMyRequests(list) : null))
+        .catch(() => {});
 
       setType(LEAVE_TYPES[0]);
       setStartDate("");
