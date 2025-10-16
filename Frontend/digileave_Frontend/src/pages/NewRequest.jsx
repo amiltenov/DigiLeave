@@ -62,7 +62,6 @@ export default function NewRequest() {
       .then((u) => setAvailableDays(u?.availableLeaveDays ?? null))
       .catch(() => setAvailableDays(null));
 
-    // Load existing requests (adjust endpoint if yours differs)
     fetch(`${API}/requests`, { headers: h })
       .then((r) => (r.ok ? r.json() : []))
       .then((list) => (Array.isArray(list) ? setMyRequests(list) : setMyRequests([])))
@@ -200,6 +199,10 @@ export default function NewRequest() {
         type: "ok",
         text: saved?.id ? `Request submitted successfully.` : "Request submitted successfully.",
       });
+
+      setTimeout(() => {
+      navigate("/requests");
+      }, 1000);
 
       const h = new Headers();
       Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
