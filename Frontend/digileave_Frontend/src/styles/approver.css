@@ -76,19 +76,32 @@
 .approver-section {
   margin-top: 18px;
 }
+.approver-section h2{
+  font-size: 120%;
+}
 
 .section-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: flex-end; */
   gap: 12px;
-  margin: 0 0 10px;
+  margin-bottom: 4px;
+  padding: -2px;
 }
 
 .section-head h2 {
   margin: 0;
   font-size: 1.1rem;
+  justify-self: start;
+  display: flex;
+  align-items: center;
 }
+
+.rvmm{
+  /* justify-self: right; */
+  /* justify-content: flex-end; */
+}
+
 
 .msg {
   padding: 12px 14px;
@@ -384,9 +397,14 @@
   .section-left{ display:flex; align-items:center; gap:12px; flex-wrap: nowrap; }
   .section-left .vm.bar{ width:auto; margin:0; }
   .section-left .vm.bar .vm-row{ width:auto; gap:8px; }
+  .section-head{
+      justify-content: flex-end;
+  }
 }
 
 /* ensure the requests cards look centered on mobile */
 @media (max-width: 756px){
-  .request-grid{ justify-content: center; }
+  .request-grid{ 
+    justify-content: center; 
+  }
 }

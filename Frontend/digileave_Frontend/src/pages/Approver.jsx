@@ -21,7 +21,7 @@ export default function Approver() {
 
   // view + sorting for REQUESTS (underneath the assignees)
   const [view, setView] = useState("cards");          // "cards" | "table" | "compact"
-  const [sortBy, setSortBy] = useState("recent");     // "recent" | "start-date" | "pending-first"
+  const [sortBy, setSortBy] = useState("pending-first");     // "recent" | "start-date" | "pending-first"
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" | "desc"
 
   const [showExport, setShowExport] = useState(false);
@@ -130,8 +130,8 @@ export default function Approver() {
 
       <section className="approver-section">
         <div className="section-head">
-          <h2>Assignees</h2>
         </div>
+          <h2>Assignees</h2>
 
         {assigneesErr && <div className="msg glass">{assigneesErr}</div>}
         {assigneesLoading ? (
@@ -162,15 +162,15 @@ export default function Approver() {
       </section>
 
       <section className="approver-section">
-        <div className="section-head">
-          {/* pin sort/menu LEFT next to the title */}
-          <div className="section-left">
             <h2>
               {selectedAssignee
                 ? `Requests — ${selectedAssignee.fullName || selectedAssignee.email}`
                 : `Requests — All Assignees`}
             </h2>
+        <div className="section-head">
+          <div className="section-left">
 
+            <span className="rvmm">
             <RequestsViewModeMenu
               view={view}
               onChangeView={setView}
@@ -179,6 +179,7 @@ export default function Approver() {
               onChangeSortBy={(v) => setSortBy(v)}
               onChangeSortOrder={(v) => setSortOrder(v)}
             />
+            </span>
           </div>
 
           {selectedAssignee && (
@@ -186,7 +187,7 @@ export default function Approver() {
               className="ghost-btn"
               onClick={() => {
                 setSelectedAssignee(null);
-                setRequests([]);
+                loadAllRequests();
               }}
             >
               Clear

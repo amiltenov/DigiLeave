@@ -102,7 +102,7 @@
   }
   /* pin the view mode toggle to the right edge */
   .vm.bar .vm-row .vm.toggle{
-    margin-left: auto !important;
+    /* margin-left: auto !important; */
     justify-content: flex-end;
   }
 }
