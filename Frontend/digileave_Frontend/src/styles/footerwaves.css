@@ -1,0 +1,25 @@
+.waves-over-footer {
+  width:99.6vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  line-height: 0;
+  pointer-events: none;
+  isolation: isolate;
+  margin-bottom: -20px;
+}
+
+.footer-wave-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+
+@media (min-width: 1024px) {
+  .footer-wave-svg {
+    height: 200px !important;
+  }
+  .waves-over-footer{
+    width:99.5vw
+  }
+}

@@ -1,0 +1,171 @@
+.newrequest-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.newrequest-card {
+  width: 100%;
+  max-width: 780px;
+  padding: 24px;
+  border: 1px solid var(--color-surface-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px var(--color-surface-shadow);
+}
+
+.newrequest-card h2 {
+  margin: 0 0 16px;
+}
+
+.newrequest-card form {
+  display: grid;
+  gap: 16px;
+}
+
+/* Inputs */
+.newrequest-card label {
+  display: grid;
+  gap: 6px;
+}
+
+.newrequest-card input,
+.newrequest-card textarea,
+.newrequest-card select {
+  padding: 12px 14px;
+  border: 1px solid var(--color-surface-border);
+  border-radius: 12px;
+  background: var(--color-background);
+  color: var(--color-text);
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .05s ease;
+  box-shadow: 0 3px 10px var(--color-surface-shadow);
+}
+
+.newrequest-card input:focus,
+.newrequest-card textarea:focus,
+.newrequest-card select:focus {
+  border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  box-shadow: 0 6px 16px var(--color-surface-shadow);
+  transform: translateY(-1px);
+}
+
+:root[data-theme="dark"] .newrequest-card input[type="date"],
+:root[data-theme="dark"] .newrequest-card select,
+:root[data-theme="dark"] .newrequest-card textarea {
+  color-scheme: dark;
+}
+:root[data-theme="light"] .newrequest-card input[type="date"],
+:root[data-theme="light"] .newrequest-card select,
+:root[data-theme="light"] .newrequest-card textarea {
+  color-scheme: light;
+}
+
+.nr-alert {
+  padding: 10px 12px;
+  margin: 0 0 12px;
+  border-radius: 12px;
+  border: 1px solid;
+}
+.nr-alert.ok   { border-color: rgba(0,160,60,.35);  background: rgba(0,160,60,.08); }
+.nr-alert.warn { border-color: rgba(255,170,0,.45); background: rgba(255,170,0,.08); }
+.nr-alert.err  { border-color: rgba(200,0,0,.35);   background: rgba(200,0,0,.08); }
+
+/* Preview chip/card */
+.nr-previewCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px dashed var(--color-surface-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+.nr-chip {
+  background: var(--color-accent);
+  color: #111;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px var(--color-surface-shadow);
+  user-select: none;
+}
+
+.nr-previewText {
+  opacity: .95;
+}
+
+/* Stats row */
+.nr-stats {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.nr-stat {
+  border: 1px solid var(--color-surface-border);
+  border-radius: 14px;
+  padding: 14px;
+  background: var(--color-background);
+  box-shadow: 0 6px 16px var(--color-surface-shadow);
+}
+
+.nr-stat-label {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.nr-stat-value {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.nr-stat-value.danger {
+  color: #d54646;
+}
+
+.newrequest-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-lg {
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .08s ease, box-shadow .2s ease, background .2s ease, opacity .15s ease;
+  box-shadow: 0 6px 16px var(--color-surface-shadow);
+}
+
+.submit-btn {
+  border: none;
+  background: linear-gradient(180deg, var(--btn-grad-light), var(--btn-grad-dark));
+  color: var(--btn-text);
+}
+
+.submit-btn:hover   { transform: translateY(-1px); box-shadow: 0 10px 24px var(--btn-shadow-hover); }
+.submit-btn:active  { transform: translateY(0);     box-shadow: 0 6px 16px var(--btn-shadow-active); }
+
+.reset-btn {
+  border: 1px solid var(--color-surface-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.reset-btn:hover   { background: color-mix(in srgb, var(--color-accent) 18%, transparent); transform: translateY(-1px); }
+.reset-btn:active  { transform: translateY(0); }
+
+#type-dropdown {
+  background-color: var(--color-surface);
+}
+
+.datePicker{
+  border-radius: 10px;
+  color: red;
+}

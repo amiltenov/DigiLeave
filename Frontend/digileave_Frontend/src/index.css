@@ -1,0 +1,90 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  /* font-weight: 400; */
+
+  --color-bg: #ffffff;
+  --color-text: #000000;
+  --color-accent: #ffd733;
+  --color-accent-dark: #ffcc00;
+  --color-surface: rgba(255,255,255,0.25);
+  --color-surface-border: rgba(134, 134, 134, 0.281);
+  --color-surface-shadow: rgba(0,0,0,0.15);
+
+
+  --header-bg: var(--color-surface);
+  --header-border: var(--color-surface-border);
+  --header-shadow: var(--color-surface-shadow);
+
+  --nav-link: var(--color-text);
+  --nav-hover-bg: rgba(0,0,0,0.05);
+  --nav-hover-text: #333;
+
+  --btn-grad-light: #ffea00;
+  --btn-grad-dark: #f7bd00;
+  --btn-text: #111;
+  --btn-shadow: rgba(0,0,0,.15);
+  --btn-shadow-hover: rgba(0,0,0,.25);
+  --btn-shadow-active: rgba(0,0,0,.15);
+
+  --switch-bg: #ccc;
+  --switch-circle: #fff;
+  --switch-bg-active: #222;
+
+  --footer-background: #e7e7e7;
+  --footer-background2: #e3e3e3;
+  --footer-background3: #ededed;
+
+  --new-tint: 20%;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+
+  --color-bg: #111111;
+  --color-text: #f7f7f7;
+  --color-accent: #ffd733;
+  --color-accent-dark: #ffcc00;
+  --color-surface: rgba(30,30,30,0.8);
+  --color-surface-border: rgba(255,255,255,0.1);
+  --color-surface-shadow: rgba(0,0,0,0.5);
+
+  --header-bg: var(--color-surface);
+  --header-border: var(--color-surface-border);
+  --header-shadow: var(--color-surface-shadow);
+
+  --nav-link: #f5f5f5;
+  --nav-hover-bg: rgba(255,255,255,0.1);
+  --nav-hover-text: #fff;
+
+  --btn-grad-light: #ffd600;
+  --btn-grad-dark: #ff9800;
+  --btn-text: #000;
+  --btn-shadow: rgba(0,0,0,.5);
+  --btn-shadow-hover: rgba(0,0,0,.6);
+  --btn-shadow-active: rgba(0,0,0,.4);
+
+  --switch-bg: #444;
+  --switch-circle: #fff;
+  --switch-bg-active: #bbb;
+
+  --footer-background: #131313;
+  --footer-background2: #101010;
+  --footer-background3: #474747;
+
+  --new-tint: 6%;
+}
+
+
+body {
+  padding-top: 70px;
+  font-family: system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: background 0.3s, color 0.3s;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}

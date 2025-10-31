@@ -1,0 +1,292 @@
+/* =========================
+   Edit User Menu – FULL CSS
+   ========================= */
+
+/* Shell/header/actions */
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.icon-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--color-text);
+}
+
+.menu-alert.err {
+  padding: 10px 12px;
+  margin: 8px 0 10px;
+  border: 1px solid rgba(200,0,0,.35);
+  background: rgba(200,0,0,.08);
+  border-radius: 10px;
+}
+
+.menu-actions { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; }
+.menu-actions.spaced { gap: 14px; }
+
+.menu-form { width: 100%; }
+
+/* Grid form layout */
+.grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+.grid .span-2 { grid-column: span 2; }
+.grid label { display: grid; gap: 6px; }
+
+.grid input,
+.grid select,
+.grid textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--color-surface-border);
+  border-radius: 10px;
+  background: var(--color-background);
+  color: var(--color-text);
+  box-sizing: border-box;
+}
+
+/* Themed native select (keeps OS pickers readable) */
+.themed-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+:root[data-theme="dark"] .themed-select { color-scheme: dark; }
+:root[data-theme="light"] .themed-select { color-scheme: light; }
+.themed-select option {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+/* ---------- Assignees ---------- */
+
+/* container around chips & input */
+.chip-wrap {
+  border: 1px solid var(--color-surface-border);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--color-background);
+  box-sizing: border-box;
+}
+
+/* each row is produced by chunk(..., 2) */
+.chip-row {
+  display: flex;
+  gap: 12px;
+  justify-content: space-evenly; /* two per row, spaced evenly */
+  margin-bottom: 12px;
+}
+.chip-row.center { justify-content: center; } /* single chip row centered */
+.chip-row:last-of-type { margin-bottom: 0; }
+
+/* chip pill – neutral theme (no random blue) */
+.admin-menu{
+  --chip-bg: var(--surface-2, color-mix(in oklab, var(--color-text) 8%, var(--color-bg)));
+  --chip-border: var(--color-surface-border);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  color: var(--color-text);
+  box-shadow: 0 3px 10px var(--color-surface-shadow);
+  flex: 0 0 auto;
+  max-width: 100%;
+}
+.chip-avatar {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--color-accent);
+  color: #111;
+  user-select: none;
+}
+.chip-text { display: grid; min-width: 0; }
+.chip-name {
+  font-size: 12px;
+  opacity: .9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chip-email {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chip-x {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--color-text);
+  opacity: .85;
+  margin-left: 8px;
+}
+.chip-x:hover { opacity: 1; }
+
+/* assignee input (under chips) */
+.chip-add { position: relative; margin-top: 12px; }
+.chip-add input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--color-surface-border);
+  border-radius: 10px;
+  background: var(--color-background);
+  color: var(--color-text);
+  outline: none;
+  box-sizing: border-box; /* keep inside .chip-wrap */
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.chip-add input::placeholder{
+  color: color-mix(in oklab, var(--color-text) 60%, transparent);
+}
+.chip-add input:focus{
+  border-color: color-mix(in oklab, var(--color-text) 22%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 22%, transparent);
+}
+
+/* suggestions dropdown */
+.suggest-wrap { position: relative; }
+.suggest-list {
+  position: absolute;
+  left: 0; right: 0; top: 100%;
+  margin-top: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--color-surface-border) !important;
+  box-shadow: 0 10px 24px var(--color-surface-shadow);
+  z-index: 200;
+  max-height: 240px;
+  overflow: auto;
+
+  /* SOLID surface (not transparent) + subtle blur for polish */
+  background: var(--surface-2, color-mix(in oklab, var(--color-text) 8%, var(--color-bg))) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.suggest-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+  text-align: left;
+}
+.suggest-item:hover { background: color-mix(in oklab, var(--color-accent) 14%, transparent); }
+.s-name { opacity: .9; }
+.s-email { font-weight: 700; }
+
+/* ---------- Overlay polish (blur + dim) ---------- */
+.admin-menu{
+  /* soft dimmer + background blur behind the card */
+  background: color-mix(in oklab, var(--color-bg) 35%, rgba(0,0,0,.55));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  width: 100%;
+
+}
+
+/* ---------- Mobile (≤768px) ---------- */
+@media (max-width: 768px) {
+  .admin-menu{
+    align-items: flex-start;     /* respect top margin */
+    justify-content: center;
+  }
+  .admin-menu-card{
+    width: 94vw !important;      /* wider, but still with nice gutters */
+    max-width: 94vw !important;
+    margin-inline: auto;
+    border-radius: 18px;         /* keep the rounded look */
+  }
+    .admin-menu-card{
+    width: 100%;         /* fill available space */
+    max-width: 500px;    /* but cap like Account */
+    margin-inline: auto; /* center it */
+    box-sizing: border-box;
+    }
+  /* form becomes single column */
+  .grid { grid-template-columns: 1fr; }
+  .grid .span-2 { grid-column: 1; }
+
+  /* chips stacked & centered */
+   .chip-row{
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;        /* chips fill the row */
+    justify-content: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .chip{
+    width: 100%;                 /* full width of parent */
+    margin: 0;                   /* remove stray margins */
+  }
+}
+.chip-add input{
+  width: 100%;
+  box-sizing: border-box;        /* no spill out of .chip-wrap */
+}
+
+.chip{
+  display: flex;                 /* ensure proper alignment */
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;        /* respect padding/borders */
+}
+.chip-text{
+  flex: 1 1 auto;                /* text takes remaining room */
+  min-width: 0;                  /* enable ellipsis */
+}
+.chip-x{
+  margin-left: auto;             /* push X to the far right */
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: transparent;
+}
+.chip-x:hover{
+  background: color-mix(in oklab, var(--color-text) 8%, transparent);
+}
+
+.admin-menu{
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  margin-top: 14%;
+  padding-top: 0px;
+}
+
+.admin-menu-card{
+  max-height: calc(100dvh - 96px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
