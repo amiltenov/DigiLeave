@@ -26,7 +26,7 @@
   background: rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  z-index: 50;
+  z-index: 9999;
 }
 
 .request-detail-card {
@@ -299,11 +299,12 @@
 
 @media (max-width: 640px) {
   .request-detail-root {
-    align-items: flex-start;
-    padding: calc(70px + 12px) 12px 16px;
+    align-items: center;
+    padding: 16px;
   }
 
   .request-detail-card {
-    max-height: calc(100dvh - 96px);
+    max-height: calc(100dvh - 32px);
   }
 }
+
