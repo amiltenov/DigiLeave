@@ -1,55 +1,7 @@
 import React from "react";
 import "../../styles/request-detail.css";
 import { formatDate } from "../../utils/formatDate";
-
-const toTitle = (s) =>
-  (s || "")
-    .toString()
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (m) => m.toUpperCase());
-
-const safeNum = (v, fb = 0) =>
-  typeof v === "number" && !Number.isNaN(v) ? v : fb;
-
-const statusTone = (status) => {
-  switch ((status || "").toLowerCase()) {
-    case "approved":
-      return "approved";
-    case "denied":
-    case "rejected":
-      return "denied";
-    default:
-      return "pending";
-  }
-};
-
-const Icon = {
-  Calendar: (p) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" {...p}>
-      <path fill="currentColor" d="M7 2h2v2h6V2h2v2h3a2 2 0 012 2v14a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2h3V2zm14 8H3v10h18V10zM3 8h18V6H3v2z" />
-    </svg>
-  ),
-  Clock: (p) => (
-    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" {...p}>
-      <path fill="currentColor" d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 11h5v-2h-4V6h-2v7z" />
-    </svg>
-  ),
-  Close: (p) => (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...p}>
-      <path fill="currentColor" d="M18.3 5.71L12 12.01l-6.3-6.3-1.4 1.41 6.29 6.3-6.3 6.3 1.41 1.41 6.3-6.29 6.29 6.29 1.41-1.41-6.3-6.3 6.3-6.3z"/>
-    </svg>
-  ),
-};
-
-const Badge = ({ status, children }) => {
-  const tone = statusTone(status);
-  return (
-    <span className={`rd-badge rd-badge--${tone}`}>
-      {children ?? toTitle(status)}
-    </span>
-  );
-};
+import { IconCalendar, IconClock, IconClose } from "../../utils/icons";
 
 export default function RequestDetailView({
   open,
@@ -60,88 +12,182 @@ export default function RequestDetailView({
 }) {
   if (!open || !request) return null;
 
-  return (
-    <div className="rd-modal" role="dialog" aria-modal="true" onClick={onClose}>
-      <div className="rd-panel" onClick={(e) => e.stopPropagation()}>
-        <div className="rd-head">
-          <h2>{title}</h2>
-          <button className="rd-close" onClick={onClose} aria-label="Close">
-            <Icon.Close />
-          </button>
-        </div>
+  const hasActions = Array.isArray(actions) && actions.length > 0;
 
-        <div className="rd-body">
+  const workdays =
+    typeof request.workdaysCount === "number" &&
+    !Number.isNaN(request.workdaysCount)
+      ? request.workdaysCount
+      : null;
+
+  const leaveTypeLabel = request.type || "—";
+
+  const status = request.status || "PENDING";
+  const statusClass = status.toLowerCase();
+
+  const handleBackdropClick = (event) => {
+    if (event.target === event.currentTarget && onClose) {
+      onClose();
+    }
+  };
+
+  return (
+    <div
+      className="request-detail-root"
+      aria-modal="true"
+      role="dialog"
+      onClick={handleBackdropClick}
+    >
+      <div
+        className="request-detail-card"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="request-detail-header">
+          <h2 className="request-detail-title">{title}</h2>
+          <button
+            type="button"
+            className="request-detail-close-button"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <IconClose />
+          </button>
+        </header>
+
+        <div className="request-detail-body">
           {(request.userName || request.userEmail) && (
-            <div className="rd-card rd-card--one">
-              <div className="rd-label">Requester</div>
-              <div className="rd-value">
-                <div className="rd-strong">{request.userName || "—"}</div>
-                {request.userEmail && <div className="rd-muted rd-email">{request.userEmail}</div>}
+            <section className="request-detail-section request-detail-requester">
+              <div className="request-detail-section-label">Requester</div>
+              <div className="request-detail-requester-info">
+                <div className="request-detail-requester-name">
+                  {request.userName || "—"}
+                </div>
+                {request.userEmail && (
+                  <div className="request-detail-user-email">
+                    {request.userEmail}
+                  </div>
+                )}
               </div>
-            </div>
+            </section>
           )}
 
-          <div className="rd-grid">
-            <div className="rd-card">
-              <div className="rd-label"><Icon.Calendar /> Start Date</div>
-              <div className="rd-value">{formatDate(request.startDate)}</div>
+          <section className="request-detail-section">
+            <div className="request-detail-info-grid" role="list">
+              <article className="request-detail-info-card" role="listitem">
+                <div className="request-detail-info-label">
+                  <IconCalendar className="request-detail-info-icon" />
+                  <span>Start date</span>
+                </div>
+                <div className="request-detail-info-value">
+                  {formatDate(request.startDate)}
+                </div>
+              </article>
+
+              <article className="request-detail-info-card" role="listitem">
+                <div className="request-detail-info-label">
+                  <IconCalendar className="request-detail-info-icon" />
+                  <span>End date</span>
+                </div>
+                <div className="request-detail-info-value">
+                  {formatDate(request.endDate)}
+                </div>
+              </article>
+
+              <article className="request-detail-info-card" role="listitem">
+                <div className="request-detail-info-label">
+                  <IconClock className="request-detail-info-icon" />
+                  <span>Duration</span>
+                </div>
+                <div className="request-detail-info-value request-detail-duration-value">
+                  {workdays ?? "—"}
+                  {workdays != null && (
+                    <span className="request-detail-duration-unit">
+                      workdays
+                    </span>
+                  )}
+                </div>
+              </article>
+
+              <article className="request-detail-info-card" role="listitem">
+                <div className="request-detail-info-label">
+                  <span>Leave type</span>
+                </div>
+                <div className="request-detail-info-value">
+                  {leaveTypeLabel}
+                </div>
+              </article>
             </div>
-            <div className="rd-card">
-              <div className="rd-label"><Icon.Calendar /> End Date</div>
-              <div className="rd-value">{formatDate(request.endDate)}</div>
-            </div>
-            <div className="rd-card">
-              <div className="rd-label"><Icon.Clock /> Duration</div>
-              <div className="rd-value rd-big">
-                {safeNum(request.workdaysCount)} <span>workdays</span>
-              </div>
-            </div>
-            <div className="rd-card">
-              <div className="rd-label">Leave Type</div>
-              <div className="rd-value">{toTitle(request.type || "")}</div>
-            </div>
-          </div>
+          </section>
 
           {request.comment && (
-            <div className="rd-comment">
-              <div className="rd-label">Comment</div>
-              <div className="rd-commentbox">{request.comment}</div>
-            </div>
+            <section className="request-detail-section">
+              <div className="request-detail-section-label">Comment</div>
+              <div className="request-detail-comment">{request.comment}</div>
+            </section>
           )}
 
-          <div className="rd-times">
-            {request.createdAt && (
-              <div>
-                <span>Created:</span>{" "}
-                <strong>{formatDate(request.createdAt)}</strong>
-              </div>
-            )}
-            {request.decidedAt && (
-              <div>
-                <span>Decided:</span>{" "}
-                <strong>{formatDate(request.decidedAt)}</strong>
-              </div>
-            )}
-          </div>
+          {(request.createdAt || request.decidedAt) && (
+            <section className="request-detail-section request-detail-timestamps">
+              {request.createdAt && (
+                <div className="request-detail-timestamp">
+                  <span className="request-detail-timestamp-label">
+                    Created:
+                  </span>
+                  <span className="request-detail-timestamp-value">
+                    {formatDate(request.createdAt)}
+                  </span>
+                </div>
+              )}
+
+              {request.decidedAt && (
+                <div className="request-detail-timestamp">
+                  <span className="request-detail-timestamp-label">
+                    Decided:
+                  </span>
+                  <span className="request-detail-timestamp-value">
+                    {formatDate(request.decidedAt)}
+                  </span>
+                </div>
+              )}
+            </section>
+          )}
         </div>
 
-        <div className="rd-foot" style={{ justifyContent: actions.length ? "space-between" : "flex-end" }}>
-          <Badge status={request.status} />
-          {actions.length > 0 && (
-            <div className="rd-actions">
-              {actions.map((a, i) => (
+        <footer
+          className={
+            "request-detail-footer" +
+            (hasActions ? "" : " request-detail-footer--no-actions")
+          }
+        >
+          <div className="request-detail-status">
+            <span
+              className={`request-detail-status-badge request-detail-status-badge--${statusClass}`}
+            >
+              {status}
+            </span>
+          </div>
+
+          {hasActions && (
+            <div className="request-detail-actions">
+              {actions.map((action, index) => (
                 <button
-                  key={i}
-                  onClick={a.onClick}
-                  disabled={a.disabled}
-                  className={`rd-btn ${a.variant ? `rd-btn--${a.variant}` : ""}`}
+                  key={index}
+                  type="button"
+                  onClick={action.onClick}
+                  disabled={action.disabled}
+                  className={
+                    "request-detail-action-button" +
+                    (action.variant
+                      ? ` request-detail-action-button--${action.variant}`
+                      : "")
+                  }
                 >
-                  {a.label}
+                  {action.label}
                 </button>
               ))}
             </div>
           )}
-        </div>
+        </footer>
       </div>
     </div>
   );

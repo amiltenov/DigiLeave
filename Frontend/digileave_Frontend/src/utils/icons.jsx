@@ -39,3 +39,20 @@ export const IconSearch = (p) => (
 );
 
 
+export const IconClock = (p) => (
+  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" {...p}>
+    <path
+      fill="currentColor"
+      d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 11h5v-2h-4V6h-2v7z"
+    />
+  </svg>
+);
+
+export const IconClose = (p) => (
+  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" {...p}>
+    <path
+      fill="currentColor"
+      d="M18.3 5.71 12 12.01l-6.3-6.3-1.4 1.41 6.29 6.3-6.3 6.3 1.41 1.41 6.3-6.29 6.29 6.29 1.41-1.41-6.3-6.3 6.3-6.3z"
+    />
+  </svg>
+);
