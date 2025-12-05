@@ -7,6 +7,8 @@ import RequestsViewMode from "../components/RequestComponents/RequestsViewMode";
 import { authHeader } from "../utils/auth";
 import { STATE } from "../utils/state";
 import { BASE_API_URL } from "../utils/base_api_url";
+import FlashMessage from "../utils/FlashMessage";
+import { getFlashMessage } from "../utils/flashMessageStorage";
 
 export default function Requests() {
   const [viewState, setViewState] = useState(STATE.LOADING);
@@ -16,6 +18,11 @@ export default function Requests() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [userName, setUserName] = useState("User");
 
+  const [toast, setToast] = useState(() => getFlashMessage());
+
+  function showToast(status, text) {
+    setToast({ status, text });
+  }
 
   useEffect(() => {
     let alive = true;
@@ -79,6 +86,14 @@ export default function Requests() {
 
   return (
     <div className="requests-root">
+      {toast && (
+        <FlashMessage
+          status={toast.status}
+          text={toast.text}
+          duration={4000}
+          onClose={() => setToast(null)}
+        />
+      )}
       <div className="requests-inner">
         <div className="rq-pagehead">
           <div>

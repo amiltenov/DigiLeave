@@ -1,7 +1,9 @@
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { authHeader } from "../utils/auth";
 import { BASE_API_URL } from "../utils/base_api_url";
 import { hasOverlapWithRequests } from "../utils/overlap";
+import FlashMessage from "../utils/FlashMessage";
+import { setFlashMessage } from "../utils/flashMessageStorage";
 import "../styles/newrequest.css";
 
 
@@ -13,20 +15,6 @@ const LEAVE_TYPES = [
   "PATERNITY_LEAVE",
 ];
 
-function prettyType(t) {
-  return t
-    .toLowerCase()
-    .split("_")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
-
-function toLocalISO(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
 
 
 export default function NewRequest() {
@@ -35,44 +23,52 @@ export default function NewRequest() {
   const [endDate, setEndDate] = useState("");
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [msg, setMsg] = useState(null);
-
+  
+  const [toast, setToast] = useState(null); // { status, text }
+  
   const [availableDays, setAvailableDays] = useState(null);
-
-  // BG public holiday dates (YYYY-MM-DD)
   const [holidayDates, setHolidayDates] = useState(() => new Set());
-
   const [myRequests, setMyRequests] = useState([]);
+  
+  const today = new Date().toISOString().slice(0, 10);
 
+
+  // # Fetch User info for checks
   useEffect(() => {
-    const h = new Headers();
-    Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
-    fetch(`${BASE_API_URL}/account`, { headers: h })
+    const headers = new Headers(authHeader());
+
+    // availableLeaveDays blanace check 
+    fetch(`${BASE_API_URL}/account`, { headers })
       .then((r) => (r.ok ? r.json() : null))
       .then((u) => setAvailableDays(u?.availableLeaveDays ?? null))
       .catch(() => setAvailableDays(null));
-
-    fetch(`${BASE_API_URL}/requests`, { headers: h })
+    // fetch user requests (to check for overlap with the new request)
+    fetch(`${BASE_API_URL}/requests`, { headers })
       .then((r) => (r.ok ? r.json() : []))
-      .then((list) => (Array.isArray(list) ? setMyRequests(list) : setMyRequests([])))
+      .then((list) => (Array.isArray(list) ? setMyRequests(list) : []))
       .catch(() => setMyRequests([]));
   }, []);
 
-  // Fetch official hlidays
+
+  // # Official holidays check
   useEffect(() => {
     if (!startDate || !endDate) {
       setHolidayDates(new Set());
       return;
     }
+
     const s = new Date(startDate);
     const e = new Date(endDate);
+
     if (Number.isNaN(s) || Number.isNaN(e) || s > e) {
       setHolidayDates(new Set());
       return;
     }
 
     const years = [];
-    for (let y = s.getFullYear(); y <= e.getFullYear(); y++) years.push(y);
+    for (let y = s.getFullYear(); y <= e.getFullYear(); y += 1) {
+      years.push(y);
+    }
 
     Promise.all(
       years.map((y) =>
@@ -97,55 +93,83 @@ export default function NewRequest() {
       });
   }, [startDate, endDate]);
 
+
+
+  // # Calculate workdays (skip Weekends and Holidays)
   const workdaysCount = useMemo(() => {
     if (!startDate || !endDate) return 0;
+
     const s = new Date(startDate);
     const e = new Date(endDate);
-    if (Number.isNaN(s) || Number.isNaN(e) || s > e) return 0;
-    let d = new Date(s);
-    let count = 0;
-    while (d <= e) {
-      const day = d.getDay();
-      const isWeekend = day === 0 || day === 6;
-      const iso = toLocalISO(d);
-      const isHoliday = holidayDates.has(iso);
-      if (!isWeekend && !isHoliday) count++;
-      d.setDate(d.getDate() + 1);
+
+    if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime()) || s > e) {
+      return 0;
     }
+
+    let current = new Date(s);
+    let count = 0;
+
+    while (current <= e) {
+      const dayOfWeek = current.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+      const year = current.getFullYear();
+      const month = String(current.getMonth() + 1).padStart(2, "0");
+      const day = String(current.getDate()).padStart(2, "0");
+      const iso = `${year}-${month}-${day}`;
+
+      const isHoliday = holidayDates.has(iso);
+
+      if (!isWeekend && !isHoliday) {
+        count += 1;
+      }
+
+      current.setDate(current.getDate() + 1);
+    }
+
     return count;
   }, [startDate, endDate, holidayDates]);
 
+
+
+  // # Calculate remaining days
   const remainingDays = useMemo(() => {
     if (availableDays == null) return null;
     const rem = availableDays - workdaysCount;
     return rem < 0 ? 0 : rem;
   }, [availableDays, workdaysCount]);
 
+
+
+  function showToast(status, text) {
+    setToast({ status, text });
+  }
+
+
   async function handleSubmit(e) {
     e.preventDefault();
-    setMsg(null);
+    setToast(null);
 
     if (!type) {
-      setMsg({ type: "err", text: "Please choose a leave type." });
+      showToast("err", "Please choose a leave type.");
       return;
     }
     if (!startDate || !endDate) {
-      setMsg({ type: "err", text: "Select both start and end dates." });
+      showToast("err", "Select both start and end dates.");
       return;
     }
     if (new Date(startDate) > new Date(endDate)) {
-      setMsg({ type: "err", text: "Start date cannot be after end date." });
+      showToast("err", "Start date cannot be after end date.");
       return;
     }
     if (workdaysCount <= 0) {
-      setMsg({ type: "err", text: "Selected range contains no workdays (Mon–Fri)." });
+      showToast("err", "Selected range contains no workdays (Mon–Fri).");
       return;
     }
 
     const hasOverlap = hasOverlapWithRequests(startDate, endDate, myRequests);
-
     if (hasOverlap) {
-      setMsg({ type: "err", text: "This request overlaps with an existing leave request." });
+      showToast("err", "This request overlaps with an existing leave request.");
       return;
     }
 
@@ -166,52 +190,50 @@ export default function NewRequest() {
       });
 
       if (res.status === 401) {
-        setMsg({ type: "unauth", text: "Not signed in. Use Login with Google." });
+        showToast("unauth", "Not signed in. Use Login with Google.");
         return;
       }
+
       if (!res.ok) {
         const text = await res.text().catch(() => "");
-        setMsg({ type: "err", text: text || `Request failed (HTTP ${res.status})` });
+        showToast("err", text || `Request failed (HTTP ${res.status})`);
         return;
       }
 
       const saved = await res.json().catch(() => null);
-      setMsg({
-        type: "ok",
-        text: saved?.id ? `Request submitted successfully.` : "Request submitted successfully.",
+
+      setFlashMessage({
+        status: "ok",
+        text: "Leave request created successfully.",
+        requestId: saved?.id ?? null,
       });
-      
 
-      const h = new Headers();
-      Object.entries(authHeader()).forEach(([k, v]) => h.set(k, v));
-      fetch(`${BASE_API_URL}/requests`, { headers: h })
-        .then((r) => (r.ok ? r.json() : []))
-        .then((list) => (Array.isArray(list) ? setMyRequests(list) : null))
-        .catch(() => {});
-
-      setType(LEAVE_TYPES[0]);
-      setStartDate("");
-      setEndDate("");
-      setComment("");
+      window.location.href = "/requests";
     } catch {
-      setMsg({ type: "err", text: "Network error." });
+      showToast("err", "Network error.");
     } finally {
       setSubmitting(false);
     }
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+
 
   return (
-    <div className="newrequest-wrap">
-      <div className="newrequest-card">
-        <h2>Create Leave Request</h2>
 
-        {msg && (
-          <div className={`nr-alert ${msg.type === "ok" ? "ok" : msg.type === "unauth" ? "warn" : "err"}`}>
-            {msg.text}
-          </div>
-        )}
+    <div className="newrequest-root">
+      {toast && (
+        <FlashMessage
+          status={toast.status}
+          text={toast.text}
+          duration={4000}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <div className="newrequest-card">
+        <h2 className="newrequest-title">
+          Create Leave Request
+        </h2>
 
         <form onSubmit={handleSubmit}>
           <label>
@@ -239,12 +261,27 @@ export default function NewRequest() {
 
           <label>
             <span>Leave type</span>
-            <select id="type-dropdown" value={type} onChange={(e) => setType(e.target.value)} required>
-              {LEAVE_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {prettyType(t)}
-                </option>
-              ))}
+            <select
+              id="type-dropdown"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              required
+            >
+              {LEAVE_TYPES.map((leaveType) => {
+                const label = leaveType
+                  .toLowerCase()
+                  .split("_")
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() + word.slice(1)
+                  )
+                  .join(" ");
+                return (
+                  <option key={leaveType} value={leaveType}>
+                    {label}
+                  </option>
+                );
+              })}
             </select>
           </label>
 
@@ -258,39 +295,51 @@ export default function NewRequest() {
             />
           </label>
 
-          <div className="nr-previewCard">
-            <span className="nr-stat">Preview</span>
-            <div className="nr-previewText">
-              {workdaysCount} workday{workdaysCount === 1 ? "" : "s"} (Mon–Fri)
+          <div className="newrequest-summary-row">
+            <div className="newrequest-summary-card">
+              <div className="newrequest-summary-label">Preview (work days)</div>
+              <div className="newrequest-summary-value">
+                {workdaysCount}
+              </div>
             </div>
-          </div>
 
-          <div className="nr-stats">
-            <div className="nr-stat">
-              <div className="nr-stat-label">Available days</div>
-              <div className="nr-stat-value">{availableDays == null ? "—" : availableDays}</div>
+            <div className="newrequest-summary-card">
+              <div className="newrequest-summary-label">Available days</div>
+              <div className="newrequest-summary-value">
+                {availableDays == null ? "—" : availableDays}
+              </div>
             </div>
-            <div className="nr-stat">
-              <div className="nr-stat-label">Remaining after request</div>
-              <div className={`nr-stat-value ${remainingDays === 0 ? "danger" : ""}`}>
+
+            <div className="newrequest-summary-card">
+              <div className="newrequest-summary-label">Remaining after request</div>
+              <div
+                className={
+                  "newrequest-summary-value " +
+                  (remainingDays === 0 ? "danger" : "")
+                }
+              >
                 {remainingDays == null ? "—" : remainingDays}
               </div>
             </div>
           </div>
 
           <div className="newrequest-buttons">
-            <button className="btn-lg submit-btn" type="submit" disabled={submitting}>
+            <button
+              className="newrequest-button newrequest-button--submit"
+              type="submit"
+              disabled={submitting}
+            >
               {submitting ? "Submitting…" : "Submit"}
             </button>
             <button
-              className="btn-lg reset-btn"
+              className="newrequest-button newrequest-button--reset"
               type="button"
               onClick={() => {
                 setType(LEAVE_TYPES[0]);
                 setStartDate("");
                 setEndDate("");
                 setComment("");
-                setMsg(null);
+                setToast(null);
               }}
             >
               Reset
@@ -300,4 +349,6 @@ export default function NewRequest() {
       </div>
     </div>
   );
+
+  
 }

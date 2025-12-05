@@ -1,0 +1,178 @@
+:root {
+  --flash-success-bg: color-mix(in oklab, #16a34a 14%, var(--color-bg));
+  --flash-success-border: #16a34a;
+
+  --flash-error-bg: color-mix(in oklab, #ef4444 14%, var(--color-bg));
+  --flash-error-border: #ef4444;
+
+  --flash-warning-bg: color-mix(in oklab, #f59e0b 18%, var(--color-bg));
+  --flash-warning-border: #f59e0b;
+
+  --flash-info-bg: color-mix(in oklab, var(--color-accent) 12%, var(--color-bg));
+  --flash-info-border: var(--color-accent);
+}
+
+[data-theme="dark"] {
+  --flash-success-bg: color-mix(in oklab, #16a34a 26%, #000);
+  --flash-error-bg: color-mix(in oklab, #ef4444 26%, #000);
+  --flash-warning-bg: color-mix(in oklab, #f59e0b 32%, #000);
+  --flash-info-bg: color-mix(in oklab, var(--color-accent) 26%, #000);
+}
+
+.flash-message-root {
+  position: fixed;
+  top: 78px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-12px);
+  max-width: min(480px, calc(100vw - 24px));
+  z-index: 1200;
+  pointer-events: none;
+  opacity: 0;
+  animation: flash-message-in 180ms ease-out forwards;
+}
+
+.flash-message-root--closing {
+  animation: flash-message-out 180ms ease-in forwards;
+}
+
+.flash-message-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--color-surface-border);
+  box-shadow: 0 8px 26px var(--color-surface-shadow);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  background: var(--flash-info-bg);
+  color: var(--color-text);
+  pointer-events: auto;
+}
+
+.flash-message-root--success .flash-message-inner {
+  background: var(--flash-success-bg);
+  border-color: var(--flash-success-border);
+}
+
+.flash-message-root--error .flash-message-inner {
+  background: var(--flash-error-bg);
+  border-color: var(--flash-error-border);
+}
+
+.flash-message-root--warning .flash-message-inner {
+  background: var(--flash-warning-bg);
+  border-color: var(--flash-warning-border);
+}
+
+.flash-message-root--info .flash-message-inner {
+  background: var(--flash-info-bg);
+  border-color: var(--flash-info-border);
+}
+
+.flash-message-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.flash-message-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.flash-message-text {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.flash-message-close {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.flash-message-close:hover {
+  background: color-mix(in oklab, currentColor 14%, transparent);
+}
+
+.flash-message-progress {
+  margin-top: 2px;
+  border-radius: 999px;
+  overflow: hidden;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 10px var(--color-surface-shadow);
+  pointer-events: none;
+}
+
+.flash-message-progress-bar {
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  animation: flash-message-progress var(--flash-message-duration, 4000ms)
+    linear forwards;
+}
+
+.flash-message-root--success .flash-message-progress-bar {
+  background: var(--flash-success-border);
+}
+
+.flash-message-root--error .flash-message-progress-bar {
+  background: var(--flash-error-border);
+}
+
+.flash-message-root--warning .flash-message-progress-bar {
+  background: var(--flash-warning-border);
+}
+
+.flash-message-root--info .flash-message-progress-bar {
+  background: var(--flash-info-border);
+}
+
+@keyframes flash-message-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes flash-message-out {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+
+@keyframes flash-message-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .flash-message-root {
+    top: 72px;
+  }
+}
