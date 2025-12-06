@@ -177,11 +177,12 @@
 }
 .mobile-drawer .nav-btn,
 .mobile-drawer .account_google-btn {
-  display: block;
+  /* display: block; */
   text-align: center;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  /* align-items:center; */
 }
 
 @media (max-width: 680px) {
@@ -198,7 +199,12 @@
   }
   .logo-img { height: 34px; }
 
-  .mobile-drawer { top: 64px; padding: 12px; gap: 10px; }
+  .mobile-drawer {
+    top: 64px;
+    padding: 12px; 
+    gap: 10px;
+    align-items:center;
+   }
 
   .mobile-drawer .nav-btn,
   .mobile-drawer .account_google-btn {
